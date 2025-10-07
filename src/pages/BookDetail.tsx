@@ -73,15 +73,23 @@ const BookDetail = () => {
       if (bookData) {
         setBook(bookData);
 
-        // Fetch reviews
+        // Fetch reviews (using old column names until migration is approved)
         const { data: reviewsData } = await supabase
           .from("reviews")
-          .select("id, review_text, nickname, rating, created_at")
+          .select("id, review_text, pen_name, hearts, timestamp")
           .eq("book_id", bookId)
-          .order("created_at", { ascending: false });
+          .order("timestamp", { ascending: false });
 
         if (reviewsData) {
-          setReviews(reviewsData);
+          // Map old column names to new interface structure
+          const mappedReviews = reviewsData.map(review => ({
+            id: review.id,
+            review_text: review.review_text,
+            nickname: review.pen_name,
+            rating: review.hearts,
+            created_at: review.timestamp
+          }));
+          setReviews(mappedReviews);
         }
 
         // Fetch recommendations based on mood or trope
@@ -170,12 +178,20 @@ const BookDetail = () => {
       // Refresh reviews
       const { data: reviewsData } = await supabase
         .from("reviews")
-        .select("id, review_text, nickname, rating, created_at")
+        .select("id, review_text, pen_name, hearts, timestamp")
         .eq("book_id", bookId)
-        .order("created_at", { ascending: false });
+        .order("timestamp", { ascending: false });
 
       if (reviewsData) {
-        setReviews(reviewsData);
+        // Map old column names to new interface structure
+        const mappedReviews = reviewsData.map(review => ({
+          id: review.id,
+          review_text: review.review_text,
+          nickname: review.pen_name,
+          rating: review.hearts,
+          created_at: review.timestamp
+        }));
+        setReviews(mappedReviews);
       }
 
       toast({
