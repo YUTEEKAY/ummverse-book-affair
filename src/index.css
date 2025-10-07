@@ -38,10 +38,16 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
+    --blush: 345 70% 90%;
+    --cream: 40 50% 95%;
+    --dusty-rose: 345 50% 75%;
+    --warm-peach: 25 80% 85%;
+
     --gradient-romance: linear-gradient(135deg, hsl(345, 65%, 45%), hsl(345, 55%, 55%));
     --gradient-hero: linear-gradient(180deg, hsl(345, 85%, 96%), hsl(28, 40%, 98%));
     --shadow-soft: 0 4px 20px -4px hsl(345, 45%, 75% / 0.3);
     --shadow-card: 0 2px 12px -2px hsl(345, 35%, 65% / 0.2);
+    --shadow-glow: 0 0 30px hsl(345 65% 45% / 0.4);
   }
 
   .dark {
@@ -73,10 +79,16 @@ All colors MUST be HSL.
     --input: 345 20% 20%;
     --ring: 345 65% 55%;
 
+    --blush: 345 40% 25%;
+    --cream: 40 20% 20%;
+    --dusty-rose: 345 35% 35%;
+    --warm-peach: 25 40% 30%;
+
     --gradient-romance: linear-gradient(135deg, hsl(345, 65%, 55%), hsl(345, 55%, 65%));
     --gradient-hero: linear-gradient(180deg, hsl(345, 30%, 12%), hsl(345, 35%, 8%));
     --shadow-soft: 0 4px 20px -4px hsl(345, 65%, 25% / 0.5);
     --shadow-card: 0 2px 12px -2px hsl(345, 55%, 35% / 0.4);
+    --shadow-glow: 0 0 30px hsl(345 65% 45% / 0.5);
   }
 }
 
@@ -109,5 +121,93 @@ All colors MUST be HSL.
   
   .shadow-card {
     box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  /* Typewriter animation */
+  @keyframes typewriter {
+    from { 
+      width: 0;
+      opacity: 0;
+    }
+    to { 
+      width: 100%;
+      opacity: 1;
+    }
+  }
+  
+  .animate-typewriter {
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typewriter 3s steps(40, end) forwards;
+  }
+  
+  /* Shimmer animation */
+  @keyframes shimmer {
+    0% { 
+      background-position: -200% center;
+    }
+    100% { 
+      background-position: 200% center;
+    }
+  }
+  
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--primary) / 0.3) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+  }
+  
+  /* Floating animation */
+  @keyframes float {
+    0%, 100% { 
+      transform: translateY(0px);
+    }
+    50% { 
+      transform: translateY(-10px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Hero gradient animation */
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+  
+  /* Sparkle animation */
+  @keyframes sparkle {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(1.2);
+    }
+  }
+  
+  .animate-sparkle {
+    animation: sparkle 2s ease-in-out infinite;
   }
 }

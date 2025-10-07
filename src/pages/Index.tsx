@@ -1,13 +1,17 @@
 import Hero from "@/components/Hero";
-import FeaturedBooks from "@/components/FeaturedBooks";
-import QuoteCarousel from "@/components/QuoteCarousel";
+import TodaysQuote from "@/components/TodaysQuote";
+import PopularMoods from "@/components/PopularMoods";
+import TrendingBooksCarousel from "@/components/TrendingBooksCarousel";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
     <main className="min-h-screen">
       <Hero />
-      <FeaturedBooks />
-      <QuoteCarousel />
+      <TodaysQuote />
+      <PopularMoods />
+      <TrendingBooksCarousel />
+      <Footer />
     </main>
   );
 };

@@ -56,6 +56,14 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+      },
+      colors: {
+        blush: "hsl(var(--blush))",
+        cream: "hsl(var(--cream))",
+        "dusty-rose": "hsl(var(--dusty-rose))",
+        "warm-peach": "hsl(var(--warm-peach))",
       },
       keyframes: {
         "accordion-down": {
