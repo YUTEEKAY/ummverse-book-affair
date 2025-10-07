@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.get-similar-books]
 verify_jwt = false
+
+[functions.import-csv-books]
+verify_jwt = false

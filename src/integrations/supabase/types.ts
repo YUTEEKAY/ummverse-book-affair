@@ -26,8 +26,11 @@ export type Database = {
           genre: string | null
           heat_level: string | null
           id: string
+          import_source: string | null
+          language: string | null
           mood: string | null
           publication_year: number | null
+          publisher: string | null
           purchase_link: string | null
           rating: number | null
           summary: string | null
@@ -45,8 +48,11 @@ export type Database = {
           genre?: string | null
           heat_level?: string | null
           id?: string
+          import_source?: string | null
+          language?: string | null
           mood?: string | null
           publication_year?: number | null
+          publisher?: string | null
           purchase_link?: string | null
           rating?: number | null
           summary?: string | null
@@ -64,8 +70,11 @@ export type Database = {
           genre?: string | null
           heat_level?: string | null
           id?: string
+          import_source?: string | null
+          language?: string | null
           mood?: string | null
           publication_year?: number | null
+          publisher?: string | null
           purchase_link?: string | null
           rating?: number | null
           summary?: string | null

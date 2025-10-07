@@ -8,6 +8,7 @@ import MoodDetail from "./pages/MoodDetail";
 import GenreDetail from "./pages/GenreDetail";
 import TropeDetail from "./pages/TropeDetail";
 import BookDetail from "./pages/BookDetail";
+import AdminImport from "./pages/AdminImport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/genre/:genreId" element={<GenreDetail />} />
           <Route path="/trope/:tropeId" element={<TropeDetail />} />
           <Route path="/book/:bookId" element={<BookDetail />} />
+          <Route path="/admin/import" element={<AdminImport />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
