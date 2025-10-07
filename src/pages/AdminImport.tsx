@@ -161,34 +161,65 @@ export default function AdminImport() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="border-2 border-dashed border-muted rounded-lg p-8 text-center">
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  id="csv-upload"
-                  disabled={isProcessing}
-                />
-                <label
-                  htmlFor="csv-upload"
-                  className="cursor-pointer flex flex-col items-center gap-2"
-                >
-                  <FileText className="h-12 w-12 text-muted-foreground" />
-                  <div className="text-sm">
-                    {file ? (
-                      <span className="text-primary font-medium">{file.name}</span>
-                    ) : (
-                      <>
-                        <span className="text-primary">Click to upload</span> or drag and drop
-                      </>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    CSV files only
-                  </p>
-                </label>
-              </div>
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleFileChange}
+                className="hidden"
+                id="csv-upload"
+                disabled={isProcessing}
+              />
+              <label
+                htmlFor="csv-upload"
+                className={`
+                  relative block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
+                  transition-all duration-300 ease-in-out
+                  ${file 
+                    ? 'border-primary bg-primary/5 shadow-lg' 
+                    : 'border-muted hover:border-primary/50 hover:bg-accent/50'
+                  }
+                  hover:scale-[1.02] hover:shadow-md
+                  active:scale-[0.98]
+                `}
+              >
+                <div className="flex flex-col items-center gap-3">
+                  {file ? (
+                    <>
+                      <div className="relative">
+                        <FileText className="h-12 w-12 text-primary" />
+                        <CheckCircle2 className="h-6 w-6 text-primary absolute -top-1 -right-1 bg-background rounded-full" />
+                      </div>
+                      <div className="text-sm">
+                        <span className="text-primary font-semibold">{file.name}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        File ready to import
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-12 w-12 text-muted-foreground transition-colors group-hover:text-primary" />
+                      <div className="space-y-1">
+                        <Button 
+                          type="button" 
+                          variant="secondary" 
+                          size="sm"
+                          className="pointer-events-none"
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          Browse Files
+                        </Button>
+                        <p className="text-sm text-muted-foreground">
+                          or drag and drop
+                        </p>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        CSV files only
+                      </p>
+                    </>
+                  )}
+                </div>
+              </label>
 
               {file && (
                 <Button
