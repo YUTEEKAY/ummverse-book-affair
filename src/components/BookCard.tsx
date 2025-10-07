@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import BookCoverPlaceholder from "./BookCoverPlaceholder";
+import HeatLevelBadge from "./HeatLevelBadge";
 
 interface BookCardProps {
   book: {
@@ -14,6 +15,7 @@ interface BookCardProps {
     rating: number | null;
     genre?: string | null;
     mood?: string | null;
+    heat_level?: string | null;
   };
 }
 
@@ -73,6 +75,11 @@ const BookCard = ({ book }: BookCardProps) => {
               genre={book.genre} 
               mood={book.mood}
             />
+          )}
+          {book.heat_level && (
+            <div className="absolute top-2 right-2 z-10">
+              <HeatLevelBadge heatLevel={book.heat_level} size="sm" showLabel={false} />
+            </div>
           )}
         </div>
         <div className="p-4">

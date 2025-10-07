@@ -16,6 +16,7 @@ interface Book {
   author: string;
   cover_url: string | null;
   rating: number | null;
+  heat_level: string | null;
 }
 
 const TrendingBooksCarousel = () => {
@@ -25,7 +26,7 @@ const TrendingBooksCarousel = () => {
     const fetchBooks = async () => {
       const { data } = await supabase
         .from("books")
-        .select("id, title, author, cover_url, rating")
+        .select("id, title, author, cover_url, rating, heat_level")
         .order("rating", { ascending: false })
         .limit(6);
 

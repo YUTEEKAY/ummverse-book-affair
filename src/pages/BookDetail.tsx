@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion";
-import { ArrowLeft, Heart, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Heart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import BookCard from "@/components/BookCard";
-import BookCoverPlaceholder from "@/components/BookCoverPlaceholder";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getThemeStyle } from "@/lib/themeGradients";
+import BookCoverPlaceholder from "@/components/BookCoverPlaceholder";
+import HeatLevelBadge from "@/components/HeatLevelBadge";
+import { getHeatLevelConfig } from "@/lib/heatLevelConfig";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 interface Book {
   id: string;
@@ -69,7 +71,7 @@ const BookDetail = () => {
       // Fetch book details
       const { data: bookData } = await supabase
         .from("books")
-        .select("*")
+        .select("id, title, author, cover_url, rating, summary, genre, mood, trope, heat_level, affiliate_amazon, affiliate_barnesnoble, affiliate_harlequin, purchase_link, publication_year")
         .eq("id", bookId)
         .single();
 
@@ -96,17 +98,24 @@ const BookDetail = () => {
         }
 
         // Fetch recommendations based on mood or trope
-        if (bookData.mood || bookData.trope) {
-          const { data: recsData } = await supabase
+        if (bookData.mood) {
+          const { data: moodBooks } = await supabase
             .from("books")
-            .select("*")
+            .select("id, title, author, cover_url, rating, heat_level")
+            .eq("mood", bookData.mood)
             .neq("id", bookId)
-            .or(`mood.eq.${bookData.mood},trope.eq.${bookData.trope}`)
-            .limit(6);
-            
-          if (recsData) {
-            setRecommendations(recsData.map(book => ({ ...book, affiliate_kobo: null } as Book)));
-          }
+            .limit(4);
+
+          if (moodBooks) setRecommendations(moodBooks as Book[]);
+        } else if (bookData.trope) {
+          const { data: tropeBooks } = await supabase
+            .from("books")
+            .select("id, title, author, cover_url, rating, heat_level")
+            .eq("trope", bookData.trope)
+            .neq("id", bookId)
+            .limit(4);
+
+          if (tropeBooks) setRecommendations(tropeBooks as Book[]);
         }
       }
 
@@ -245,25 +254,43 @@ const BookDetail = () => {
   }
 
   const rating = book.rating ? Math.round(Number(book.rating)) : 0;
-  const theme = getThemeStyle(book.genre?.toLowerCase() || book.mood?.toLowerCase() || "default");
+  const themeStyle = getThemeStyle(book?.genre || book?.mood);
+  const heatConfig = getHeatLevelConfig(book?.heat_level);
 
   return (
-    <main className={`min-h-screen relative bg-gradient-to-br ${theme.gradient}`}>
-      {/* Subtle animated overlay */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Heat level background glow */}
+      {heatConfig && (
         <motion.div
-          className="absolute -top-1/2 -left-1/4 w-full h-full rounded-full bg-background/30 blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: heatConfig.bgGlow,
           }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
         />
-      </div>
+      )}
+
+      {/* Subtle animated background overlay */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle at 30% 20%, ${
+            themeStyle.gradient.split(" ")[0].replace("from-", "hsl(var(--") + "))"
+          } 0%, transparent 50%)`,
+          opacity: 0.1,
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.1, 0.15, 0.1],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
       <div className="relative max-w-6xl mx-auto px-6 py-12 z-10">
         <Button
           variant="ghost"
@@ -310,40 +337,26 @@ const BookDetail = () => {
 
           {/* Book Details */}
           <div className="md:col-span-2">
-            <div className="relative inline-block mb-2">
-              <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-                {book.title}
-              </h1>
-              {/* Floating hearts animation */}
-              <motion.div
-                className="absolute -top-6 -right-8 text-2xl"
-                animate={{ 
-                  y: [-5, 5, -5],
-                  rotate: [0, 5, -5, 0] 
-                }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 3,
-                  ease: "easeInOut"
-                }}
-              >
-                ❤️
-              </motion.div>
-              <motion.div
-                className="absolute -bottom-2 -left-6 text-xl opacity-70"
-                animate={{ 
-                  y: [5, -5, 5],
-                  rotate: [0, -5, 5, 0] 
-                }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 3.5,
-                  ease: "easeInOut",
-                  delay: 0.5
-                }}
-              >
-                🌹
-              </motion.div>
+            <div className="space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-4xl md:text-5xl font-serif font-bold flex-1"
+                >
+                  {book.title}
+                </motion.h1>
+                {book.heat_level && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <HeatLevelBadge heatLevel={book.heat_level} size="lg" />
+                  </motion.div>
+                )}
+              </div>
             </div>
             <p className="text-xl text-muted-foreground mb-2">by {book.author}</p>
             {book.publication_year && (
@@ -634,7 +647,7 @@ const BookDetail = () => {
           </motion.div>
         )}
       </div>
-    </main>
+    </div>
   );
 };
 

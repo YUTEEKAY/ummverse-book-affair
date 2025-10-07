@@ -7,6 +7,8 @@ import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { getThemeStyle } from "@/lib/themeGradients";
 import DiscoverButton from "@/components/DiscoverButton";
+import HeatLevelFilter from "@/components/HeatLevelFilter";
+import type { HeatLevel } from "@/lib/heatLevelConfig";
 
 interface Genre {
   id: string;
@@ -21,6 +23,7 @@ interface Book {
   author: string;
   cover_url: string | null;
   rating: number | null;
+  heat_level: string | null;
 }
 
 const GenreDetail = () => {
@@ -28,7 +31,9 @@ const GenreDetail = () => {
   const navigate = useNavigate();
   const [genre, setGenre] = useState<Genre | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
+  const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedHeatLevel, setSelectedHeatLevel] = useState<HeatLevel | "all">("all");
 
   useEffect(() => {
     const fetchGenreAndBooks = async () => {
@@ -52,13 +57,14 @@ const GenreDetail = () => {
           // Fetch books matching this genre
           const { data: booksData, error: booksError } = await supabase
             .from("books")
-            .select("id, title, author, cover_url, rating")
+            .select("id, title, author, cover_url, rating, heat_level")
             .eq("genre", genreData.name)
             .order("rating", { ascending: false, nullsFirst: false });
 
           if (booksError) throw booksError;
 
           if (booksData) {
+            setAllBooks(booksData);
             setBooks(booksData);
           }
         }
@@ -71,6 +77,14 @@ const GenreDetail = () => {
 
     fetchGenreAndBooks();
   }, [genreId]);
+
+  useEffect(() => {
+    if (selectedHeatLevel === "all") {
+      setBooks(allBooks);
+    } else {
+      setBooks(allBooks.filter((book) => book.heat_level === selectedHeatLevel));
+    }
+  }, [selectedHeatLevel, allBooks]);
 
   if (isLoading) {
     return (
@@ -193,11 +207,19 @@ const GenreDetail = () => {
       {/* Books Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
+          {allBooks.length > 0 && (
+            <HeatLevelFilter
+              selectedLevel={selectedHeatLevel}
+              onSelectLevel={setSelectedHeatLevel}
+            />
+          )}
+          
           <h2 className="text-3xl font-serif font-bold mb-8">
             {books.length} {books.length === 1 ? "Book" : "Books"} Found
           </h2>
 
-          {books.length > 0 ? (
+          {allBooks.length > 0 ? (
+            books.length > 0 ? (
             <motion.div
               variants={container}
               initial="hidden"
@@ -210,6 +232,19 @@ const GenreDetail = () => {
                 </motion.div>
               ))}
             </motion.div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-xl text-muted-foreground mb-4">
+                  No books found with this heat level.
+                </p>
+                <Button
+                  onClick={() => setSelectedHeatLevel("all")}
+                  variant="outline"
+                >
+                  Show All Books
+                </Button>
+              </div>
+            )
           ) : (
             <div className="text-center py-16">
               <p className="text-xl text-muted-foreground mb-6">

@@ -6,6 +6,8 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BookCard from "@/components/BookCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import HeatLevelFilter from "@/components/HeatLevelFilter";
+import type { HeatLevel } from "@/lib/heatLevelConfig";
 
 interface Mood {
   id: string;
@@ -20,6 +22,7 @@ interface Book {
   author: string;
   cover_url: string | null;
   rating: number | null;
+  heat_level: string | null;
 }
 
 const moodGradients: Record<string, string> = {
@@ -35,7 +38,9 @@ const MoodDetail = () => {
   const navigate = useNavigate();
   const [mood, setMood] = useState<Mood | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
+  const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedHeatLevel, setSelectedHeatLevel] = useState<HeatLevel | "all">("all");
 
   useEffect(() => {
     const fetchMoodAndBooks = async () => {
@@ -56,11 +61,12 @@ const MoodDetail = () => {
         // Fetch books matching this mood name
         const { data: booksData } = await supabase
           .from("books")
-          .select("id, title, author, cover_url, rating")
+          .select("id, title, author, cover_url, rating, heat_level")
           .eq("mood", moodData.name)
           .order("rating", { ascending: false, nullsFirst: false });
 
         if (booksData) {
+          setAllBooks(booksData);
           setBooks(booksData);
         }
       }
@@ -70,6 +76,14 @@ const MoodDetail = () => {
 
     fetchMoodAndBooks();
   }, [moodId]);
+
+  useEffect(() => {
+    if (selectedHeatLevel === "all") {
+      setBooks(allBooks);
+    } else {
+      setBooks(allBooks.filter((book) => book.heat_level === selectedHeatLevel));
+    }
+  }, [selectedHeatLevel, allBooks]);
 
   const gradientClass = mood?.color_theme
     ? moodGradients[mood.color_theme] || moodGradients.default
@@ -148,8 +162,12 @@ const MoodDetail = () => {
 
       {/* Books Grid */}
       <div className="max-w-6xl mx-auto px-6 py-12">
-        {books.length > 0 ? (
+        {allBooks.length > 0 ? (
           <>
+            <HeatLevelFilter
+              selectedLevel={selectedHeatLevel}
+              onSelectLevel={setSelectedHeatLevel}
+            />
             <motion.h2
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -158,16 +176,35 @@ const MoodDetail = () => {
             >
               {books.length} {books.length === 1 ? "Book" : "Books"} Found
             </motion.h2>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-            >
-              {books.map((book) => (
-                <BookCard key={book.id} book={book} />
-              ))}
-            </motion.div>
+            {books.length > 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+              >
+                {books.map((book) => (
+                  <BookCard key={book.id} book={book} />
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12"
+              >
+                <p className="text-xl text-muted-foreground">
+                  No books found with this heat level.
+                </p>
+                <Button
+                  onClick={() => setSelectedHeatLevel("all")}
+                  variant="outline"
+                  className="mt-4"
+                >
+                  Show All Books
+                </Button>
+              </motion.div>
+            )}
           </>
         ) : (
           <motion.div
