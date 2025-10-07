@@ -76,18 +76,21 @@ export type Database = {
       }
       genres: {
         Row: {
+          color_theme: string | null
           created_at: string | null
           description: string | null
           id: string
           name: string
         }
         Insert: {
+          color_theme?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           name: string
         }
         Update: {
+          color_theme?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -189,18 +192,21 @@ export type Database = {
       }
       tropes: {
         Row: {
+          color_theme: string | null
           created_at: string | null
           description: string | null
           id: string
           name: string
         }
         Insert: {
+          color_theme?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           name: string
         }
         Update: {
+          color_theme?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
