@@ -17,15 +17,26 @@ const TodaysQuote = () => {
 
   useEffect(() => {
     const fetchRandomQuote = async () => {
-      const { data, error } = await supabase
+      // Get total count first
+      const { count } = await supabase
         .from("quotes")
-        .select("*")
-        .limit(100);
+        .select("*", { count: "exact", head: true });
 
-      if (data && data.length > 0) {
-        const randomIndex = Math.floor(Math.random() * data.length);
-        setQuote(data[randomIndex]);
-        setTimeout(() => setShowTypewriter(true), 300);
+      if (count && count > 0) {
+        // Generate random offset
+        const randomOffset = Math.floor(Math.random() * count);
+        
+        // Fetch single random quote using offset
+        const { data } = await supabase
+          .from("quotes")
+          .select("*")
+          .range(randomOffset, randomOffset)
+          .single();
+
+        if (data) {
+          setQuote(data);
+          setTimeout(() => setShowTypewriter(true), 300);
+        }
       }
     };
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface Mood {
   id: string;
@@ -21,12 +22,14 @@ const moodGradients: Record<string, string> = {
 
 const PopularMoods = () => {
   const [moods, setMoods] = useState<Mood[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMoods = async () => {
       const { data } = await supabase
         .from("moods")
         .select("*")
+        .order("name", { ascending: true })
         .limit(4);
 
       if (data) {
@@ -85,7 +88,8 @@ const PopularMoods = () => {
             return (
               <motion.div key={mood.id} variants={item}>
                 <Card
-                  className={`group relative overflow-hidden rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 cursor-pointer h-48 border-none ${gradientClass}`}
+                  onClick={() => navigate(`/mood/${mood.id}`)}
+                  className={`group relative overflow-hidden rounded-2xl shadow-soft hover:shadow-glow-strong transition-all duration-300 cursor-pointer h-48 border-none ${gradientClass}`}
                 >
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
                   <div className="relative h-full flex flex-col items-center justify-center p-6 text-center text-white">

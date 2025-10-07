@@ -59,6 +59,11 @@ export default {
         "2xl": "1rem",
         "3xl": "1.5rem",
       },
+      boxShadow: {
+        soft: "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
+        glow: "0 0 20px rgba(255, 182, 193, 0.4)",
+        "glow-strong": "0 0 30px rgba(255, 182, 193, 0.6)",
+      },
       colors: {
         blush: "hsl(var(--blush))",
         cream: "hsl(var(--cream))",
