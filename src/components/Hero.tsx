@@ -27,6 +27,7 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.6 }}
           className="text-6xl md:text-8xl font-bold mb-6 font-serif text-primary"
+          style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.15)" }}
         >
           Ummverse
         </motion.h1>
@@ -36,6 +37,7 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.6 }}
           className="text-3xl md:text-5xl font-serif mb-4 text-foreground"
+          style={{ textShadow: "0 1px 2px rgba(0, 0, 0, 0.1)" }}
         >
           The Book Affair
         </motion.p>
@@ -45,6 +47,7 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9, duration: 0.6 }}
           className="text-xl md:text-2xl text-muted-foreground mb-12 italic font-serif"
+          style={{ textShadow: "0 1px 2px rgba(0, 0, 0, 0.1)" }}
         >
           Fall for the words. Stay for the feels.
         </motion.p>

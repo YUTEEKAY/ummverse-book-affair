@@ -64,6 +64,10 @@ export default {
         glow: "0 0 20px rgba(255, 182, 193, 0.4)",
         "glow-strong": "0 0 30px rgba(255, 182, 193, 0.6)",
       },
+      textShadow: {
+        sm: "0 1px 2px rgba(0, 0, 0, 0.1)",
+        md: "0 2px 4px rgba(0, 0, 0, 0.15)",
+      },
       colors: {
         blush: "hsl(var(--blush))",
         cream: "hsl(var(--cream))",

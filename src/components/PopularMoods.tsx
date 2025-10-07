@@ -93,14 +93,14 @@ const PopularMoods = () => {
                 >
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
                   <div className="relative h-full flex flex-col items-center justify-center p-6 text-center text-white">
-                    <h3 className="text-2xl md:text-3xl font-serif font-bold mb-2 group-hover:scale-110 transition-transform">
-                      {mood.name}
-                    </h3>
-                    {mood.tagline && (
-                      <p className="text-sm md:text-base italic opacity-90">
-                        {mood.tagline}
-                      </p>
-                    )}
+              <h3 className="text-2xl md:text-3xl font-serif font-bold mb-2 group-hover:scale-110 transition-transform drop-shadow-md">
+                {mood.name}
+              </h3>
+              {mood.tagline && (
+                <p className="text-sm md:text-base italic opacity-90 drop-shadow-sm">
+                  {mood.tagline}
+                </p>
+              )}
                   </div>
                 </Card>
               </motion.div>
