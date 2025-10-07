@@ -16,6 +16,9 @@ export type Database = {
     Tables: {
       books: {
         Row: {
+          affiliate_amazon: string | null
+          affiliate_barnesnoble: string | null
+          affiliate_harlequin: string | null
           api_source: string | null
           author: string
           cover_url: string | null
@@ -24,6 +27,7 @@ export type Database = {
           heat_level: string | null
           id: string
           mood: string | null
+          publication_year: number | null
           purchase_link: string | null
           rating: number | null
           summary: string | null
@@ -31,6 +35,9 @@ export type Database = {
           trope: string | null
         }
         Insert: {
+          affiliate_amazon?: string | null
+          affiliate_barnesnoble?: string | null
+          affiliate_harlequin?: string | null
           api_source?: string | null
           author: string
           cover_url?: string | null
@@ -39,6 +46,7 @@ export type Database = {
           heat_level?: string | null
           id?: string
           mood?: string | null
+          publication_year?: number | null
           purchase_link?: string | null
           rating?: number | null
           summary?: string | null
@@ -46,6 +54,9 @@ export type Database = {
           trope?: string | null
         }
         Update: {
+          affiliate_amazon?: string | null
+          affiliate_barnesnoble?: string | null
+          affiliate_harlequin?: string | null
           api_source?: string | null
           author?: string
           cover_url?: string | null
@@ -54,6 +65,7 @@ export type Database = {
           heat_level?: string | null
           id?: string
           mood?: string | null
+          publication_year?: number | null
           purchase_link?: string | null
           rating?: number | null
           summary?: string | null

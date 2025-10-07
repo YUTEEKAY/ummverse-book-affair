@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import BookCard from "@/components/BookCard";
 
 interface Book {
   id: string;
@@ -21,6 +22,10 @@ interface Book {
   trope: string | null;
   mood: string | null;
   purchase_link: string | null;
+  publication_year: number | null;
+  affiliate_harlequin: string | null;
+  affiliate_amazon: string | null;
+  affiliate_barnesnoble: string | null;
 }
 
 interface Review {
@@ -36,6 +41,7 @@ const BookDetail = () => {
   const navigate = useNavigate();
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [recommendations, setRecommendations] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -63,6 +69,20 @@ const BookDetail = () => {
 
         if (reviewsData) {
           setReviews(reviewsData);
+        }
+
+        // Fetch recommendations based on mood or trope
+        if (bookData.mood || bookData.trope) {
+          const { data: recsData } = await supabase
+            .from("books")
+            .select("*")
+            .neq("id", bookId)
+            .or(`mood.eq.${bookData.mood},trope.eq.${bookData.trope}`)
+            .limit(6);
+            
+          if (recsData) {
+            setRecommendations(recsData);
+          }
         }
       }
 
@@ -142,10 +162,47 @@ const BookDetail = () => {
 
           {/* Book Details */}
           <div className="md:col-span-2">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-2">
-              {book.title}
-            </h1>
-            <p className="text-xl text-muted-foreground mb-4">by {book.author}</p>
+            <div className="relative inline-block mb-2">
+              <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
+                {book.title}
+              </h1>
+              {/* Floating hearts animation */}
+              <motion.div
+                className="absolute -top-6 -right-8 text-2xl"
+                animate={{ 
+                  y: [-5, 5, -5],
+                  rotate: [0, 5, -5, 0] 
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 3,
+                  ease: "easeInOut"
+                }}
+              >
+                ❤️
+              </motion.div>
+              <motion.div
+                className="absolute -bottom-2 -left-6 text-xl opacity-70"
+                animate={{ 
+                  y: [5, -5, 5],
+                  rotate: [0, -5, 5, 0] 
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 3.5,
+                  ease: "easeInOut",
+                  delay: 0.5
+                }}
+              >
+                🌹
+              </motion.div>
+            </div>
+            <p className="text-xl text-muted-foreground mb-2">by {book.author}</p>
+            {book.publication_year && (
+              <p className="text-lg text-muted-foreground mb-4">
+                Published: {book.publication_year}
+              </p>
+            )}
 
             {/* Rating */}
             {rating > 0 && (
@@ -180,15 +237,40 @@ const BookDetail = () => {
               </div>
             )}
 
-            {/* Purchase Link */}
-            {book.purchase_link && (
-              <Button
-                onClick={() => window.open(book.purchase_link!, "_blank")}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                Get This Book
-                <ExternalLink className="w-4 h-4 ml-2" />
-              </Button>
+            {/* Affiliate Links */}
+            {(book.affiliate_harlequin || book.affiliate_amazon || book.affiliate_barnesnoble) && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-serif font-semibold">Get Your Copy</h3>
+                <div className="flex flex-wrap gap-3">
+                  {book.affiliate_harlequin && (
+                    <Button 
+                      onClick={() => window.open(book.affiliate_harlequin!, "_blank")}
+                      variant="outline"
+                      className="border-2 border-dusty-rose text-dusty-rose hover:bg-dusty-rose hover:text-white transition-colors"
+                    >
+                      Read on Harlequin 💋
+                    </Button>
+                  )}
+                  {book.affiliate_amazon && (
+                    <Button 
+                      onClick={() => window.open(book.affiliate_amazon!, "_blank")}
+                      variant="outline"
+                      className="border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+                    >
+                      Amazon 📚
+                    </Button>
+                  )}
+                  {book.affiliate_barnesnoble && (
+                    <Button 
+                      onClick={() => window.open(book.affiliate_barnesnoble!, "_blank")}
+                      variant="outline"
+                      className="border-2 border-accent text-accent hover:bg-accent hover:text-white transition-colors"
+                    >
+                      Barnes & Noble 💕
+                    </Button>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </motion.div>
@@ -235,6 +317,26 @@ const BookDetail = () => {
                   </div>
                   <p className="text-muted-foreground leading-relaxed">{review.review_text}</p>
                 </Card>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* You Might Also Like Section */}
+        {recommendations.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-12"
+          >
+            <Separator className="mb-8" />
+            <h2 className="text-3xl font-serif font-semibold mb-6">
+              You Might Also Like
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {recommendations.map((recBook) => (
+                <BookCard key={recBook.id} book={recBook} />
               ))}
             </div>
           </motion.div>
