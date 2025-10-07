@@ -8,6 +8,10 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import BookCard from "@/components/BookCard";
 
 interface Book {
@@ -31,18 +35,27 @@ interface Book {
 interface Review {
   id: string;
   review_text: string;
-  pen_name: string | null;
-  hearts: number | null;
-  timestamp: string;
+  nickname: string | null;
+  rating: number | null;
+  created_at: string;
 }
 
 const BookDetail = () => {
   const { bookId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [recommendations, setRecommendations] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Review form state
+  const [formRating, setFormRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPetals, setShowPetals] = useState(false);
 
   useEffect(() => {
     const fetchBookAndReviews = async () => {
@@ -63,9 +76,9 @@ const BookDetail = () => {
         // Fetch reviews
         const { data: reviewsData } = await supabase
           .from("reviews")
-          .select("*")
+          .select("id, review_text, nickname, rating, created_at")
           .eq("book_id", bookId)
-          .order("timestamp", { ascending: false });
+          .order("created_at", { ascending: false });
 
         if (reviewsData) {
           setReviews(reviewsData);
@@ -91,6 +104,97 @@ const BookDetail = () => {
 
     fetchBookAndReviews();
   }, [bookId]);
+
+  const calculateAverageRating = () => {
+    if (reviews.length === 0) return 0;
+    const sum = reviews.reduce((acc, r) => acc + (r.rating || 0), 0);
+    const avg = sum / reviews.length;
+    return Math.round(avg * 2) / 2; // Round to nearest 0.5
+  };
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (formRating === 0) {
+      toast({
+        title: "Rating required",
+        description: "Please select a rating before submitting.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (reviewText.trim().length < 10) {
+      toast({
+        title: "Review too short",
+        description: "Please write at least 10 characters.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (reviewText.length > 500) {
+      toast({
+        title: "Review too long",
+        description: "Please keep your review under 500 characters.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await supabase.functions.invoke('submit-review', {
+        body: {
+          bookId,
+          rating: formRating,
+          review: reviewText.trim(),
+          nickname: nickname.trim() || 'A Hopeless Romantic'
+        }
+      });
+
+      if (response.error) {
+        throw response.error;
+      }
+
+      // Success! Show rose petals animation
+      setShowPetals(true);
+      setTimeout(() => setShowPetals(false), 3000);
+
+      // Reset form
+      setFormRating(0);
+      setReviewText("");
+      setNickname("");
+
+      // Refresh reviews
+      const { data: reviewsData } = await supabase
+        .from("reviews")
+        .select("id, review_text, nickname, rating, created_at")
+        .eq("book_id", bookId)
+        .order("created_at", { ascending: false });
+
+      if (reviewsData) {
+        setReviews(reviewsData);
+      }
+
+      toast({
+        title: "Thank you for sharing your thoughts! 🌹",
+        description: "Your review has been posted."
+      });
+    } catch (error: any) {
+      console.error('Error submitting review:', error);
+      toast({
+        title: "Couldn't submit review",
+        description: error.message || "Something went wrong. Please try again. 🌹",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const averageRating = calculateAverageRating();
 
   if (loading) {
     return (
@@ -275,38 +379,173 @@ const BookDetail = () => {
           </div>
         </motion.div>
 
+        {/* Rose Petal Animation */}
+        {showPetals && (
+          <div className="fixed inset-0 pointer-events-none z-50">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute text-3xl"
+                initial={{ 
+                  top: -50, 
+                  left: `${Math.random() * 100}%`,
+                  rotate: 0,
+                  opacity: 1
+                }}
+                animate={{ 
+                  top: '100vh', 
+                  rotate: 360,
+                  opacity: 0
+                }}
+                transition={{ 
+                  duration: 3 + Math.random() * 2,
+                  delay: Math.random() * 0.5,
+                  ease: "easeIn"
+                }}
+              >
+                🌹
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        <Separator className="my-12" />
+
+        {/* Review Form Section */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mb-12"
+        >
+          <Card className="p-6 md:p-8 bg-gradient-to-br from-blush/10 to-dusty-rose/10 border-none shadow-soft rounded-2xl">
+            <h2 className="text-2xl font-serif font-semibold mb-6 text-foreground">
+              ✨ Share Your Thoughts
+            </h2>
+            
+            <form onSubmit={handleSubmitReview} className="space-y-6">
+              {/* Rating Selector */}
+              <div>
+                <Label className="text-base mb-3 block">⭐ Rating</Label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setFormRating(star)}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                    >
+                      <Heart
+                        className={`w-10 h-10 ${
+                          star <= (hoverRating || formRating)
+                            ? "fill-dusty-rose text-dusty-rose"
+                            : "text-muted-foreground/30"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                  {formRating > 0 && (
+                    <span className="ml-2 text-muted-foreground font-medium">
+                      {formRating}/5
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Review Text */}
+              <div>
+                <Label htmlFor="review-text" className="text-base mb-3 block">
+                  💬 Your Review
+                </Label>
+                <Textarea
+                  id="review-text"
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  placeholder="Share what you loved about this book..."
+                  className="min-h-[120px] resize-none border-2 focus:border-dusty-rose"
+                  maxLength={500}
+                />
+                <p className="text-sm text-muted-foreground mt-2">
+                  {reviewText.length}/500 characters
+                </p>
+              </div>
+
+              {/* Nickname */}
+              <div>
+                <Label htmlFor="nickname" className="text-base mb-3 block">
+                  🕊️ Nickname (optional)
+                </Label>
+                <Input
+                  id="nickname"
+                  type="text"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  placeholder="A Hopeless Romantic"
+                  className="border-2 focus:border-dusty-rose"
+                  maxLength={50}
+                />
+              </div>
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full md:w-auto bg-dusty-rose hover:bg-dusty-rose/90 text-white font-serif text-lg px-8"
+              >
+                {isSubmitting ? "Submitting..." : "Submit Review ✨"}
+              </Button>
+            </form>
+          </Card>
+        </motion.div>
+
         {/* Reviews Section */}
         {reviews.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.5 }}
           >
-            <Separator className="mb-8" />
-            <h2 className="text-3xl font-serif font-semibold mb-6">Reader Reviews</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-serif font-semibold">💕 Reader Reviews</h2>
+              {averageRating > 0 && (
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <Heart className="w-6 h-6 fill-dusty-rose text-dusty-rose" />
+                    <span className="text-2xl font-serif font-bold">
+                      {averageRating.toFixed(1)}
+                    </span>
+                  </div>
+                  <span className="text-muted-foreground">
+                    Based on {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
+                  </span>
+                </div>
+              )}
+            </div>
             <div className="space-y-6">
               {reviews.map((review) => (
                 <Card key={review.id} className="p-6">
                   <div className="flex items-start justify-between mb-3">
-                    <div>
+                  <div>
                       <p className="font-semibold text-foreground">
-                        {review.pen_name || "Anonymous Reader"}
+                        {review.nickname || "Anonymous Reader"}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(review.timestamp).toLocaleDateString("en-US", {
+                        {new Date(review.created_at).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
                         })}
                       </p>
                     </div>
-                    {review.hearts && review.hearts > 0 && (
+                    {review.rating && review.rating > 0 && (
                       <div className="flex items-center gap-1">
                         {[...Array(5)].map((_, i) => (
                           <Heart
                             key={i}
                             className={`w-4 h-4 ${
-                              i < review.hearts!
+                              i < review.rating!
                                 ? "fill-dusty-rose text-dusty-rose"
                                 : "text-muted-foreground/30"
                             }`}
