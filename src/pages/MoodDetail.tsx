@@ -8,6 +8,7 @@ import BookCard from "@/components/BookCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import HeatLevelFilter from "@/components/HeatLevelFilter";
 import type { HeatLevel } from "@/lib/heatLevelConfig";
+import SimilarBooksSection from "@/components/SimilarBooksSection";
 
 interface Mood {
   id: string;
@@ -221,6 +222,21 @@ const MoodDetail = () => {
             </p>
             <Button onClick={() => navigate("/")}>Explore Other Moods</Button>
           </motion.div>
+        )}
+
+        {/* Similar Books Section */}
+        {allBooks.length > 0 && (
+          <div className="mt-8">
+            <SimilarBooksSection
+              contextType="mood"
+              contextId={moodId!}
+              contextData={{
+                name: mood.name,
+                mood: mood.name
+              }}
+              limit={6}
+            />
+          </div>
         )}
       </div>
     </main>

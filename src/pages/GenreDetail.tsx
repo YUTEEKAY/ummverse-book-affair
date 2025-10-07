@@ -9,6 +9,7 @@ import { getThemeStyle } from "@/lib/themeGradients";
 import DiscoverButton from "@/components/DiscoverButton";
 import HeatLevelFilter from "@/components/HeatLevelFilter";
 import type { HeatLevel } from "@/lib/heatLevelConfig";
+import SimilarBooksSection from "@/components/SimilarBooksSection";
 
 interface Genre {
   id: string;
@@ -257,6 +258,23 @@ const GenreDetail = () => {
           )}
         </div>
       </section>
+
+      {/* Similar Books Section */}
+      {allBooks.length > 0 && (
+        <section className="py-8 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <SimilarBooksSection
+              contextType="genre"
+              contextId={genreId!}
+              contextData={{
+                name: genre.name,
+                genre: genre.name
+              }}
+              limit={6}
+            />
+          </div>
+        </section>
+      )}
 
       {/* Discover CTA */}
       <section className="py-16 px-4 bg-gradient-to-br from-blush/10 via-warm-peach/10 to-dusty-rose/10">

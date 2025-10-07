@@ -17,6 +17,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import SimilarBooksSection from "@/components/SimilarBooksSection";
 
 interface Book {
   id: string;
@@ -51,7 +52,6 @@ const BookDetail = () => {
   const { toast } = useToast();
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [recommendations, setRecommendations] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Review form state
@@ -95,27 +95,6 @@ const BookDetail = () => {
             created_at: review.timestamp
           }));
           setReviews(mappedReviews);
-        }
-
-        // Fetch recommendations based on mood or trope
-        if (bookData.mood) {
-          const { data: moodBooks } = await supabase
-            .from("books")
-            .select("id, title, author, cover_url, rating, heat_level")
-            .eq("mood", bookData.mood)
-            .neq("id", bookId)
-            .limit(4);
-
-          if (moodBooks) setRecommendations(moodBooks as Book[]);
-        } else if (bookData.trope) {
-          const { data: tropeBooks } = await supabase
-            .from("books")
-            .select("id, title, author, cover_url, rating, heat_level")
-            .eq("trope", bookData.trope)
-            .neq("id", bookId)
-            .limit(4);
-
-          if (tropeBooks) setRecommendations(tropeBooks as Book[]);
         }
       }
 
@@ -627,25 +606,22 @@ const BookDetail = () => {
           </motion.div>
         )}
 
-        {/* You Might Also Like Section */}
-        {recommendations.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-12"
-          >
-            <Separator className="mb-8" />
-            <h2 className="text-3xl font-serif font-semibold mb-6">
-              You Might Also Like
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {recommendations.map((recBook) => (
-                <BookCard key={recBook.id} book={recBook} />
-              ))}
-            </div>
-          </motion.div>
-        )}
+        {/* Similar Books Section */}
+        <div className="mt-12">
+          <Separator className="mb-8" />
+          <SimilarBooksSection
+            contextType="book"
+            contextId={bookId!}
+            contextData={{
+              title: book.title,
+              genre: book.genre,
+              mood: book.mood,
+              trope: book.trope,
+              heat_level: book.heat_level
+            }}
+            limit={4}
+          />
+        </div>
       </div>
     </div>
   );
