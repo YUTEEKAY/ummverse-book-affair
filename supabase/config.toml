@@ -1,1 +1,7 @@
 project_id = "spwlnjuqephrodvymixr"
+
+[functions.submit-review]
+verify_jwt = false
+
+[functions.fetch-book-data]
+verify_jwt = false

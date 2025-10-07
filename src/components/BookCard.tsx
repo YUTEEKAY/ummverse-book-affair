@@ -2,6 +2,8 @@ import { Card } from "@/components/ui/card";
 import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import BookCoverPlaceholder from "./BookCoverPlaceholder";
 
 interface BookCardProps {
   book: {
@@ -10,12 +12,16 @@ interface BookCardProps {
     author: string;
     cover_url: string | null;
     rating: number | null;
+    genre?: string | null;
+    mood?: string | null;
   };
 }
 
 const BookCard = ({ book }: BookCardProps) => {
   const navigate = useNavigate();
   const rating = book.rating ? Math.round(Number(book.rating)) : 0;
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   return (
     <motion.div
@@ -28,16 +34,45 @@ const BookCard = ({ book }: BookCardProps) => {
         className="group relative overflow-hidden rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 cursor-pointer border-none bg-card"
       >
         <div className="aspect-[2/3] relative overflow-hidden bg-gradient-to-br from-blush/20 to-dusty-rose/20">
-          {book.cover_url ? (
-            <img
-              src={book.cover_url}
-              alt={book.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+          {book.cover_url && !imageError ? (
+            <>
+              {/* Shimmer loading placeholder */}
+              {!imageLoaded && (
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-muted via-muted-foreground/20 to-muted"
+                  animate={{
+                    backgroundPosition: ['-200%', '200%']
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  style={{
+                    backgroundSize: '200% 100%'
+                  }}
+                />
+              )}
+              <motion.img
+                initial={{ opacity: 0 }}
+                animate={{ opacity: imageLoaded ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+                src={book.cover_url}
+                alt={book.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                onLoad={() => setImageLoaded(true)}
+                onError={() => {
+                  setImageError(true);
+                  setImageLoaded(true);
+                }}
+              />
+            </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <span className="text-muted-foreground text-sm italic">No cover</span>
-            </div>
+            <BookCoverPlaceholder 
+              title={book.title} 
+              genre={book.genre} 
+              mood={book.mood}
+            />
           )}
         </div>
         <div className="p-4">

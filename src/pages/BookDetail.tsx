@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import BookCard from "@/components/BookCard";
+import BookCoverPlaceholder from "@/components/BookCoverPlaceholder";
+import { getThemeStyle } from "@/lib/themeGradients";
 
 interface Book {
   id: string;
@@ -30,6 +32,7 @@ interface Book {
   affiliate_harlequin: string | null;
   affiliate_amazon: string | null;
   affiliate_barnesnoble: string | null;
+  affiliate_kobo: string | null;
 }
 
 interface Review {
@@ -71,7 +74,7 @@ const BookDetail = () => {
         .single();
 
       if (bookData) {
-        setBook(bookData);
+        setBook({ ...bookData, affiliate_kobo: null } as Book);
 
         // Fetch reviews (using old column names until migration is approved)
         const { data: reviewsData } = await supabase
@@ -102,7 +105,7 @@ const BookDetail = () => {
             .limit(6);
             
           if (recsData) {
-            setRecommendations(recsData);
+            setRecommendations(recsData.map(book => ({ ...book, affiliate_kobo: null } as Book)));
           }
         }
       }
@@ -242,10 +245,26 @@ const BookDetail = () => {
   }
 
   const rating = book.rating ? Math.round(Number(book.rating)) : 0;
+  const theme = getThemeStyle(book.genre?.toLowerCase() || book.mood?.toLowerCase() || "default");
 
   return (
-    <main className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-6 py-12">
+    <main className={`min-h-screen relative bg-gradient-to-br ${theme.gradient}`}>
+      {/* Subtle animated overlay */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+        <motion.div
+          className="absolute -top-1/2 -left-1/4 w-full h-full rounded-full bg-background/30 blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      </div>
+      <div className="relative max-w-6xl mx-auto px-6 py-12 z-10">
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
@@ -266,15 +285,24 @@ const BookDetail = () => {
             <Card className="overflow-hidden rounded-2xl shadow-glow border-none">
               <div className="aspect-[2/3] relative bg-gradient-to-br from-blush/20 to-dusty-rose/20">
                 {book.cover_url ? (
-                  <img
+                  <motion.img
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
                     src={book.cover_url}
                     alt={book.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // If image fails to load, hide it and show placeholder
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-muted-foreground text-lg italic">No cover available</span>
-                  </div>
+                  <BookCoverPlaceholder 
+                    title={book.title} 
+                    genre={book.genre} 
+                    mood={book.mood}
+                  />
                 )}
               </div>
             </Card>
@@ -358,7 +386,7 @@ const BookDetail = () => {
             )}
 
             {/* Affiliate Links */}
-            {(book.affiliate_harlequin || book.affiliate_amazon || book.affiliate_barnesnoble) && (
+            {(book.affiliate_harlequin || book.affiliate_amazon || book.affiliate_barnesnoble || book.affiliate_kobo) && (
               <div className="space-y-4">
                 <h3 className="text-xl font-serif font-semibold">Get Your Copy</h3>
                 <div className="flex flex-wrap gap-3">
@@ -387,6 +415,15 @@ const BookDetail = () => {
                       className="border-2 border-accent text-accent hover:bg-accent hover:text-white transition-colors"
                     >
                       Barnes & Noble 💕
+                    </Button>
+                  )}
+                  {book.affiliate_kobo && (
+                    <Button 
+                      onClick={() => window.open(book.affiliate_kobo!, "_blank")}
+                      variant="outline"
+                      className="border-2 border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white transition-colors"
+                    >
+                      Read on Kobo 📖
                     </Button>
                   )}
                 </div>
