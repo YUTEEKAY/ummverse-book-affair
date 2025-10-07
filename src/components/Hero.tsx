@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import RecommendationModal from "@/components/RecommendationModal";
 
 const Hero = () => {
+  const [showRecommendations, setShowRecommendations] = useState(false);
+
   return (
-    <header className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <>
+      <header className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-blush via-cream to-dusty-rose animate-gradient" />
       
       <motion.div
@@ -59,6 +64,7 @@ const Hero = () => {
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
           <Button 
+            onClick={() => setShowRecommendations(true)}
             size="lg" 
             className="text-lg px-8 py-6 rounded-2xl shadow-soft hover:shadow-glow hover:scale-105 transition-all duration-300 bg-gradient-romance text-white border-none"
           >
@@ -73,7 +79,13 @@ const Hero = () => {
           </Button>
         </motion.div>
       </motion.div>
-    </header>
+      </header>
+
+      <RecommendationModal 
+        open={showRecommendations}
+        onOpenChange={setShowRecommendations}
+      />
+    </>
   );
 };
 
