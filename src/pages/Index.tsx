@@ -1,7 +1,7 @@
 import Hero from "@/components/Hero";
 import TodaysQuote from "@/components/TodaysQuote";
 import PopularMoods from "@/components/PopularMoods";
-import TrendingBooksCarousel from "@/components/TrendingBooksCarousel";
+import MostSearchedBooksCarousel from "@/components/MostSearchedBooksCarousel";
 import Footer from "@/components/Footer";
 import PremiumBanner from "@/components/PremiumBanner";
 
@@ -12,7 +12,7 @@ const Index = () => {
       <Hero />
       <TodaysQuote />
       <PopularMoods />
-      <TrendingBooksCarousel />
+      <MostSearchedBooksCarousel />
       <Footer />
     </main>
   );

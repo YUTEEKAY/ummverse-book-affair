@@ -79,6 +79,13 @@ const BookDetail = () => {
 
       if (bookData) {
         setBook(bookData as Book);
+        
+        // Track book view
+        await supabase.from('book_views').insert({
+          book_id: bookId,
+          user_id: user?.id || null,
+          view_type: 'detail_page'
+        });
 
         // Check if user can view - if not, show paywall
         if (!canViewBook && user && !hasViewedContent) {

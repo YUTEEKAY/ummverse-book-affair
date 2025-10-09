@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      book_views: {
+        Row: {
+          book_id: string
+          created_at: string
+          id: string
+          user_id: string | null
+          view_type: string | null
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          view_type?: string | null
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          view_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_views_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       books: {
         Row: {
           affiliate_amazon: string | null
