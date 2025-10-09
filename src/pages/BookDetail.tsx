@@ -536,7 +536,18 @@ const BookDetail = () => {
               <Separator className="my-12" />
 
               {/* Similar Books */}
-              <SimilarBooksSection bookId={bookId!} currentBook={book} />
+              <SimilarBooksSection 
+                contextType="book"
+                contextId={bookId!}
+                contextData={{
+                  title: book.title,
+                  genre: book.genre,
+                  mood: book.mood,
+                  trope: book.trope,
+                  heat_level: book.heat_level
+                }}
+                limit={4}
+              />
             </>
           )}
         </div>

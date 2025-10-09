@@ -10,11 +10,17 @@ const corsHeaders = {
 interface CSVBook {
   title: string;
   author: string;
-  genre: string;
-  trope: string;
-  mood: string;
-  heat_level: string;
-  summary: string;
+  'release year'?: string;
+  synopsis?: string;
+  'book length'?: string;
+  rating?: string;
+  'number of ratings'?: string;
+  // Optional fields from other CSV formats
+  genre?: string;
+  trope?: string;
+  mood?: string;
+  heat_level?: string;
+  summary?: string;
   Publisher?: string;
   PublishYear?: string;
   Language?: string;
@@ -24,11 +30,11 @@ interface CSVBook {
 interface ProcessedBook {
   title: string;
   author: string;
-  genre: string;
-  trope: string;
-  mood: string;
-  heat_level: string;
-  summary: string;
+  genre: string | null;
+  trope: string | null;
+  mood: string | null;
+  heat_level: string | null;
+  summary: string | null;
   publisher?: string;
   publication_year?: number;
   language?: string;
@@ -141,19 +147,22 @@ async function cleanAndValidateBook(
   book: CSVBook, 
   lovableApiKey: string
 ): Promise<ProcessedBook | null> {
+  // Get summary from either 'synopsis' or 'summary' field
+  const rawSummary = book.synopsis || book.summary || '';
+  
   // Clean HTML tags from summary
-  const cleanSummary = book.summary
+  const cleanSummary = rawSummary
     ?.replace(/<[^>]*>/g, '')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
-    .trim() || '';
+    .trim() || null;
 
   // Use AI to validate if it's a romance novel
   const isRomance = await validateRomanceNovel(
     book.title,
     book.author,
-    cleanSummary,
-    book.genre,
+    cleanSummary || '',
+    book.genre || '',
     lovableApiKey
   );
 
@@ -161,26 +170,22 @@ async function cleanAndValidateBook(
     return null;
   }
 
-  // Normalize genre
-  const normalizedGenre = normalizeGenre(book.genre);
-  
-  // Normalize trope
-  const normalizedTrope = normalizeTrope(book.trope);
-  
-  // Normalize mood
-  const normalizedMood = normalizeMood(book.mood);
-  
-  // Normalize heat level
-  const normalizedHeatLevel = normalizeHeatLevel(book.heat_level);
+  // Normalize fields only if they exist
+  const normalizedGenre = book.genre ? normalizeGenre(book.genre) : null;
+  const normalizedTrope = book.trope ? normalizeTrope(book.trope) : null;
+  const normalizedMood = book.mood ? normalizeMood(book.mood) : null;
+  const normalizedHeatLevel = book.heat_level ? normalizeHeatLevel(book.heat_level) : null;
 
-  // Parse publication year
-  const publicationYear = book.PublishYear 
-    ? parseInt(book.PublishYear.toString()) 
+  // Parse publication year from either 'release year' or 'PublishYear'
+  const yearString = book['release year'] || book.PublishYear;
+  const publicationYear = yearString 
+    ? parseInt(yearString.toString()) 
     : undefined;
 
-  // Parse rating
-  const rating = book.Rating 
-    ? parseFloat(book.Rating.toString()) 
+  // Parse rating from either 'rating' or 'Rating'
+  const ratingString = book.rating || book.Rating;
+  const rating = ratingString 
+    ? parseFloat(ratingString.toString()) 
     : undefined;
 
   return {
@@ -206,23 +211,25 @@ async function validateRomanceNovel(
   genre: string,
   lovableApiKey: string
 ): Promise<boolean> {
-  // Quick genre check first
-  const genreLower = genre.toLowerCase();
-  const obviouslyNotRomance = [
-    'puzzle', 'coloring', 'cookbook', 'children', 'kids',
-    'activity', 'workbook', 'journal', 'diary', 'planner'
-  ];
-  
-  if (obviouslyNotRomance.some(term => genreLower.includes(term))) {
-    return false;
+  // If genre is provided, do quick checks
+  if (genre) {
+    const genreLower = genre.toLowerCase();
+    const obviouslyNotRomance = [
+      'puzzle', 'coloring', 'cookbook', 'children', 'kids',
+      'activity', 'workbook', 'journal', 'diary', 'planner'
+    ];
+    
+    if (obviouslyNotRomance.some(term => genreLower.includes(term))) {
+      return false;
+    }
+
+    // If genre explicitly says romance, quick accept
+    if (genreLower.includes('romance')) {
+      return true;
+    }
   }
 
-  // If genre explicitly says romance, quick accept
-  if (genreLower.includes('romance')) {
-    return true;
-  }
-
-  // Use AI for ambiguous cases
+  // Use AI for ambiguous cases or when no genre is provided
   try {
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -239,7 +246,7 @@ async function validateRomanceNovel(
           },
           {
             role: 'user',
-            content: `Is this a romance novel?\n\nTitle: ${title}\nAuthor: ${author}\nGenre: ${genre}\nSummary: ${summary.slice(0, 500)}`
+            content: `Is this a romance novel?\n\nTitle: ${title}\nAuthor: ${author}${genre ? `\nGenre: ${genre}` : ''}${summary ? `\nSummary: ${summary.slice(0, 500)}` : ''}`
           }
         ],
         max_tokens: 10
@@ -252,8 +259,8 @@ async function validateRomanceNovel(
 
   } catch (error) {
     console.error('AI validation error:', error);
-    // On error, be conservative and accept if genre mentions romance
-    return genreLower.includes('romance');
+    // On error, be conservative - accept if genre mentions romance or if no genre provided
+    return genre ? genre.toLowerCase().includes('romance') : true;
   }
 }
 
