@@ -9,6 +9,9 @@ verify_jwt = false
 [functions.enrich-books]
 verify_jwt = false
 
+[functions.enrich-single-book]
+verify_jwt = false
+
 [functions.get-recommendations]
 verify_jwt = false
 

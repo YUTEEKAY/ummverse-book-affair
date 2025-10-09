@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Heart, Lock } from "lucide-react";
+import { ArrowLeft, Heart, Lock, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import SimilarBooksSection from "@/components/SimilarBooksSection";
 import { useAuth } from "@/contexts/AuthContext";
 import PremiumModal from "@/components/PremiumModal";
+import { useBookEnrichment } from "@/hooks/useBookEnrichment";
 
 interface Book {
   id: string;
@@ -48,6 +49,7 @@ const BookDetail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, profile, incrementViewCount, canViewBook } = useAuth();
+  const { enrichBook } = useBookEnrichment();
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +63,7 @@ const BookDetail = () => {
   const [nickname, setNickname] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPetals, setShowPetals] = useState(false);
+  const [isEnriching, setIsEnriching] = useState(false);
 
   useEffect(() => {
     const fetchBookAndReviews = async () => {
@@ -203,6 +206,25 @@ const BookDetail = () => {
     }
   };
 
+  const handleEnrichBook = async () => {
+    if (!bookId) return;
+    
+    setIsEnriching(true);
+    await enrichBook(bookId);
+    setIsEnriching(false);
+    
+    // Reload book data
+    const { data: bookData } = await supabase
+      .from("books")
+      .select("*")
+      .eq("id", bookId)
+      .single();
+    
+    if (bookData) {
+      setBook(bookData as Book);
+    }
+  };
+
   const averageRating = calculateAverageRating();
   const isPremium = profile?.is_premium;
   const showLimitedView = !user || (!isPremium && !canViewBook);
@@ -257,14 +279,27 @@ const BookDetail = () => {
         )}
 
         <div className="relative max-w-6xl mx-auto px-6 py-12 z-10">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="mb-8"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
+          <div className="flex items-center justify-between mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            
+            {profile?.is_premium && (
+              <Button
+                variant="outline"
+                onClick={handleEnrichBook}
+                disabled={isEnriching}
+                size="sm"
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${isEnriching ? 'animate-spin' : ''}`} />
+                Refresh Book Data
+              </Button>
+            )}
+          </div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -13,6 +13,8 @@ interface BookData {
   summary: string | null;
   cover_url: string | null;
   publication_year: number | null;
+  publisher: string | null;
+  page_count: number | null;
   api_source: 'open_library' | 'google_books' | 'hybrid' | 'not_found';
 }
 
@@ -64,6 +66,8 @@ serve(async (req) => {
       summary: null,
       cover_url: null,
       publication_year: null,
+      publisher: null,
+      page_count: null,
       api_source: 'not_found'
     };
 
@@ -84,6 +88,8 @@ serve(async (req) => {
         bookData.title = firstResult.title || title;
         bookData.author = firstResult.author_name?.[0] || author || '';
         bookData.publication_year = firstResult.first_publish_year || null;
+        bookData.publisher = firstResult.publisher?.[0] || null;
+        bookData.page_count = firstResult.number_of_pages_median || null;
         
         // Build cover URL if available
         if (firstResult.cover_i) {
@@ -123,6 +129,8 @@ serve(async (req) => {
               ? parseInt(volumeInfo.publishedDate.substring(0, 4)) 
               : null;
             bookData.cover_url = volumeInfo.imageLinks?.thumbnail || null;
+            bookData.publisher = volumeInfo.publisher || null;
+            bookData.page_count = volumeInfo.pageCount || null;
             bookData.api_source = 'google_books';
           }
           
@@ -134,6 +142,14 @@ serve(async (req) => {
             if (bookData.api_source === 'open_library') {
               bookData.api_source = 'hybrid';
             }
+          }
+          
+          // Extract page count and publisher if not already set
+          if (!bookData.page_count && volumeInfo.pageCount) {
+            bookData.page_count = volumeInfo.pageCount;
+          }
+          if (!bookData.publisher && volumeInfo.publisher) {
+            bookData.publisher = volumeInfo.publisher;
           }
           
           console.log('Google Books data found');

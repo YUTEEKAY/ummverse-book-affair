@@ -174,6 +174,12 @@ serve(async (req) => {
           hasUpdates = true;
         }
 
+        // Update page count if found
+        if (bookData.page_count && !book.page_count) {
+          updates.page_count = bookData.page_count;
+          hasUpdates = true;
+        }
+
         if (hasUpdates) {
           const { error: updateError } = await supabase
             .from('books')
@@ -184,6 +190,15 @@ serve(async (req) => {
             throw updateError;
           }
 
+          // Log successful enrichment
+          await supabase.from('enrichment_logs').insert({
+            book_id: book.id,
+            status: 'success',
+            fields_updated: Object.keys(updates),
+            data_source: bookData.api_source,
+            error_message: null
+          });
+
           stats.updated++;
           stats.details.push({
             bookId: book.id,
@@ -193,6 +208,15 @@ serve(async (req) => {
           });
           console.log(`✓ Updated ${book.title}`);
         } else {
+          // Log skipped/no data
+          await supabase.from('enrichment_logs').insert({
+            book_id: book.id,
+            status: bookData.api_source === 'not_found' ? 'failed' : 'skipped',
+            fields_updated: [],
+            data_source: bookData.api_source,
+            error_message: bookData.api_source === 'not_found' ? 'No data found' : 'No new fields to update'
+          });
+
           stats.noDataFound++;
           stats.details.push({
             bookId: book.id,
@@ -208,6 +232,16 @@ serve(async (req) => {
 
       } catch (error) {
         console.error(`Error processing ${book.title}:`, error);
+        
+        // Log error
+        await supabase.from('enrichment_logs').insert({
+          book_id: book.id,
+          status: 'error',
+          fields_updated: [],
+          data_source: null,
+          error_message: error instanceof Error ? error.message : 'Unknown error'
+        });
+
         stats.errors++;
         stats.details.push({
           bookId: book.id,

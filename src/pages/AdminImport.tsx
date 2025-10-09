@@ -251,7 +251,12 @@ export default function AdminImport() {
 
       addLog(`Enrichment complete! Total: ${totalProcessed} books processed`);
       await loadBookStats(); // Refresh stats
-      toast.success('Enrichment complete!');
+      
+      // Show success toast
+      toast.success("✨ Ummverse magic — book details and covers added!", {
+        description: `${enrichStats.updated} books enriched with summaries and covers`,
+        duration: 5000,
+      });
 
     } catch (error: any) {
       console.error('Enrichment error:', error);
