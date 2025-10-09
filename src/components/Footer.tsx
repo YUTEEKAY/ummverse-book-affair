@@ -15,8 +15,7 @@ const Footer = () => {
           className="flex items-center justify-center gap-2"
         >
           <p className="text-lg text-muted-foreground font-serif">
-            Made with love by{" "}
-            <span className="text-primary font-semibold">Ummu Salama</span>
+            Made with love and reverence for every romantic soul — where passion meets pages and stories breathe tenderness.
           </p>
           <Sparkles className="w-5 h-5 text-primary animate-sparkle" />
         </motion.div>
