@@ -40,7 +40,12 @@ const RecommendationModal = ({ open, onOpenChange }: RecommendationModalProps) =
   const [recommendations, setRecommendations] = useState<BookRecommendation[]>([]);
   const { toast } = useToast();
 
-  const handleCategorySelect = async (categoryId: string) => {
+  const handleCategorySelect = async (categoryId: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    console.log('Category selected:', categoryId);
     setSelectedCategory(categoryId);
     setIsLoading(true);
     setRecommendations([]);
@@ -100,9 +105,10 @@ const RecommendationModal = ({ open, onOpenChange }: RecommendationModalProps) =
                   transition={{ delay: index * 0.1 }}
                 >
                   <Button
-                    onClick={() => handleCategorySelect(category.id)}
+                    type="button"
+                    onClick={(e) => handleCategorySelect(category.id, e)}
                     size="lg"
-                    className="w-full h-auto py-6 px-6 text-lg bg-gradient-to-br from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 border-2 border-primary/20 hover:border-primary/40 hover:scale-105 transition-all duration-300 shadow-soft hover:shadow-glow"
+                    className="w-full h-auto py-6 px-6 text-lg bg-gradient-to-br from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 border-2 border-primary/20 hover:border-primary/40 hover:scale-105 transition-all duration-300 shadow-soft hover:shadow-glow relative z-20"
                   >
                     <span className="text-2xl mr-3">{category.emoji}</span>
                     <span className="font-serif">{category.label}</span>
@@ -131,8 +137,14 @@ const RecommendationModal = ({ open, onOpenChange }: RecommendationModalProps) =
             <div className="flex items-center justify-between">
               <h3 className="text-2xl font-serif text-primary">Your Recommendations</h3>
               <Button
+                type="button"
                 variant="ghost"
-                onClick={() => setSelectedCategory(null)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Choose Different Mood clicked');
+                  setSelectedCategory(null);
+                }}
                 className="text-sm"
               >
                 ← Choose Different Mood

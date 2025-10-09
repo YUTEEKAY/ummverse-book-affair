@@ -15,7 +15,10 @@ const DiscoverButton = ({ currentId, currentType }: DiscoverButtonProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleDiscover = async () => {
+  const handleDiscover = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Discover button clicked');
     setIsLoading(true);
     
     try {
@@ -76,10 +79,11 @@ const DiscoverButton = ({ currentId, currentType }: DiscoverButtonProps) => {
 
   return (
     <Button
+      type="button"
       onClick={handleDiscover}
       disabled={isLoading}
       size="lg"
-      className="bg-gradient-to-r from-dusty-rose to-blush hover:from-blush hover:to-dusty-rose text-white shadow-glow transform transition-transform hover:scale-105"
+      className="bg-gradient-to-r from-dusty-rose to-blush hover:from-blush hover:to-dusty-rose text-white shadow-glow transform transition-transform hover:scale-105 relative z-20"
     >
       <Sparkles className="w-5 h-5 mr-2 animate-pulse" />
       {isLoading ? "Discovering..." : "Discover Another World 💞"}

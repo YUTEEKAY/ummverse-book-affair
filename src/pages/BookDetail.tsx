@@ -259,7 +259,17 @@ const BookDetail = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-serif text-foreground mb-4">Book not found</h2>
-          <Button onClick={() => navigate("/")}>Return Home</Button>
+          <Button 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Return Home clicked');
+              navigate("/");
+            }}
+          >
+            Return Home
+          </Button>
         </div>
       </div>
     );
@@ -286,10 +296,16 @@ const BookDetail = () => {
         )}
 
         <div className="relative max-w-6xl mx-auto px-6 py-12 z-10">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-8 relative z-20">
             <Button
+              type="button"
               variant="ghost"
-              onClick={() => navigate(-1)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Back button clicked');
+                navigate(-1);
+              }}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
@@ -297,8 +313,14 @@ const BookDetail = () => {
             
             {profile?.is_premium && (
               <Button
+                type="button"
                 variant="outline"
-                onClick={handleEnrichBook}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Refresh Book Data clicked');
+                  handleEnrichBook();
+                }}
                 disabled={isEnriching}
                 size="sm"
               >

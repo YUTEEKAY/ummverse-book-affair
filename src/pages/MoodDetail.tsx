@@ -116,7 +116,17 @@ const MoodDetail = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-serif text-foreground mb-4">Mood not found</h2>
-          <Button onClick={() => navigate("/")}>Return Home</Button>
+          <Button 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Return Home clicked');
+              navigate("/");
+            }}
+          >
+            Return Home
+          </Button>
         </div>
       </div>
     );
@@ -133,9 +143,15 @@ const MoodDetail = () => {
       >
         <div className="max-w-6xl mx-auto">
           <Button
+            type="button"
             variant="ghost"
-            onClick={() => navigate("/")}
-            className="mb-8 text-white hover:bg-white/20"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Back to Home clicked');
+              navigate("/");
+            }}
+            className="mb-8 text-white hover:bg-white/20 relative z-20"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home

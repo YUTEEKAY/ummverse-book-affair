@@ -105,7 +105,16 @@ const TropeDetail = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blush via-warm-peach to-dusty-rose">
         <div className="text-center text-white">
           <h1 className="text-4xl font-serif mb-4">Trope Not Found</h1>
-          <Button onClick={() => navigate("/")} variant="outline">
+          <Button 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Return Home clicked');
+              navigate("/");
+            }} 
+            variant="outline"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Return Home
           </Button>
@@ -173,9 +182,15 @@ const TropeDetail = () => {
             transition={{ duration: 0.5 }}
           >
             <Button
-              onClick={() => navigate("/")}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Back to Home clicked');
+                navigate("/");
+              }}
               variant="ghost"
-              className={`${themeStyle.textColor} hover:bg-white/20 mb-8`}
+              className={`${themeStyle.textColor} hover:bg-white/20 mb-8 relative z-20`}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Home

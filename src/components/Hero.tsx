@@ -20,8 +20,14 @@ const Hero = () => {
       <div className="absolute top-6 right-6 z-20">
         {user ? (
           <Button
+            type="button"
             variant="ghost"
-            onClick={signOut}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Sign out clicked');
+              signOut();
+            }}
             className="bg-white/80 backdrop-blur-sm hover:bg-white"
           >
             <User className="w-4 h-4 mr-2" />
@@ -29,7 +35,13 @@ const Hero = () => {
           </Button>
         ) : (
           <Button
-            onClick={() => navigate('/auth')}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Sign in clicked');
+              navigate('/auth');
+            }}
             className="bg-white/80 backdrop-blur-sm hover:bg-white text-foreground"
             variant="ghost"
           >
@@ -91,14 +103,24 @@ const Hero = () => {
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
           <Button 
-            onClick={() => setShowRecommendations(true)}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Find Me a Romance clicked');
+              setShowRecommendations(true);
+            }}
             size="lg" 
             className="text-lg px-8 py-6 rounded-2xl shadow-soft hover:shadow-glow hover:scale-105 transition-all duration-300 bg-gradient-romance text-white border-none"
           >
             Find Me a Romance 💞
           </Button>
           <Button 
-            onClick={() => {
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Explore Moods clicked');
               document.getElementById('moods')?.scrollIntoView({ 
                 behavior: 'smooth',
                 block: 'start'
