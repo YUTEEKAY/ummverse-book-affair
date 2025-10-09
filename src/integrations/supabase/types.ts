@@ -29,6 +29,7 @@ export type Database = {
           import_source: string | null
           language: string | null
           mood: string | null
+          page_count: number | null
           publication_year: number | null
           publisher: string | null
           purchase_link: string | null
@@ -51,6 +52,7 @@ export type Database = {
           import_source?: string | null
           language?: string | null
           mood?: string | null
+          page_count?: number | null
           publication_year?: number | null
           publisher?: string | null
           purchase_link?: string | null
@@ -73,6 +75,7 @@ export type Database = {
           import_source?: string | null
           language?: string | null
           mood?: string | null
+          page_count?: number | null
           publication_year?: number | null
           publisher?: string | null
           purchase_link?: string | null
@@ -82,6 +85,44 @@ export type Database = {
           trope?: string | null
         }
         Relationships: []
+      }
+      enrichment_logs: {
+        Row: {
+          book_id: string | null
+          created_at: string | null
+          data_source: string | null
+          error_message: string | null
+          fields_updated: string[] | null
+          id: string
+          status: string
+        }
+        Insert: {
+          book_id?: string | null
+          created_at?: string | null
+          data_source?: string | null
+          error_message?: string | null
+          fields_updated?: string[] | null
+          id?: string
+          status: string
+        }
+        Update: {
+          book_id?: string | null
+          created_at?: string | null
+          data_source?: string | null
+          error_message?: string | null
+          fields_updated?: string[] | null
+          id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enrichment_logs_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       genres: {
         Row: {
