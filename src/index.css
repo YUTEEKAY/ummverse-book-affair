@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 28 40% 98%;
+    --background: 0 60% 95%;
     --foreground: 345 40% 12%;
 
     --card: 0 0% 100%;
@@ -17,37 +17,43 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 345 40% 12%;
 
-    --primary: 345 65% 40%;
-    --primary-foreground: 28 40% 98%;
+    --primary: 345 60% 35%;
+    --primary-foreground: 0 60% 95%;
 
     --secondary: 345 45% 92%;
     --secondary-foreground: 345 40% 12%;
 
-    --muted: 28 30% 95%;
-    --muted-foreground: 345 15% 35%;
+    --muted: 0 30% 92%;
+    --muted-foreground: 345 15% 40%;
 
     --accent: 38 85% 65%;
     --accent-foreground: 345 35% 15%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 28 40% 98%;
+    --destructive-foreground: 0 60% 95%;
 
-    --border: 345 20% 90%;
-    --input: 345 20% 90%;
-    --ring: 345 65% 45%;
+    --border: 345 20% 88%;
+    --input: 345 20% 88%;
+    --ring: 345 60% 40%;
 
     --radius: 0.75rem;
 
-    --blush: 345 70% 90%;
-    --cream: 40 50% 95%;
-    --dusty-rose: 345 50% 75%;
+    --blush: 0 60% 95%;
+    --cream: 40 50% 96%;
+    --dusty-rose: 345 50% 70%;
     --warm-peach: 25 80% 85%;
+    
+    /* Genre-specific accent colors */
+    --burgundy: 350 60% 35%;
+    --lavender: 270 40% 75%;
+    --pastel-blue: 190 40% 75%;
+    --vintage-gold: 30 50% 65%;
 
     --gradient-romance: linear-gradient(135deg, hsl(345, 65%, 45%), hsl(345, 55%, 55%));
-    --gradient-hero: linear-gradient(180deg, hsl(345, 85%, 96%), hsl(28, 40%, 98%));
-    --shadow-soft: 0 4px 20px -4px hsl(345, 45%, 75% / 0.3);
-    --shadow-card: 0 2px 12px -2px hsl(345, 35%, 65% / 0.2);
-    --shadow-glow: 0 0 30px hsl(345 65% 45% / 0.4);
+    --gradient-hero: linear-gradient(180deg, hsl(0, 60%, 95%), hsl(0, 60%, 98%));
+    --shadow-soft: 0 4px 20px -4px hsl(345, 45%, 75% / 0.25);
+    --shadow-card: 0 2px 12px -2px hsl(345, 35%, 65% / 0.15);
+    --shadow-glow: 0 0 30px hsl(345 60% 40% / 0.35);
   }
 
   .dark {

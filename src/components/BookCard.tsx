@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import BookCoverPlaceholder from "./BookCoverPlaceholder";
 import HeatLevelBadge from "./HeatLevelBadge";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface BookCardProps {
   book: {
@@ -21,9 +23,11 @@ interface BookCardProps {
 
 const BookCard = ({ book }: BookCardProps) => {
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const rating = book.rating ? Math.round(Number(book.rating)) : 0;
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const isPremium = profile?.is_premium;
 
   return (
     <motion.div
@@ -35,10 +39,14 @@ const BookCard = ({ book }: BookCardProps) => {
         onClick={() => navigate(`/book/${book.id}`)}
         className="group relative overflow-hidden rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 cursor-pointer border-none bg-card"
       >
+        {!isPremium && (
+          <Badge className="absolute top-2 left-2 z-10 bg-gradient-to-r from-primary to-dusty-rose text-primary-foreground">
+            Premium
+          </Badge>
+        )}
         <div className="aspect-[2/3] relative overflow-hidden bg-gradient-to-br from-blush/20 to-dusty-rose/20">
           {book.cover_url && !imageError ? (
             <>
-              {/* Shimmer loading placeholder */}
               {!imageLoaded && (
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-muted via-muted-foreground/20 to-muted"

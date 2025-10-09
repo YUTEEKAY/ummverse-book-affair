@@ -1,16 +1,43 @@
 import { useState } from "react";
-import { Heart } from "lucide-react";
+import { Heart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import RecommendationModal from "@/components/RecommendationModal";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <>
       <header className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-blush via-cream to-dusty-rose animate-gradient" />
+      
+      {/* Auth Button */}
+      <div className="absolute top-6 right-6 z-20">
+        {user ? (
+          <Button
+            variant="ghost"
+            onClick={signOut}
+            className="bg-white/80 backdrop-blur-sm hover:bg-white"
+          >
+            <User className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
+        ) : (
+          <Button
+            onClick={() => navigate('/auth')}
+            className="bg-white/80 backdrop-blur-sm hover:bg-white text-foreground"
+            variant="ghost"
+          >
+            <User className="w-4 h-4 mr-2" />
+            Sign In
+          </Button>
+        )}
+      </div>
       
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
