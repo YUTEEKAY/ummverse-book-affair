@@ -6,6 +6,9 @@ verify_jwt = false
 [functions.fetch-book-data]
 verify_jwt = false
 
+[functions.enrich-books]
+verify_jwt = false
+
 [functions.get-recommendations]
 verify_jwt = false
 

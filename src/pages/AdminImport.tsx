@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { Upload, FileText, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Upload, FileText, CheckCircle2, XCircle, AlertCircle, RefreshCw, BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ImportStats {
   imported: number;
@@ -19,6 +20,62 @@ export default function AdminImport() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [stats, setStats] = useState<ImportStats | null>(null);
+  
+  // Enrichment states
+  const [bookStats, setBookStats] = useState({
+    total: 0,
+    missingCovers: 0,
+    missingSummaries: 0,
+    noApiSource: 0
+  });
+  const [enriching, setEnriching] = useState(false);
+  const [enrichProgress, setEnrichProgress] = useState(0);
+  const [enrichStats, setEnrichStats] = useState({
+    processed: 0,
+    updated: 0,
+    noData: 0,
+    errors: 0
+  });
+  const [batchSize, setBatchSize] = useState("25");
+  const [enrichLogs, setEnrichLogs] = useState<string[]>([]);
+  const [showLogs, setShowLogs] = useState(false);
+
+  // Load book stats on mount
+  useEffect(() => {
+    loadBookStats();
+  }, []);
+
+  const loadBookStats = async () => {
+    try {
+      const { count: total } = await supabase
+        .from('books')
+        .select('*', { count: 'exact', head: true });
+
+      const { count: missingCovers } = await supabase
+        .from('books')
+        .select('*', { count: 'exact', head: true })
+        .is('cover_url', null);
+
+      const { count: missingSummaries } = await supabase
+        .from('books')
+        .select('*', { count: 'exact', head: true })
+        .is('summary', null);
+
+      const { count: noApiSource } = await supabase
+        .from('books')
+        .select('*', { count: 'exact', head: true })
+        .is('api_source', null);
+
+      setBookStats({
+        total: total || 0,
+        missingCovers: missingCovers || 0,
+        missingSummaries: missingSummaries || 0,
+        noApiSource: noApiSource || 0
+      });
+    } catch (error) {
+      console.error('Error loading book stats:', error);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -134,6 +191,75 @@ export default function AdminImport() {
     } finally {
       setIsProcessing(false);
       setProgress(0);
+    }
+  };
+
+  const handleEnrichBooks = async (forceRefresh: boolean = false) => {
+    setEnriching(true);
+    setEnrichProgress(0);
+    setEnrichStats({ processed: 0, updated: 0, noData: 0, errors: 0 });
+    setEnrichLogs([]);
+    setShowLogs(true);
+
+    try {
+      const size = parseInt(batchSize);
+      let offset = 0;
+      let hasMore = true;
+      let totalProcessed = 0;
+
+      const addLog = (message: string) => {
+        setEnrichLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+      };
+
+      addLog(`Starting enrichment with batch size ${size}...`);
+
+      while (hasMore) {
+        addLog(`Processing batch starting at ${offset}...`);
+
+        const { data, error } = await supabase.functions.invoke('enrich-books', {
+          body: {
+            batchSize: size,
+            startFrom: offset,
+            forceRefresh: forceRefresh
+          }
+        });
+
+        if (error) throw error;
+
+        const batchStats = data as any;
+        totalProcessed += batchStats.totalProcessed;
+
+        setEnrichStats(prev => ({
+          processed: prev.processed + batchStats.totalProcessed,
+          updated: prev.updated + batchStats.updated,
+          noData: prev.noData + batchStats.noDataFound,
+          errors: prev.errors + batchStats.errors
+        }));
+
+        addLog(`Batch complete: ${batchStats.updated} updated, ${batchStats.noDataFound} no data, ${batchStats.errors} errors`);
+
+        if (batchStats.totalProcessed < size) {
+          hasMore = false;
+          addLog('All books processed!');
+        } else {
+          offset = batchStats.nextOffset;
+          const estimatedTotal = forceRefresh ? bookStats.total : (bookStats.missingCovers + bookStats.missingSummaries + bookStats.noApiSource);
+          const progress = Math.min(100, (totalProcessed / Math.max(estimatedTotal, 1)) * 100);
+          setEnrichProgress(progress);
+        }
+      }
+
+      addLog(`Enrichment complete! Total: ${totalProcessed} books processed`);
+      await loadBookStats(); // Refresh stats
+      toast.success('Enrichment complete!');
+
+    } catch (error: any) {
+      console.error('Enrichment error:', error);
+      setEnrichLogs(prev => [...prev, `ERROR: ${error.message}`]);
+      toast.error('Enrichment failed');
+    } finally {
+      setEnriching(false);
+      setEnrichProgress(100);
     }
   };
 
@@ -302,6 +428,135 @@ export default function AdminImport() {
             </CardContent>
           </Card>
         )}
+
+        {/* Book Data Enrichment Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5" />
+              Book Data Enrichment
+            </CardTitle>
+            <CardDescription>
+              Enrich book data with summaries and covers from Open Library and Google Books API
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Statistics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-secondary/20 p-4 rounded-lg">
+                <div className="text-2xl font-bold">{bookStats.total}</div>
+                <div className="text-sm text-muted-foreground">Total Books</div>
+              </div>
+              <div className="bg-secondary/20 p-4 rounded-lg">
+                <div className="text-2xl font-bold">{bookStats.missingCovers}</div>
+                <div className="text-sm text-muted-foreground">Missing Covers</div>
+              </div>
+              <div className="bg-secondary/20 p-4 rounded-lg">
+                <div className="text-2xl font-bold">{bookStats.missingSummaries}</div>
+                <div className="text-sm text-muted-foreground">Missing Summaries</div>
+              </div>
+              <div className="bg-secondary/20 p-4 rounded-lg">
+                <div className="text-2xl font-bold">{bookStats.noApiSource}</div>
+                <div className="text-sm text-muted-foreground">Not Enriched</div>
+              </div>
+            </div>
+
+            {/* Configuration */}
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <label className="text-sm font-medium mb-2 block">Batch Size</label>
+                <Select value={batchSize} onValueChange={setBatchSize} disabled={enriching}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10 books per batch</SelectItem>
+                    <SelectItem value="25">25 books per batch</SelectItem>
+                    <SelectItem value="50">50 books per batch</SelectItem>
+                    <SelectItem value="100">100 books per batch</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <Button
+                onClick={() => handleEnrichBooks(false)}
+                disabled={enriching}
+                className="flex-1"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
+                Enrich Missing Data
+              </Button>
+              <Button
+                onClick={() => handleEnrichBooks(true)}
+                disabled={enriching}
+                variant="outline"
+                className="flex-1"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
+                Force Refresh All
+              </Button>
+            </div>
+
+            {/* Progress */}
+            {enriching && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Enriching books...</span>
+                  <span>{Math.round(enrichProgress)}%</span>
+                </div>
+                <Progress value={enrichProgress} />
+              </div>
+            )}
+
+            {/* Statistics During/After Enrichment */}
+            {(enriching || enrichStats.processed > 0) && (
+              <div className="grid grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold">{enrichStats.processed}</div>
+                  <div className="text-xs text-muted-foreground">Processed</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{enrichStats.updated}</div>
+                  <div className="text-xs text-muted-foreground">Updated</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-yellow-600">{enrichStats.noData}</div>
+                  <div className="text-xs text-muted-foreground">No Data</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-600">{enrichStats.errors}</div>
+                  <div className="text-xs text-muted-foreground">Errors</div>
+                </div>
+              </div>
+            )}
+
+            {/* Logs */}
+            {enrichLogs.length > 0 && (
+              <div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowLogs(!showLogs)}
+                  className="mb-2"
+                >
+                  {showLogs ? 'Hide' : 'Show'} Logs ({enrichLogs.length})
+                </Button>
+                {showLogs && (
+                  <div className="bg-secondary/20 p-4 rounded-lg max-h-60 overflow-y-auto">
+                    <div className="space-y-1 font-mono text-xs">
+                      {enrichLogs.map((log, i) => (
+                        <div key={i} className="text-muted-foreground">{log}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
