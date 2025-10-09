@@ -98,6 +98,12 @@ const Hero = () => {
             Find Me a Romance 💞
           </Button>
           <Button 
+            onClick={() => {
+              document.getElementById('moods')?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }}
             size="lg" 
             variant="secondary"
             className="text-lg px-8 py-6 rounded-2xl shadow-soft hover:shadow-card hover:scale-105 transition-all duration-300 bg-white/80 backdrop-blur-sm"

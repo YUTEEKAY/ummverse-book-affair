@@ -58,7 +58,7 @@ const PopularMoods = () => {
   };
 
   return (
-    <section className="py-16 px-6 bg-gradient-to-b from-blush/20 to-background">
+    <section id="moods" className="py-16 px-6 bg-gradient-to-b from-blush/20 to-background">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
