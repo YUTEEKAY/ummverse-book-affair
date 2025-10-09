@@ -8,19 +8,26 @@ const corsHeaders = {
 };
 
 interface CSVBook {
+  id?: string;
   title: string;
   author: string;
-  'release year'?: string;
-  synopsis?: string;
-  'book length'?: string;
-  rating?: string;
-  'number of ratings'?: string;
-  // Optional fields from other CSV formats
   genre?: string;
   trope?: string;
   mood?: string;
   heat_level?: string;
   summary?: string;
+  publisher?: string;
+  publish_year?: string;
+  isbn?: string;
+  language?: string;
+  page_count?: string;
+  rating?: string;
+  description?: string;
+  quote_snippet?: string;
+  source_api?: string;
+  // Legacy fields from old CSV formats
+  'release year'?: string;
+  synopsis?: string;
   Publisher?: string;
   PublishYear?: string;
   Language?: string;
@@ -83,11 +90,15 @@ serve(async (req) => {
             continue;
           }
 
-          // Check for duplicates
+          // Check for duplicates - ignore format suffixes in comparison
+          const titleForComparison = cleanedBook.title
+            .replace(/\s*\([^)]*\)$/g, '')
+            .trim();
+          
           const { data: existing } = await supabase
             .from('books')
             .select('id')
-            .ilike('title', cleanedBook.title)
+            .ilike('title', titleForComparison)
             .ilike('author', cleanedBook.author)
             .limit(1);
 
@@ -147,19 +158,28 @@ async function cleanAndValidateBook(
   book: CSVBook, 
   lovableApiKey: string
 ): Promise<ProcessedBook | null> {
-  // Get summary from either 'synopsis' or 'summary' field
-  const rawSummary = book.synopsis || book.summary || '';
+  // Prefer description over summary (description field has more detailed content)
+  const rawSummary = book.description || book.summary || book.synopsis || '';
   
-  // Clean HTML tags from summary
+  // Clean HTML tags and entities from summary
   const cleanSummary = rawSummary
     ?.replace(/<[^>]*>/g, '')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
     .trim() || null;
 
+  // Clean title: remove format suffixes like "(Paperback)", "(Kindle Edition)", etc.
+  const cleanTitle = book.title
+    .replace(/\s*\([^)]*Edition\)$/gi, '')
+    .replace(/\s*\((Paperback|Hardcover|Mass Market|Audio CD)\)$/gi, '')
+    .trim();
+
   // Use AI to validate if it's a romance novel
+  // Skip expensive AI validation if genre is explicitly "Romance"
   const isRomance = await validateRomanceNovel(
-    book.title,
+    cleanTitle,
     book.author,
     cleanSummary || '',
     book.genre || '',
@@ -176,31 +196,34 @@ async function cleanAndValidateBook(
   const normalizedMood = book.mood ? normalizeMood(book.mood) : null;
   const normalizedHeatLevel = book.heat_level ? normalizeHeatLevel(book.heat_level) : null;
 
-  // Parse publication year from either 'release year' or 'PublishYear'
-  const yearString = book['release year'] || book.PublishYear;
+  // Parse publication year - support multiple field names
+  const yearString = book.publish_year || book.PublishYear || book['release year'];
   const publicationYear = yearString 
     ? parseInt(yearString.toString()) 
     : undefined;
 
-  // Parse rating from either 'rating' or 'Rating'
+  // Parse rating - support multiple field names
   const ratingString = book.rating || book.Rating;
   const rating = ratingString 
     ? parseFloat(ratingString.toString()) 
     : undefined;
 
+  // Use source_api if provided, otherwise default to 'csv_import'
+  const importSource = book.source_api || 'csv_import';
+
   return {
-    title: book.title.trim(),
+    title: cleanTitle,
     author: book.author.trim(),
     genre: normalizedGenre,
     trope: normalizedTrope,
     mood: normalizedMood,
     heat_level: normalizedHeatLevel,
     summary: cleanSummary,
-    publisher: book.Publisher?.trim(),
+    publisher: (book.publisher || book.Publisher)?.trim(),
     publication_year: publicationYear,
-    language: book.Language?.trim() || 'English',
+    language: (book.language || book.Language)?.trim() || 'English',
     rating: rating,
-    import_source: 'csv_import'
+    import_source: importSource
   };
 }
 
@@ -223,8 +246,9 @@ async function validateRomanceNovel(
       return false;
     }
 
-    // If genre explicitly says romance, quick accept
-    if (genreLower.includes('romance')) {
+    // If genre is exactly "Romance" (pre-labeled), skip expensive AI validation
+    if (genreLower === 'romance' || genreLower.includes('romance')) {
+      console.log(`Quick accept: ${title} - Pre-labeled as romance`);
       return true;
     }
   }

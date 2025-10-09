@@ -156,7 +156,7 @@ export default function AdminImport() {
               Upload CSV File
             </CardTitle>
             <CardDescription>
-              Select a CSV file with columns: title, author, genre, trope, mood, heat_level, summary, Publisher, PublishYear, Language, Rating
+              Select a CSV file with columns: id, title, author, genre, trope, mood, heat_level, summary, publisher, publish_year, isbn, language, page_count, rating, description, quote_snippet, source_api
             </CardDescription>
           </CardHeader>
           <CardContent>
