@@ -388,17 +388,18 @@ function normalizeMood(mood: string): string {
 }
 
 function normalizeHeatLevel(heatLevel: string): string {
-  const heatLower = heatLevel.toLowerCase();
+  const heatLower = heatLevel.toLowerCase().trim();
   
+  // Match database constraint: sweet, warm, hot, scorching
   if (heatLower.includes('sweet') || heatLower.includes('clean')) {
-    return 'Sweet';
-  } else if (heatLower.includes('mild') || heatLower.includes('warm')) {
-    return 'Warm';
-  } else if (heatLower.includes('spicy') || heatLower.includes('hot')) {
-    return 'Spicy';
-  } else if (heatLower.includes('very hot') || heatLower.includes('explicit')) {
-    return 'Extra Spicy';
+    return 'sweet';
+  } else if (heatLower.includes('mild') || heatLower.includes('warm') || heatLower.includes('flirt')) {
+    return 'warm';
+  } else if (heatLower.includes('spicy') || heatLower.includes('hot') || heatLower.includes('steam')) {
+    return 'hot';
+  } else if (heatLower.includes('very hot') || heatLower.includes('explicit') || heatLower.includes('scorch')) {
+    return 'scorching';
   }
 
-  return heatLevel || 'Warm';
+  return 'warm';
 }
