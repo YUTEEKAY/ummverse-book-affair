@@ -194,6 +194,67 @@ export default function AdminImport() {
     }
   };
 
+  const handleBatchEnrich = async () => {
+    setEnriching(true);
+    setEnrichProgress(0);
+    setEnrichStats({ processed: 0, updated: 0, noData: 0, errors: 0 });
+    setEnrichLogs([]);
+    setShowLogs(true);
+
+    const addLog = (message: string) => {
+      setEnrichLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+    };
+
+    try {
+      addLog('Starting quick batch enrichment (50 books)...');
+
+      const { data, error } = await supabase.functions.invoke('batch-enrich-books', {
+        body: {
+          batchSize: 50,
+          forceRefresh: false
+        }
+      });
+
+      if (error) throw error;
+
+      const result = data as any;
+      
+      setEnrichStats({
+        processed: result.processed || 0,
+        updated: result.updated || 0,
+        noData: result.processed - result.updated - result.failed || 0,
+        errors: result.failed || 0
+      });
+
+      addLog(result.message || 'Batch enrichment complete');
+      
+      if (result.results) {
+        result.results.forEach((r: any) => {
+          if (r.updated) {
+            addLog(`✓ ${r.title}: updated ${r.fieldsUpdated.join(', ')}`);
+          } else if (r.error) {
+            addLog(`✗ ${r.title}: ${r.error}`);
+          }
+        });
+      }
+
+      setEnrichProgress(100);
+      await loadBookStats();
+
+      toast.success("✨ Batch enrichment complete!", {
+        description: `${result.updated} books updated`,
+        duration: 5000,
+      });
+
+    } catch (error: any) {
+      console.error('Batch enrichment error:', error);
+      addLog(`ERROR: ${error.message}`);
+      toast.error('Batch enrichment failed');
+    } finally {
+      setEnriching(false);
+    }
+  };
+
   const handleEnrichBooks = async (forceRefresh: boolean = false) => {
     setEnriching(true);
     setEnrichProgress(0);
@@ -485,11 +546,12 @@ export default function AdminImport() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <Button
                 onClick={() => handleEnrichBooks(false)}
                 disabled={enriching}
-                className="flex-1"
+                size="lg"
+                className="bg-gradient-romance text-white"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
                 Enrich Missing Data
@@ -497,11 +559,20 @@ export default function AdminImport() {
               <Button
                 onClick={() => handleEnrichBooks(true)}
                 disabled={enriching}
+                size="lg"
                 variant="outline"
-                className="flex-1"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
                 Force Refresh All
+              </Button>
+              <Button
+                onClick={handleBatchEnrich}
+                disabled={enriching || bookStats.total === 0}
+                size="lg"
+                variant="secondary"
+              >
+                <BookOpen className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
+                Quick Batch (50)
               </Button>
             </div>
 

@@ -47,32 +47,58 @@ const MoodDetail = () => {
     const fetchMoodAndBooks = async () => {
       if (!moodId) return;
 
-      setLoading(true);
+      try {
+        setLoading(true);
+        console.log(`[MoodDetail] Fetching mood: ${moodId}`);
 
-      // Fetch mood details
-      const { data: moodData } = await supabase
-        .from("moods")
-        .select("*")
-        .eq("id", moodId)
-        .single();
+        // Fetch mood details
+        const { data: moodData, error: moodError } = await supabase
+          .from("moods")
+          .select("*")
+          .eq("id", moodId)
+          .single();
 
-      if (moodData) {
+        if (moodError) {
+          console.error("[MoodDetail] Error fetching mood:", moodError);
+          throw moodError;
+        }
+        
+        console.log(`[MoodDetail] Mood loaded: ${moodData?.name}`);
         setMood(moodData);
 
-        // Fetch books matching this mood name
-        const { data: booksData } = await supabase
+        if (!moodData?.name) {
+          console.error("[MoodDetail] Mood data has no name!");
+          return;
+        }
+
+        // Fetch books for this mood
+        console.log(`[MoodDetail] Fetching books for mood: "${moodData.name}"`);
+        const { data: booksData, error: booksError } = await supabase
           .from("books")
           .select("id, title, author, cover_url, rating, heat_level")
           .eq("mood", moodData.name)
           .order("rating", { ascending: false, nullsFirst: false });
 
+        if (booksError) {
+          console.error("[MoodDetail] Error fetching books:", booksError);
+          throw booksError;
+        }
+        
+        console.log(`[MoodDetail] Books fetched: ${booksData?.length || 0} books found for mood "${moodData.name}"`);
+        
         if (booksData) {
           setAllBooks(booksData);
           setBooks(booksData);
         }
+        
+        if (!booksData || booksData.length === 0) {
+          console.warn(`[MoodDetail] No books found for mood "${moodData.name}". This could be a data issue.`);
+        }
+      } catch (error: any) {
+        console.error("[MoodDetail] Error in fetchMoodAndBooks:", error);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     fetchMoodAndBooks();
