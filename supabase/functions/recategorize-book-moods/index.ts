@@ -16,20 +16,74 @@ interface Book {
 
 // Known book series that need specific mood assignments
 const KNOWN_BOOKS: Record<string, { mood: string; heat_level?: string }> = {
+  // Spicy & Steamy series
   'fifty shades': { mood: 'Spicy & Steamy', heat_level: 'scorching' },
   'crossfire': { mood: 'Spicy & Steamy', heat_level: 'scorching' },
   'bared to you': { mood: 'Spicy & Steamy', heat_level: 'scorching' },
   'reflected in you': { mood: 'Spicy & Steamy', heat_level: 'scorching' },
+  'entwined with you': { mood: 'Spicy & Steamy', heat_level: 'scorching' },
+  'beautiful bastard': { mood: 'Spicy & Steamy', heat_level: 'hot' },
+  'beautiful stranger': { mood: 'Spicy & Steamy', heat_level: 'hot' },
+  'beautiful player': { mood: 'Spicy & Steamy', heat_level: 'hot' },
+  'beautiful bitch': { mood: 'Spicy & Steamy', heat_level: 'hot' },
+  'beautiful secret': { mood: 'Spicy & Steamy', heat_level: 'hot' },
+  'after': { mood: 'Spicy & Steamy', heat_level: 'hot' },
+  'thoughtless': { mood: 'Spicy & Steamy', heat_level: 'hot' },
+  
+  // Dark & Intense series
   'black dagger brotherhood': { mood: 'Dark & Intense', heat_level: 'hot' },
+  'lover awakened': { mood: 'Dark & Intense', heat_level: 'hot' },
+  'lover eternal': { mood: 'Dark & Intense', heat_level: 'hot' },
+  'lover enshrined': { mood: 'Dark & Intense', heat_level: 'hot' },
+  'lover avenged': { mood: 'Dark & Intense', heat_level: 'hot' },
+  'lover mine': { mood: 'Dark & Intense', heat_level: 'hot' },
+  'darkest': { mood: 'Dark & Intense' },
+  'twisted': { mood: 'Dark & Intense' },
+  
+  // Magical & Enchanting series
   'immortals after dark': { mood: 'Magical & Enchanting', heat_level: 'hot' },
-  'a hunger like no other': { mood: 'Magical & Enchanting' },
+  'a hunger like no other': { mood: 'Magical & Enchanting', heat_level: 'hot' },
   'kiss of midnight': { mood: 'Magical & Enchanting', heat_level: 'hot' },
+  'dark needs at night': { mood: 'Magical & Enchanting', heat_level: 'hot' },
+  'kiss of a demon king': { mood: 'Magical & Enchanting', heat_level: 'hot' },
+  'pleasure of a dark prince': { mood: 'Magical & Enchanting', heat_level: 'hot' },
+  'demon from the dark': { mood: 'Magical & Enchanting', heat_level: 'hot' },
+  'lothaire': { mood: 'Magical & Enchanting', heat_level: 'hot' },
+  'fever': { mood: 'Magical & Enchanting' },
+  'psy-changeling': { mood: 'Magical & Enchanting' },
+  'guild hunter': { mood: 'Magical & Enchanting' },
+  'vampire academy': { mood: 'Magical & Enchanting' },
+  'discovery of witches': { mood: 'Magical & Enchanting' },
+  'anita blake': { mood: 'Magical & Enchanting' },
+  'guilty pleasures': { mood: 'Magical & Enchanting' },
+  'kate daniels': { mood: 'Magical & Enchanting' },
+  'magic slays': { mood: 'Magical & Enchanting' },
+  'magic study': { mood: 'Magical & Enchanting' },
+  'poison study': { mood: 'Magical & Enchanting' },
+  
+  // Sweeping & Epic (Historical Romance authors)
+  'lisa kleypas': { mood: 'Sweeping & Epic' },
+  'julia quinn': { mood: 'Sweeping & Epic' },
+  'bridgerton': { mood: 'Sweeping & Epic' },
+  'duke': { mood: 'Sweeping & Epic' },
+  'highlander': { mood: 'Sweeping & Epic' },
+  'maya banks': { mood: 'Sweeping & Epic' },
+  'mccabe': { mood: 'Sweeping & Epic' },
+  'seduction of a highland': { mood: 'Sweeping & Epic' },
+  'never love a highlander': { mood: 'Sweeping & Epic' },
+  'spell of the highlander': { mood: 'Sweeping & Epic' },
+  'the highwayman': { mood: 'Sweeping & Epic' },
 };
 
 function determineCorrectMood(book: Book): { mood: string; heat_level?: string } {
   const title = book.title?.toLowerCase() || '';
   const author = book.author?.toLowerCase() || '';
   const genre = book.genre?.toLowerCase() || '';
+  const currentMood = book.mood?.toLowerCase() || '';
+  
+  // Force recategorization of legacy moods (Playful, Bittersweet)
+  const legacyMoods = ['playful', 'bittersweet'];
+  const isLegacyMood = legacyMoods.includes(currentMood);
   
   // Check known books first
   for (const [key, value] of Object.entries(KNOWN_BOOKS)) {
@@ -38,36 +92,66 @@ function determineCorrectMood(book: Book): { mood: string; heat_level?: string }
     }
   }
   
-  // Heat-based categorization
+  // Heat-based categorization (scorching/hot = steamy)
   if (book.heat_level === 'scorching' || book.heat_level === 'hot') {
     return { mood: 'Spicy & Steamy' };
   }
   
-  // Genre-based categorization
-  const magicalKeywords = ['paranormal', 'fantasy', 'vampire', 'witch', 'magic', 'fae', 'shifter', 'werewolf', 'immortal', 'supernatural'];
-  const historicalKeywords = ['historical', 'regency', 'medieval', 'victorian', 'highland', 'duke', 'earl'];
-  const darkKeywords = ['dark', 'suspense', 'thriller', 'mafia', 'biker'];
+  // Enhanced genre and title-based categorization
+  const magicalKeywords = [
+    'paranormal', 'fantasy', 'vampire', 'witch', 'magic', 'fae', 'shifter', 
+    'werewolf', 'immortal', 'supernatural', 'dragon', 'demon', 'angel', 
+    'psychic', 'urban fantasy', 'necromancer', 'sorcerer', 'mage'
+  ];
   
+  const historicalKeywords = [
+    'historical', 'regency', 'medieval', 'victorian', 'highland', 'duke', 
+    'earl', 'viscount', 'marquess', 'lord', 'lady', 'baron', 'laird',
+    'scottish', 'tudor', 'georgian', 'wallflower'
+  ];
+  
+  const darkKeywords = [
+    'dark', 'suspense', 'thriller', 'mafia', 'biker', 'mc', 'hitman',
+    'assassin', 'stalker', 'captive', 'kidnap', 'anti-hero', 'villain',
+    'twisted', 'ruthless', 'dangerous'
+  ];
+  
+  const spicyKeywords = [
+    'erotica', 'erotic', 'explicit', 'steamy', 'sensual', 'seduction'
+  ];
+  
+  // Check for spicy indicators
+  for (const keyword of spicyKeywords) {
+    if (genre.includes(keyword) || title.includes(keyword)) {
+      return { mood: 'Spicy & Steamy', heat_level: 'hot' };
+    }
+  }
+  
+  // Check for magical/paranormal
   for (const keyword of magicalKeywords) {
     if (genre.includes(keyword) || title.includes(keyword)) {
       return { mood: 'Magical & Enchanting' };
     }
   }
   
+  // Check for historical
   for (const keyword of historicalKeywords) {
     if (genre.includes(keyword) || title.includes(keyword)) {
       return { mood: 'Sweeping & Epic' };
     }
   }
   
+  // Check for dark themes
   for (const keyword of darkKeywords) {
     if (genre.includes(keyword) || title.includes(keyword)) {
       return { mood: 'Dark & Intense' };
     }
   }
   
-  // Default to Cozy & Comforting for sweet/contemporary romances
-  if (book.heat_level === 'sweet' || book.heat_level === 'warm' || genre.includes('contemporary') || genre.includes('romantic comedy')) {
+  // For legacy moods or sweet/contemporary romances, default to Cozy & Comforting
+  if (isLegacyMood || book.heat_level === 'sweet' || book.heat_level === 'warm' || 
+      genre.includes('contemporary') || genre.includes('romantic comedy') || 
+      genre.includes('rom-com') || genre.includes('small town')) {
     return { mood: 'Cozy & Comforting' };
   }
   
@@ -156,7 +240,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
       }),
       {
         status: 500,
