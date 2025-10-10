@@ -40,6 +40,10 @@ export default function AdminImport() {
   const [enrichLogs, setEnrichLogs] = useState<string[]>([]);
   const [showLogs, setShowLogs] = useState(false);
 
+  // Mood recategorization states
+  const [recategorizing, setRecategorizing] = useState(false);
+  const [recategorizeStats, setRecategorizeStats] = useState<any>(null);
+
   // Load book stats on mount
   useEffect(() => {
     loadBookStats();
@@ -326,6 +330,36 @@ export default function AdminImport() {
     } finally {
       setEnriching(false);
       setEnrichProgress(100);
+    }
+  };
+
+  const handleRecategorizeMoods = async () => {
+    setRecategorizing(true);
+    setRecategorizeStats(null);
+
+    try {
+      toast.loading('Recategorizing book moods...', { id: 'recategorize' });
+
+      const { data, error } = await supabase.functions.invoke('recategorize-book-moods', {
+        body: {}
+      });
+
+      if (error) throw error;
+
+      setRecategorizeStats(data);
+      await loadBookStats();
+
+      toast.success('🎭 Moods recategorized successfully!', {
+        id: 'recategorize',
+        description: `${data.updated} books updated`,
+        duration: 5000,
+      });
+
+    } catch (error: any) {
+      console.error('Recategorization error:', error);
+      toast.error('Mood recategorization failed', { id: 'recategorize' });
+    } finally {
+      setRecategorizing(false);
     }
   };
 
@@ -625,6 +659,69 @@ export default function AdminImport() {
                     <div className="space-y-1 font-mono text-xs">
                       {enrichLogs.map((log, i) => (
                         <div key={i} className="text-muted-foreground">{log}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Mood Recategorization Section */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              🎭 Mood Recategorization
+            </CardTitle>
+            <CardDescription>
+              Automatically recategorize all books into correct moods based on heat level, genre, and content
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-secondary/20 p-4 rounded-lg space-y-2">
+              <h3 className="font-semibold text-sm">Recategorization Logic:</h3>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                <li>• Scorching/Hot books → Spicy & Steamy</li>
+                <li>• Paranormal/Fantasy books → Magical & Enchanting</li>
+                <li>• Historical books → Sweeping & Epic</li>
+                <li>• Dark/Suspense books → Dark & Intense</li>
+                <li>• Sweet/Contemporary books → Cozy & Comforting</li>
+              </ul>
+            </div>
+
+            <Button
+              onClick={handleRecategorizeMoods}
+              disabled={recategorizing || bookStats.total === 0}
+              size="lg"
+              className="w-full bg-gradient-romance text-white"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${recategorizing ? 'animate-spin' : ''}`} />
+              Recategorize All Moods ({bookStats.total} books)
+            </Button>
+
+            {recategorizeStats && (
+              <div className="bg-secondary/20 p-4 rounded-lg space-y-3">
+                <h3 className="font-semibold">Recategorization Results:</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <div className="text-2xl font-bold text-green-600">{recategorizeStats.updated}</div>
+                    <div className="text-xs text-muted-foreground">Books Updated</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{recategorizeStats.unchanged}</div>
+                    <div className="text-xs text-muted-foreground">Unchanged</div>
+                  </div>
+                </div>
+                {recategorizeStats.moodDistribution && (
+                  <div>
+                    <h4 className="text-sm font-semibold mb-2">New Mood Distribution:</h4>
+                    <div className="space-y-1 text-xs">
+                      {Object.entries(recategorizeStats.moodDistribution).map(([mood, count]: [string, any]) => (
+                        <div key={mood} className="flex justify-between">
+                          <span>{mood}</span>
+                          <span className="font-semibold">{count} books</span>
+                        </div>
                       ))}
                     </div>
                   </div>

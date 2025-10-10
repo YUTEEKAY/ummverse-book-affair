@@ -1,0 +1,167 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  genre: string | null;
+  heat_level: string | null;
+  mood: string | null;
+}
+
+// Known book series that need specific mood assignments
+const KNOWN_BOOKS: Record<string, { mood: string; heat_level?: string }> = {
+  'fifty shades': { mood: 'Spicy & Steamy', heat_level: 'scorching' },
+  'crossfire': { mood: 'Spicy & Steamy', heat_level: 'scorching' },
+  'bared to you': { mood: 'Spicy & Steamy', heat_level: 'scorching' },
+  'reflected in you': { mood: 'Spicy & Steamy', heat_level: 'scorching' },
+  'black dagger brotherhood': { mood: 'Dark & Intense', heat_level: 'hot' },
+  'immortals after dark': { mood: 'Magical & Enchanting', heat_level: 'hot' },
+  'a hunger like no other': { mood: 'Magical & Enchanting' },
+  'kiss of midnight': { mood: 'Magical & Enchanting', heat_level: 'hot' },
+};
+
+function determineCorrectMood(book: Book): { mood: string; heat_level?: string } {
+  const title = book.title?.toLowerCase() || '';
+  const author = book.author?.toLowerCase() || '';
+  const genre = book.genre?.toLowerCase() || '';
+  
+  // Check known books first
+  for (const [key, value] of Object.entries(KNOWN_BOOKS)) {
+    if (title.includes(key) || author.includes(key)) {
+      return value;
+    }
+  }
+  
+  // Heat-based categorization
+  if (book.heat_level === 'scorching' || book.heat_level === 'hot') {
+    return { mood: 'Spicy & Steamy' };
+  }
+  
+  // Genre-based categorization
+  const magicalKeywords = ['paranormal', 'fantasy', 'vampire', 'witch', 'magic', 'fae', 'shifter', 'werewolf', 'immortal', 'supernatural'];
+  const historicalKeywords = ['historical', 'regency', 'medieval', 'victorian', 'highland', 'duke', 'earl'];
+  const darkKeywords = ['dark', 'suspense', 'thriller', 'mafia', 'biker'];
+  
+  for (const keyword of magicalKeywords) {
+    if (genre.includes(keyword) || title.includes(keyword)) {
+      return { mood: 'Magical & Enchanting' };
+    }
+  }
+  
+  for (const keyword of historicalKeywords) {
+    if (genre.includes(keyword) || title.includes(keyword)) {
+      return { mood: 'Sweeping & Epic' };
+    }
+  }
+  
+  for (const keyword of darkKeywords) {
+    if (genre.includes(keyword) || title.includes(keyword)) {
+      return { mood: 'Dark & Intense' };
+    }
+  }
+  
+  // Default to Cozy & Comforting for sweet/contemporary romances
+  if (book.heat_level === 'sweet' || book.heat_level === 'warm' || genre.includes('contemporary') || genre.includes('romantic comedy')) {
+    return { mood: 'Cozy & Comforting' };
+  }
+  
+  // Keep existing mood if none of the rules apply, or default
+  return { mood: book.mood || 'Cozy & Comforting' };
+}
+
+Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    console.log('🎭 Starting mood recategorization...');
+
+    // Fetch all books
+    const { data: books, error: fetchError } = await supabase
+      .from('books')
+      .select('id, title, author, genre, heat_level, mood');
+
+    if (fetchError) {
+      console.error('Error fetching books:', fetchError);
+      throw fetchError;
+    }
+
+    console.log(`📚 Found ${books?.length || 0} books to recategorize`);
+
+    let updated = 0;
+    let unchanged = 0;
+    const moodDistribution: Record<string, number> = {};
+
+    // Process each book
+    for (const book of books || []) {
+      const result = determineCorrectMood(book as Book);
+      const newMood = result.mood;
+      const newHeatLevel = result.heat_level;
+      
+      // Track mood distribution
+      moodDistribution[newMood] = (moodDistribution[newMood] || 0) + 1;
+      
+      // Only update if mood changed or heat level needs correction
+      if (book.mood !== newMood || (newHeatLevel && book.heat_level !== newHeatLevel)) {
+        const updateData: any = { mood: newMood };
+        if (newHeatLevel) {
+          updateData.heat_level = newHeatLevel;
+        }
+        
+        const { error: updateError } = await supabase
+          .from('books')
+          .update(updateData)
+          .eq('id', book.id);
+
+        if (updateError) {
+          console.error(`Error updating book ${book.id}:`, updateError);
+        } else {
+          console.log(`✅ Updated \"${book.title}\" from \"${book.mood}\" to \"${newMood}\"${newHeatLevel ? ` (heat: ${newHeatLevel})` : ''}`);
+          updated++;
+        }
+      } else {
+        unchanged++;
+      }
+    }
+
+    console.log(`✨ Recategorization complete! Updated: ${updated}, Unchanged: ${unchanged}`);
+    console.log('📊 New mood distribution:', moodDistribution);
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        totalBooks: books?.length || 0,
+        updated,
+        unchanged,
+        moodDistribution,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
+  } catch (error) {
+    console.error('Error in recategorize-book-moods:', error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
+  }
+});

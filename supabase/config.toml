@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.handle-lemon-squeezy-webhook]
 verify_jwt = false
+
+[functions.recategorize-book-moods]
+verify_jwt = false
