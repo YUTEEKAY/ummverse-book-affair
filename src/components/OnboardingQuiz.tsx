@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight, ArrowLeft } from "lucide-react";
+import { X, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -124,7 +124,10 @@ const OnboardingQuiz = ({ open, onClose }: OnboardingQuizProps) => {
 
                   <RadioGroup
                     value={answers.feeling}
-                    onValueChange={(value) => setAnswers({ ...answers, feeling: value })}
+                    onValueChange={(value) => {
+                      setAnswers({ ...answers, feeling: value });
+                      setTimeout(() => handleNext(), 300);
+                    }}
                     className="grid grid-cols-2 gap-4"
                   >
                     {feelings.map((feeling) => (
@@ -138,7 +141,7 @@ const OnboardingQuiz = ({ open, onClose }: OnboardingQuizProps) => {
                           whileTap={{ scale: 0.95 }}
                           className={`relative flex flex-col items-center justify-center p-6 h-32 rounded-lg border-2 transition-all ${
                             answers.feeling === feeling.value
-                              ? "border-primary bg-primary/10 shadow-lg"
+                              ? "border-primary border-3 bg-gradient-to-br from-primary/20 to-primary/10 shadow-xl shadow-primary/20 scale-105"
                               : "border-border hover:border-primary/50 hover:bg-accent/50"
                           }`}
                         >
@@ -147,6 +150,11 @@ const OnboardingQuiz = ({ open, onClose }: OnboardingQuizProps) => {
                             id={feeling.value}
                             className="sr-only"
                           />
+                          {answers.feeling === feeling.value && (
+                            <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          )}
                           <span className="text-4xl mb-2">{feeling.emoji}</span>
                           <span className="font-semibold text-center">{feeling.label}</span>
                         </motion.div>
@@ -168,7 +176,10 @@ const OnboardingQuiz = ({ open, onClose }: OnboardingQuizProps) => {
 
                   <RadioGroup
                     value={answers.trope}
-                    onValueChange={(value) => setAnswers({ ...answers, trope: value })}
+                    onValueChange={(value) => {
+                      setAnswers({ ...answers, trope: value });
+                      setTimeout(() => handleNext(), 300);
+                    }}
                     className="grid grid-cols-2 gap-4"
                   >
                     {tropes.map((trope) => (
@@ -178,7 +189,7 @@ const OnboardingQuiz = ({ open, onClose }: OnboardingQuizProps) => {
                           whileTap={{ scale: 0.95 }}
                           className={`relative flex flex-col items-center justify-center p-6 h-32 rounded-lg border-2 transition-all ${
                             answers.trope === trope.value
-                              ? "border-primary bg-primary/10 shadow-lg"
+                              ? "border-primary border-3 bg-gradient-to-br from-primary/20 to-primary/10 shadow-xl shadow-primary/20 scale-105"
                               : "border-border hover:border-primary/50 hover:bg-accent/50"
                           }`}
                         >
@@ -187,6 +198,11 @@ const OnboardingQuiz = ({ open, onClose }: OnboardingQuizProps) => {
                             id={trope.value}
                             className="sr-only"
                           />
+                          {answers.trope === trope.value && (
+                            <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          )}
                           <span className="text-4xl mb-2">{trope.emoji}</span>
                           <span className="font-semibold text-center">{trope.label}</span>
                         </motion.div>
@@ -208,7 +224,10 @@ const OnboardingQuiz = ({ open, onClose }: OnboardingQuizProps) => {
 
                   <RadioGroup
                     value={answers.heatLevel}
-                    onValueChange={(value) => setAnswers({ ...answers, heatLevel: value })}
+                    onValueChange={(value) => {
+                      setAnswers({ ...answers, heatLevel: value });
+                      setTimeout(() => handleNext(), 300);
+                    }}
                     className="grid grid-cols-2 md:grid-cols-4 gap-4"
                   >
                     {heatLevels.map((level) => (
@@ -218,7 +237,7 @@ const OnboardingQuiz = ({ open, onClose }: OnboardingQuizProps) => {
                           whileTap={{ scale: 0.95 }}
                           className={`relative flex flex-col items-center justify-center p-4 h-32 rounded-lg border-2 transition-all ${
                             answers.heatLevel === level.value
-                              ? "border-primary bg-primary/10 shadow-lg"
+                              ? "border-primary border-3 bg-gradient-to-br from-primary/20 to-primary/10 shadow-xl shadow-primary/20 scale-105"
                               : "border-border hover:border-primary/50 hover:bg-accent/50"
                           }`}
                         >
@@ -227,6 +246,11 @@ const OnboardingQuiz = ({ open, onClose }: OnboardingQuizProps) => {
                             id={level.value}
                             className="sr-only"
                           />
+                          {answers.heatLevel === level.value && (
+                            <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          )}
                           <span className="text-3xl mb-1">{level.emoji}</span>
                           <span className="font-semibold text-center text-sm">{level.label}</span>
                           <span className="text-xs text-muted-foreground text-center mt-1">
