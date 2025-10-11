@@ -1,7 +1,5 @@
 import Hero from "@/components/Hero";
-import TodaysQuote from "@/components/TodaysQuote";
-import PopularMoods from "@/components/PopularMoods";
-import MostSearchedBooksCarousel from "@/components/MostSearchedBooksCarousel";
+import FeaturedMoods from "@/components/FeaturedMoods";
 import Footer from "@/components/Footer";
 import PremiumBanner from "@/components/PremiumBanner";
 
@@ -10,9 +8,7 @@ const Index = () => {
     <main className="min-h-screen">
       <PremiumBanner />
       <Hero />
-      <TodaysQuote />
-      <PopularMoods />
-      <MostSearchedBooksCarousel />
+      <FeaturedMoods />
       <Footer />
     </main>
   );
