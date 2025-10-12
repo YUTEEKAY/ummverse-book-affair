@@ -121,7 +121,7 @@ const Hero = ({ onDiscoverClick }: HeroProps) => {
               }
             }}
             size="lg" 
-            className="text-xl px-12 py-7 rounded-2xl shadow-soft hover:shadow-glow hover:scale-105 transition-all duration-300 bg-gradient-romance text-white font-semibold border-none"
+            className="text-xl px-12 py-7 rounded-2xl shadow-soft hover:shadow-glow hover:scale-105 transition-all duration-300 bg-gradient-romance text-white font-semibold border-none [text-shadow:_0_2px_8px_rgb(0_0_0_/_30%)]"
           >
             Discover by Feeling
           </Button>
