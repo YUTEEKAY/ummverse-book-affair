@@ -72,10 +72,7 @@ const OnboardingResults = ({ answers, onRetake, onClose }: OnboardingResultsProp
         </div>
       )}
 
-      <div className="flex gap-3 justify-center pt-4 border-t">
-        <Button onClick={onClose} size="lg" className="min-w-32">
-          Start Reading
-        </Button>
+      <div className="flex justify-center pt-4 border-t">
         <Button onClick={onRetake} variant="ghost">
           Retake Quiz
         </Button>
