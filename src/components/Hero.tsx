@@ -6,7 +6,11 @@ import RecommendationModal from "@/components/RecommendationModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const Hero = () => {
+interface HeroProps {
+  onDiscoverClick?: () => void;
+}
+
+const Hero = ({ onDiscoverClick }: HeroProps) => {
   const [showRecommendations, setShowRecommendations] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -107,13 +111,17 @@ const Hero = () => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              document.getElementById('featured-moods')?.scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-              });
+              if (onDiscoverClick) {
+                onDiscoverClick();
+              } else {
+                document.getElementById('featured-moods')?.scrollIntoView({ 
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }
             }}
             size="lg" 
-            className="text-xl px-12 py-7 rounded-2xl shadow-soft hover:shadow-glow hover:scale-105 transition-all duration-300 bg-gradient-romance text-white border-none"
+            className="text-xl px-12 py-7 rounded-2xl shadow-soft hover:shadow-glow hover:scale-105 transition-all duration-300 bg-gradient-romance text-white font-semibold border-none"
           >
             Discover by Feeling
           </Button>

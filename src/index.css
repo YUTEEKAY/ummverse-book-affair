@@ -49,7 +49,7 @@ All colors MUST be HSL.
     --pastel-blue: 190 40% 75%;
     --vintage-gold: 30 50% 65%;
 
-    --gradient-romance: linear-gradient(135deg, hsl(345, 65%, 45%), hsl(345, 55%, 55%));
+    --gradient-romance: linear-gradient(135deg, hsl(345, 70%, 55%), hsl(345, 65%, 65%));
     --gradient-hero: linear-gradient(180deg, hsl(0, 60%, 95%), hsl(0, 60%, 98%));
     --shadow-soft: 0 4px 20px -4px hsl(345, 45%, 75% / 0.25);
     --shadow-card: 0 2px 12px -2px hsl(345, 35%, 65% / 0.15);
@@ -90,7 +90,7 @@ All colors MUST be HSL.
     --dusty-rose: 345 35% 35%;
     --warm-peach: 25 40% 30%;
 
-    --gradient-romance: linear-gradient(135deg, hsl(345, 65%, 55%), hsl(345, 55%, 65%));
+    --gradient-romance: linear-gradient(135deg, hsl(345, 70%, 60%), hsl(345, 65%, 70%));
     --gradient-hero: linear-gradient(180deg, hsl(345, 30%, 12%), hsl(345, 35%, 8%));
     --shadow-soft: 0 4px 20px -4px hsl(345, 65%, 25% / 0.5);
     --shadow-card: 0 2px 12px -2px hsl(345, 55%, 35% / 0.4);
