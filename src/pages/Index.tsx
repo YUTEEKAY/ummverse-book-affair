@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Hero from "@/components/Hero";
 import FeaturedMoods from "@/components/FeaturedMoods";
+import FeaturedTropes from "@/components/FeaturedTropes";
 import Footer from "@/components/Footer";
 import PremiumBanner from "@/components/PremiumBanner";
 import OnboardingQuiz from "@/components/OnboardingQuiz";
@@ -17,6 +18,7 @@ const Index = () => {
       <PremiumBanner />
       <Hero onDiscoverClick={handleDiscoverClick} />
       <FeaturedMoods />
+      <FeaturedTropes />
       <Footer />
       
       <OnboardingQuiz
