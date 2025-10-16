@@ -7,6 +7,24 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Validate cover URL to ensure it's a valid image link
+function isValidCoverUrl(url: string | null): boolean {
+  if (!url) return false;
+  
+  // Check for valid http/https URL
+  if (!url.startsWith('http://') && !url.startsWith('https://')) return false;
+  
+  // Check for common image extensions or known cover domains
+  const validPatterns = [
+    /\.(jpg|jpeg|png|gif|webp)$/i,
+    /covers\.openlibrary\.org/,
+    /books\.google\.com.*?img=/,
+    /googleapis\.com/
+  ];
+  
+  return validPatterns.some(pattern => pattern.test(url));
+}
+
 interface BookData {
   title: string;
   author: string;
@@ -95,10 +113,15 @@ serve(async (req) => {
         
         // Build cover URL if available (try different sizes)
         if (firstResult.cover_i) {
-          bookData.cover_url = `https://covers.openlibrary.org/b/id/${firstResult.cover_i}-L.jpg`;
-          console.log(`[${title}] Open Library cover found: ${bookData.cover_url}`);
+          const coverUrl = `https://covers.openlibrary.org/b/id/${firstResult.cover_i}-L.jpg`;
+          if (isValidCoverUrl(coverUrl)) {
+            bookData.cover_url = coverUrl;
+            console.log(`[${title}] Open Library cover found: ${bookData.cover_url}`);
+          } else {
+            console.log(`[${title}] Open Library cover URL validation failed: ${coverUrl}`);
+          }
         } else {
-          console.log(`[${title}] Open Library: no cover_i found`);
+          console.log(`[${title}] Open Library: no cover_i found in result:`, JSON.stringify(firstResult).substring(0, 200));
         }
         
         bookData.api_source = 'open_library';
@@ -146,7 +169,7 @@ serve(async (req) => {
               : null;
             
             // Try multiple cover sizes in order of preference
-            bookData.cover_url = 
+            const potentialCoverUrl = 
               volumeInfo.imageLinks?.extraLarge ||
               volumeInfo.imageLinks?.large ||
               volumeInfo.imageLinks?.medium ||
@@ -154,10 +177,17 @@ serve(async (req) => {
               volumeInfo.imageLinks?.smallThumbnail ||
               null;
             
-            if (bookData.cover_url) {
+            if (potentialCoverUrl) {
               // Convert to https and higher quality
-              bookData.cover_url = bookData.cover_url.replace('http:', 'https:').replace('&edge=curl', '');
-              console.log(`[${title}] Google Books cover URL: ${bookData.cover_url}`);
+              const coverUrl = potentialCoverUrl.replace('http:', 'https:').replace('&edge=curl', '');
+              if (isValidCoverUrl(coverUrl)) {
+                bookData.cover_url = coverUrl;
+                console.log(`[${title}] Google Books cover URL: ${bookData.cover_url}`);
+              } else {
+                console.log(`[${title}] Google Books cover URL validation failed: ${coverUrl}`);
+              }
+            } else {
+              console.log(`[${title}] Google Books: no imageLinks found in volumeInfo`);
             }
             
             bookData.publisher = volumeInfo.publisher || null;
@@ -180,7 +210,7 @@ serve(async (req) => {
           
           // Enhance cover URL even if we got one from Open Library
           if (!bookData.cover_url || bookData.cover_url.includes('openlibrary')) {
-            const gbCoverUrl = 
+            const potentialGbCoverUrl = 
               volumeInfo.imageLinks?.extraLarge ||
               volumeInfo.imageLinks?.large ||
               volumeInfo.imageLinks?.medium ||
@@ -188,9 +218,12 @@ serve(async (req) => {
               volumeInfo.imageLinks?.smallThumbnail ||
               null;
             
-            if (gbCoverUrl) {
-              bookData.cover_url = gbCoverUrl.replace('http:', 'https:').replace('&edge=curl', '');
-              console.log(`[${title}] Using Google Books cover instead: ${bookData.cover_url}`);
+            if (potentialGbCoverUrl) {
+              const gbCoverUrl = potentialGbCoverUrl.replace('http:', 'https:').replace('&edge=curl', '');
+              if (isValidCoverUrl(gbCoverUrl)) {
+                bookData.cover_url = gbCoverUrl;
+                console.log(`[${title}] Using Google Books cover instead: ${bookData.cover_url}`);
+              }
             }
           }
           

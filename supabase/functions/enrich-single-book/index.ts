@@ -95,15 +95,19 @@ serve(async (req) => {
     const bookData = await bookDataResponse.json();
     console.log('Fetched data:', bookData);
 
-    // Prepare updates
-    const updates: any = {
-      api_source: bookData.api_source || 'attempted'
-    };
-    const fieldsUpdated: string[] = ['api_source'];
+    // Prepare updates - always track api_source
+    const updates: any = {};
+    const fieldsUpdated: string[] = [];
 
-    if (bookData.cover_url && (!bookRecord?.cover_url || bookRecord.cover_url === '')) {
+    // Always update api_source to track enrichment attempts
+    updates.api_source = bookData.api_source || 'attempted';
+    fieldsUpdated.push('api_source');
+
+    // Update cover_url if we have a valid one and book doesn't have one (checking for NULL, undefined, or empty string)
+    if (bookData.cover_url && (bookRecord?.cover_url === null || bookRecord?.cover_url === undefined || bookRecord.cover_url === '')) {
       updates.cover_url = bookData.cover_url;
       fieldsUpdated.push('cover_url');
+      console.log(`Adding cover URL: ${bookData.cover_url}`);
     }
 
     if (bookData.summary) {
@@ -131,7 +135,7 @@ serve(async (req) => {
       fieldsUpdated.push('page_count');
     }
 
-    const hasUpdates = Object.keys(updates).length > 1; // More than just api_source
+    const hasUpdates = Object.keys(updates).length > 0;
 
     if (hasUpdates && bookId) {
       const { error: updateError } = await supabase
@@ -144,47 +148,39 @@ serve(async (req) => {
         throw updateError;
       }
 
-      // Log success
+      const meaningfulUpdates = fieldsUpdated.filter(f => f !== 'api_source').length;
+      const status = meaningfulUpdates > 0 ? 'success' : 'partial';
+
+      // Log enrichment attempt
       await supabase.from('enrichment_logs').insert({
         book_id: bookId,
-        status: 'success',
+        status: status,
         fields_updated: fieldsUpdated,
         data_source: bookData.api_source,
-        error_message: null
+        error_message: bookData.api_source === 'not_found' ? 'No data found from APIs' : null
       });
 
-      console.log(`✨ Successfully enriched: ${bookTitle}`);
+      console.log(`✨ Enriched: ${bookTitle} - ${fieldsUpdated.join(', ')}`);
 
       return new Response(
         JSON.stringify({ 
           success: true, 
-          updated: true,
+          updated: meaningfulUpdates > 0,
           fields: fieldsUpdated,
-          message: `Updated ${fieldsUpdated.length} fields`
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    } else {
-      // Log no data found
-      if (bookId) {
-        await supabase.from('enrichment_logs').insert({
-          book_id: bookId,
-          status: bookData.api_source === 'not_found' ? 'failed' : 'partial',
-          fields_updated: fieldsUpdated,
-          data_source: bookData.api_source,
-          error_message: bookData.api_source === 'not_found' ? 'No data found from APIs' : 'No new fields to update'
-        });
-      }
-
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          updated: false,
-          message: 'No new data to update'
+          message: meaningfulUpdates > 0 ? `Updated ${meaningfulUpdates} fields` : 'No new data available'
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        updated: false,
+        message: 'No updates to apply'
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
 
   } catch (error) {
     console.error('Error in enrich-single-book:', error);

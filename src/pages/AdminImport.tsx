@@ -333,6 +333,87 @@ export default function AdminImport() {
     }
   };
 
+  const handleReEnrichMissingCovers = async () => {
+    setEnriching(true);
+    setEnrichProgress(0);
+    setEnrichStats({ processed: 0, updated: 0, noData: 0, errors: 0 });
+    setEnrichLogs([]);
+    setShowLogs(true);
+
+    const addLog = (message: string) => {
+      setEnrichLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+    };
+
+    try {
+      addLog('Fetching books with missing covers...');
+      
+      // Fetch books without covers in batches
+      const batchSize = 50;
+      const { data: booksWithoutCovers, error: fetchError } = await supabase
+        .from('books')
+        .select('id, title, author')
+        .is('cover_url', null)
+        .limit(batchSize);
+
+      if (fetchError) throw fetchError;
+
+      if (!booksWithoutCovers || booksWithoutCovers.length === 0) {
+        addLog('No books found with missing covers');
+        toast.info('All books already have covers!');
+        return;
+      }
+
+      addLog(`Found ${booksWithoutCovers.length} books without covers. Starting enrichment...`);
+
+      let updated = 0;
+      let noData = 0;
+      let errors = 0;
+
+      for (const [index, book] of booksWithoutCovers.entries()) {
+        try {
+          addLog(`[${index + 1}/${booksWithoutCovers.length}] Enriching: ${book.title}`);
+          
+          const { data, error } = await supabase.functions.invoke('enrich-single-book', {
+            body: { bookId: book.id }
+          });
+
+          if (error) throw error;
+
+          if (data?.updated) {
+            updated++;
+            addLog(`✓ ${book.title}: Added cover`);
+          } else {
+            noData++;
+            addLog(`○ ${book.title}: No cover found in APIs`);
+          }
+
+          setEnrichStats({ processed: index + 1, updated, noData, errors });
+          setEnrichProgress(((index + 1) / booksWithoutCovers.length) * 100);
+          
+        } catch (error: any) {
+          errors++;
+          addLog(`✗ ${book.title}: ${error.message}`);
+        }
+      }
+
+      addLog(`Complete! ${updated} covers added, ${noData} not found, ${errors} errors`);
+      await loadBookStats();
+
+      toast.success(`✨ Cover enrichment complete!`, {
+        description: `${updated} covers added out of ${booksWithoutCovers.length} books`,
+        duration: 5000,
+      });
+
+    } catch (error: any) {
+      console.error('Re-enrichment error:', error);
+      addLog(`ERROR: ${error.message}`);
+      toast.error('Cover re-enrichment failed');
+    } finally {
+      setEnriching(false);
+      setEnrichProgress(100);
+    }
+  };
+
   const handleRecategorizeMoods = async () => {
     setRecategorizing(true);
     setRecategorizeStats(null);
@@ -580,7 +661,7 @@ export default function AdminImport() {
             </div>
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Button
                 onClick={() => handleEnrichBooks(false)}
                 disabled={enriching}
@@ -599,6 +680,8 @@ export default function AdminImport() {
                 <RefreshCw className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
                 Force Refresh All
               </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Button
                 onClick={handleBatchEnrich}
                 disabled={enriching || bookStats.total === 0}
@@ -607,6 +690,15 @@ export default function AdminImport() {
               >
                 <BookOpen className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
                 Quick Batch (50)
+              </Button>
+              <Button
+                onClick={handleReEnrichMissingCovers}
+                disabled={enriching || bookStats.missingCovers === 0}
+                size="lg"
+                variant="secondary"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
+                Fix Missing Covers ({bookStats.missingCovers})
               </Button>
             </div>
 
