@@ -7,22 +7,47 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Validate cover URL to ensure it's a valid image link
+// Helper function to clean book titles for better API search results
+function cleanTitleForSearch(title: string): string {
+  // Remove series info: (Series Name, #1), [Series Name #1], etc.
+  return title
+    .replace(/\s*\([^)]*#\d+[^)]*\)\s*/g, '')  // Remove (Series, #1)
+    .replace(/\s*\[[^\]]*#\d+[^\]]*\]\s*/g, '')  // Remove [Series #1]
+    .replace(/\s*#\d+\s*/g, '')                   // Remove standalone #1
+    .trim();
+}
+
+// Helper function to detect English text
+function isEnglishText(text: string): boolean {
+  if (!text) return false;
+  
+  // Common non-English words/patterns that indicate non-English content
+  const nonEnglishIndicators = [
+    /\bà\b/i, /\bde la\b/i, /\beste\b/i, /\baprès\b/i,
+    /\bétudiant/i, /\buniversité\b/i, /\bloin\b/i,
+    /\bchez\b/i, /\bquand\b/i, /\bsans\b/i
+  ];
+  
+  // If any non-English indicator is found, it's not English
+  return !nonEnglishIndicators.some(pattern => pattern.test(text));
+}
+
+// Validate cover URL to ensure it's a valid image link (more lenient)
 function isValidCoverUrl(url: string | null): boolean {
   if (!url) return false;
   
   // Check for valid http/https URL
   if (!url.startsWith('http://') && !url.startsWith('https://')) return false;
   
-  // Check for common image extensions or known cover domains
-  const validPatterns = [
-    /\.(jpg|jpeg|png|gif|webp)$/i,
-    /covers\.openlibrary\.org/,
-    /books\.google\.com.*?img=/,
-    /googleapis\.com/
+  // More lenient - just check for valid domains
+  const validDomains = [
+    'covers.openlibrary.org',
+    'books.google.com',
+    'googleapis.com',
+    'googleusercontent.com'
   ];
   
-  return validPatterns.some(pattern => pattern.test(url));
+  return validDomains.some(domain => url.includes(domain));
 }
 
 interface BookData {
@@ -89,16 +114,42 @@ serve(async (req) => {
       api_source: 'not_found'
     };
 
-    // Step 1: Try Open Library first
-    console.log(`[${title}] Fetching from Open Library...`);
+    // Try multiple search strategies for better results
+    const cleanedTitle = cleanTitleForSearch(title);
+    const searches = [
+      { title: title, author: author, label: "Full title + author" },
+      { title: cleanedTitle, author: author, label: "Clean title + author" },
+      { title: cleanedTitle, author: null, label: "Clean title only" }
+    ];
+    
+    let olData: any = null;
+    
+    // Step 1: Try Open Library first with fallback strategy
+    console.log(`[${title}] Fetching from Open Library with fallback...`);
     try {
-      const olQuery = searchAuthor 
-        ? `https://openlibrary.org/search.json?title=${searchTitle}&author=${searchAuthor}`
-        : `https://openlibrary.org/search.json?title=${searchTitle}`;
+      for (const search of searches) {
+        if (!search.author && author) continue; // Skip author-less if we have author
+        
+        const olSearchTitle = encodeURIComponent(search.title);
+        const olSearchAuthor = search.author ? encodeURIComponent(search.author) : '';
+        const olQuery = search.author 
+          ? `https://openlibrary.org/search.json?title=${olSearchTitle}&author=${olSearchAuthor}`
+          : `https://openlibrary.org/search.json?title=${olSearchTitle}`;
+        
+        console.log(`[${title}] Open Library attempt (${search.label}): ${olQuery}`);
+        
+        const olResponse = await fetch(olQuery);
+        olData = await olResponse.json();
+        
+        if (olData.docs && olData.docs.length > 0) {
+          console.log(`[${title}] Open Library success with ${search.label}: ${olData.docs.length} results`);
+          break;
+        }
+      }
       
-      console.log(`[${title}] Open Library query: ${olQuery}`);
-      const olResponse = await fetch(olQuery);
-      const olData = await olResponse.json();
+      if (!olData || !olData.docs || olData.docs.length === 0) {
+        console.log(`[${title}] Open Library: no results found after all attempts`);
+      }
 
       if (olData.docs && olData.docs.length > 0) {
         const firstResult = olData.docs[0];
@@ -133,21 +184,38 @@ serve(async (req) => {
       console.error(`[${title}] Open Library fetch error:`, error);
     }
 
-    // Step 2: Fetch from Google Books (for description and as fallback)
-    console.log(`[${title}] Fetching from Google Books...`);
+    // Step 2: Fetch from Google Books (for description and as fallback) with language filtering
+    console.log(`[${title}] Fetching from Google Books with fallback...`);
+    let gbData: any = null;
+    
     try {
       const googleApiKey = Deno.env.get('GOOGLE_BOOKS_API_KEY');
       
       if (!googleApiKey) {
         console.warn(`[${title}] Google Books API key not found`);
       } else {
-        const gbQuery = searchAuthor
-          ? `https://www.googleapis.com/books/v1/volumes?q=intitle:${searchTitle}+inauthor:${searchAuthor}&key=${googleApiKey}`
-          : `https://www.googleapis.com/books/v1/volumes?q=intitle:${searchTitle}&key=${googleApiKey}`;
+        // Try multiple search strategies with language restriction
+        for (const search of searches) {
+          const gbSearchTitle = encodeURIComponent(search.title);
+          const gbSearchAuthor = search.author ? encodeURIComponent(search.author) : '';
+          const gbQuery = search.author
+            ? `https://www.googleapis.com/books/v1/volumes?q=intitle:${gbSearchTitle}+inauthor:${gbSearchAuthor}&langRestrict=en&key=${googleApiKey}`
+            : `https://www.googleapis.com/books/v1/volumes?q=intitle:${gbSearchTitle}&langRestrict=en&key=${googleApiKey}`;
+          
+          console.log(`[${title}] Google Books attempt (${search.label}): ${gbQuery.replace(googleApiKey, '[API_KEY]')}`);
+          
+          const gbResponse = await fetch(gbQuery);
+          gbData = await gbResponse.json();
+          
+          if (gbData.items && gbData.items.length > 0) {
+            console.log(`[${title}] Google Books success with ${search.label}: ${gbData.items.length} results`);
+            break;
+          }
+        }
         
-        console.log(`[${title}] Google Books query: ${gbQuery.replace(googleApiKey, '[API_KEY]')}`);
-        const gbResponse = await fetch(gbQuery);
-        const gbData = await gbResponse.json();
+        if (!gbData || !gbData.items || !gbData.items.length) {
+          console.log(`[${title}] Google Books: no results found after all attempts`);
+        }
 
         if (gbData.items && gbData.items.length > 0) {
           console.log(`[${title}] Google Books: ${gbData.items.length} results found`);
@@ -195,14 +263,18 @@ serve(async (req) => {
             bookData.api_source = 'google_books';
           }
           
-          // Always use Google Books description (they have the best summaries)
+          // Always use Google Books description (they have the best summaries) - validate it's English
           if (volumeInfo.description) {
-            bookData.summary = volumeInfo.description;
-            console.log(`[${title}] Google Books: description found (${volumeInfo.description.length} chars)`);
-            
-            // If we got data from both sources, mark as hybrid
-            if (bookData.api_source === 'open_library') {
-              bookData.api_source = 'hybrid';
+            if (isEnglishText(volumeInfo.description)) {
+              bookData.summary = volumeInfo.description;
+              console.log(`[${title}] Google Books: English description found (${volumeInfo.description.length} chars)`);
+              
+              // If we got data from both sources, mark as hybrid
+              if (bookData.api_source === 'open_library') {
+                bookData.api_source = 'hybrid';
+              }
+            } else {
+              console.log(`[${title}] Google Books: Rejected non-English description`);
             }
           } else {
             console.log(`[${title}] Google Books: no description found`);

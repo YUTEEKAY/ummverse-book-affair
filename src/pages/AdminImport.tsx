@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { Upload, FileText, CheckCircle2, XCircle, AlertCircle, RefreshCw, BookOpen } from "lucide-react";
+import { Upload, FileText, CheckCircle2, XCircle, AlertCircle, RefreshCw, BookOpen, Search, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -26,8 +27,11 @@ export default function AdminImport() {
     total: 0,
     missingCovers: 0,
     missingSummaries: 0,
-    noApiSource: 0
+    noApiSource: 0,
+    nonEnglishSummaries: 0,
   });
+  const [testBookId, setTestBookId] = useState("");
+  const [testingBook, setTestingBook] = useState(false);
   const [enriching, setEnriching] = useState(false);
   const [enrichProgress, setEnrichProgress] = useState(0);
   const [enrichStats, setEnrichStats] = useState({
@@ -50,34 +54,32 @@ export default function AdminImport() {
   }, []);
 
   const loadBookStats = async () => {
-    try {
-      const { count: total } = await supabase
-        .from('books')
-        .select('*', { count: 'exact', head: true });
-
-      const { count: missingCovers } = await supabase
-        .from('books')
-        .select('*', { count: 'exact', head: true })
-        .is('cover_url', null);
-
-      const { count: missingSummaries } = await supabase
-        .from('books')
-        .select('*', { count: 'exact', head: true })
-        .is('summary', null);
-
-      const { count: noApiSource } = await supabase
-        .from('books')
-        .select('*', { count: 'exact', head: true })
-        .is('api_source', null);
-
+    const { data: books } = await supabase
+      .from('books')
+      .select('cover_url, summary, api_source, language');
+    
+    if (books) {
+      const withCovers = books.filter(b => b.cover_url).length;
+      const withSummaries = books.filter(b => b.summary).length;
+      const noApiSource = books.filter(b => !b.api_source).length;
+      
+      // Detect non-English summaries (common French indicators)
+      const nonEnglishSummaries = books.filter(b => 
+        b.summary && 
+        b.language === 'en' &&
+        (b.summary.includes('université') || 
+         b.summary.includes('de la') || 
+         b.summary.includes(' à ') ||
+         b.summary.includes('après'))
+      ).length;
+      
       setBookStats({
-        total: total || 0,
-        missingCovers: missingCovers || 0,
-        missingSummaries: missingSummaries || 0,
-        noApiSource: noApiSource || 0
+        total: books.length,
+        missingCovers: books.length - withCovers,
+        missingSummaries: books.length - withSummaries,
+        noApiSource,
+        nonEnglishSummaries,
       });
-    } catch (error) {
-      console.error('Error loading book stats:', error);
     }
   };
 
@@ -398,19 +400,139 @@ export default function AdminImport() {
 
       addLog(`Complete! ${updated} covers added, ${noData} not found, ${errors} errors`);
       await loadBookStats();
-
-      toast.success(`✨ Cover enrichment complete!`, {
-        description: `${updated} covers added out of ${booksWithoutCovers.length} books`,
-        duration: 5000,
-      });
-
+      toast.success(`Cover enrichment complete! ${updated} covers added`);
     } catch (error: any) {
-      console.error('Re-enrichment error:', error);
-      addLog(`ERROR: ${error.message}`);
-      toast.error('Cover re-enrichment failed');
+      console.error('Error re-enriching covers:', error);
+      toast.error('Failed to re-enrich covers');
+      addLog(`Error: ${error.message}`);
     } finally {
       setEnriching(false);
       setEnrichProgress(100);
+    }
+  };
+
+  const handleFixNonEnglishSummaries = async () => {
+    setEnriching(true);
+    setEnrichProgress(0);
+    setEnrichStats({ processed: 0, updated: 0, noData: 0, errors: 0 });
+    setEnrichLogs([]);
+    setShowLogs(true);
+
+    const addLog = (message: string) => {
+      setEnrichLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+    };
+
+    try {
+      addLog('Finding non-English summaries...');
+      
+      const { data: nonEnglishBooks, error: fetchError } = await supabase
+        .from('books')
+        .select('id, title, author, summary')
+        .not('summary', 'is', null)
+        .eq('language', 'en')
+        .or('summary.ilike.%université%,summary.ilike.%de la%,summary.ilike.% à %');
+
+      if (fetchError) throw fetchError;
+
+      if (!nonEnglishBooks || nonEnglishBooks.length === 0) {
+        addLog('No non-English summaries found');
+        toast.info('All summaries are in English!');
+        return;
+      }
+
+      addLog(`Found ${nonEnglishBooks.length} books with non-English summaries. Re-enriching...`);
+
+      let updated = 0;
+      let noData = 0;
+      let errors = 0;
+
+      for (const [index, book] of nonEnglishBooks.entries()) {
+        try {
+          addLog(`[${index + 1}/${nonEnglishBooks.length}] Re-enriching: ${book.title}`);
+          
+          // Clear the non-English summary first
+          await supabase
+            .from('books')
+            .update({ summary: null, api_source: null })
+            .eq('id', book.id);
+
+          // Then re-enrich with the improved logic
+          const { data, error } = await supabase.functions.invoke('enrich-single-book', {
+            body: { bookId: book.id }
+          });
+
+          if (error) throw error;
+
+          if (data?.updated && data?.fields?.includes('summary')) {
+            updated++;
+            addLog(`✓ ${book.title}: Got English summary`);
+          } else {
+            noData++;
+            addLog(`○ ${book.title}: No English summary available`);
+          }
+
+          setEnrichStats({ processed: index + 1, updated, noData, errors });
+          setEnrichProgress(((index + 1) / nonEnglishBooks.length) * 100);
+          
+          // Small delay to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 150));
+        } catch (error: any) {
+          errors++;
+          addLog(`✗ ${book.title}: ${error.message}`);
+        }
+      }
+
+      addLog(`Complete! ${updated} English summaries added, ${noData} not found, ${errors} errors`);
+      await loadBookStats();
+      toast.success(`Fixed ${updated} non-English summaries!`);
+    } catch (error: any) {
+      console.error('Error fixing summaries:', error);
+      toast.error("Failed to fix non-English summaries");
+      addLog(`Error: ${error.message}`);
+    } finally {
+      setEnriching(false);
+      setEnrichProgress(100);
+    }
+  };
+
+  const handleTestSingleBook = async () => {
+    if (!testBookId.trim()) {
+      toast.error("Please enter a book ID");
+      return;
+    }
+
+    setTestingBook(true);
+    setEnrichLogs([]);
+    setShowLogs(true);
+
+    const addLog = (message: string) => {
+      setEnrichLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+    };
+
+    try {
+      addLog(`🔍 Testing enrichment for book ID: ${testBookId}`);
+
+      const { data, error } = await supabase.functions.invoke('enrich-single-book', {
+        body: { bookId: testBookId.trim() }
+      });
+
+      if (error) {
+        addLog(`❌ Error: ${error.message}`);
+        toast.error("Test failed");
+      } else {
+        addLog(`✅ Result: ${data?.updated ? 'Updated' : 'No updates'}`);
+        addLog(`📋 Fields: ${data?.fields?.join(', ') || 'none'}`);
+        addLog(`📄 Message: ${data?.message || 'none'}`);
+        toast.success("Test complete - check logs");
+      }
+
+      await loadBookStats();
+    } catch (error: any) {
+      console.error('Error testing book:', error);
+      addLog(`❌ ${error.message}`);
+      toast.error("Test failed");
+    } finally {
+      setTestingBook(false);
     }
   };
 
@@ -699,6 +821,33 @@ export default function AdminImport() {
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
                 Fix Missing Covers ({bookStats.missingCovers})
+              </Button>
+              <Button
+                onClick={handleFixNonEnglishSummaries}
+                disabled={enriching || bookStats.nonEnglishSummaries === 0}
+                size="lg"
+                variant="destructive"
+              >
+                <AlertCircle className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
+                Fix Non-English ({bookStats.nonEnglishSummaries})
+              </Button>
+            </div>
+
+            {/* Test Single Book */}
+            <div className="flex gap-2">
+              <Input
+                placeholder="Enter book ID to test enrichment..."
+                value={testBookId}
+                onChange={(e) => setTestBookId(e.target.value)}
+                className="max-w-xs"
+              />
+              <Button
+                onClick={handleTestSingleBook}
+                disabled={testingBook || !testBookId.trim()}
+                variant="outline"
+              >
+                <Search className={`h-4 w-4 mr-2 ${testingBook ? 'animate-spin' : ''}`} />
+                Test Book
               </Button>
             </div>
 
