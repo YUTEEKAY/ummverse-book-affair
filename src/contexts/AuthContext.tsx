@@ -23,6 +23,8 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   incrementViewCount: () => Promise<void>;
   canViewBook: boolean;
+  isAdmin: boolean;
+  checkAdminStatus: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -145,6 +148,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const checkAdminStatus = async () => {
+    if (!user) {
+      setIsAdmin(false);
+      return false;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('check-admin');
+      
+      if (error || !data) {
+        setIsAdmin(false);
+        return false;
+      }
+
+      setIsAdmin(data.isAdmin);
+      return data.isAdmin;
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      setIsAdmin(false);
+      return false;
+    }
+  };
+
   const canViewBook = !user || profile?.is_premium || (profile?.free_views_count ?? 0) < 3;
 
   return (
@@ -160,6 +186,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         incrementViewCount,
         canViewBook,
+        isAdmin,
+        checkAdminStatus,
       }}
     >
       {children}

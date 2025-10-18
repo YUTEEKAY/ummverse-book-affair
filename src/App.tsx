@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedAdminRoute } from "@/components/ProtectedAdminRoute";
 import Index from "./pages/Index";
 import MoodDetail from "./pages/MoodDetail";
 import GenreDetail from "./pages/GenreDetail";
@@ -34,7 +35,14 @@ const App = () => (
             <Route path="/genre/:genreId" element={<GenreDetail />} />
             <Route path="/trope/:tropeId" element={<TropeDetail />} />
             <Route path="/book/:bookId" element={<BookDetail />} />
-            <Route path="/admin/import" element={<AdminImport />} />
+            <Route 
+              path="/admin/import" 
+              element={
+                <ProtectedAdminRoute>
+                  <AdminImport />
+                </ProtectedAdminRoute>
+              } 
+            />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/disclaimer" element={<Disclaimer />} />
