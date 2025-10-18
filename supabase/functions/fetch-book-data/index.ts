@@ -44,10 +44,99 @@ function isValidCoverUrl(url: string | null): boolean {
     'covers.openlibrary.org',
     'books.google.com',
     'googleapis.com',
-    'googleusercontent.com'
+    'googleusercontent.com',
+    'archive.org'
   ];
   
   return validDomains.some(domain => url.includes(domain));
+}
+
+// Fetch from Internet Archive
+async function fetchFromInternetArchive(title: string, author: string | null, internetArchiveKey: string) {
+  try {
+    const query = author 
+      ? `title:"${title}" AND creator:"${author}"`
+      : `title:"${title}"`;
+    
+    const searchUrl = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier,title,creator,date,isbn,publisher&sort[]=downloads+desc&rows=5&page=1&output=json`;
+    
+    console.log(`[IA] Searching: ${searchUrl}`);
+    
+    const response = await fetch(searchUrl, {
+      headers: {
+        'Authorization': `LOW ${internetArchiveKey}`
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.response?.docs && data.response.docs.length > 0) {
+      const book = data.response.docs[0];
+      return {
+        identifier: book.identifier,
+        isbn: book.isbn ? book.isbn[0] : null,
+        coverUrl: book.identifier ? `https://archive.org/services/img/${book.identifier}` : null,
+        title: book.title,
+        author: book.creator ? book.creator[0] : null,
+        publicationYear: book.date ? parseInt(book.date) : null,
+        publisher: book.publisher ? book.publisher[0] : null
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('[IA] Error:', error);
+    return null;
+  }
+}
+
+// Fetch Open Library cover by ISBN
+async function fetchOpenLibraryCoverByISBN(isbn: string) {
+  if (!isbn) return null;
+  
+  const sizes = ['L', 'M', 'S'];
+  
+  for (const size of sizes) {
+    const coverUrl = `https://covers.openlibrary.org/b/isbn/${isbn}-${size}.jpg`;
+    
+    try {
+      const response = await fetch(coverUrl, { method: 'HEAD' });
+      
+      if (response.ok && response.headers.get('content-type')?.includes('image')) {
+        console.log(`[OL-ISBN] Found cover for ISBN ${isbn}: ${coverUrl}`);
+        return coverUrl;
+      }
+    } catch (error) {
+      console.error(`[OL-ISBN] Error checking ${coverUrl}:`, error);
+    }
+  }
+  
+  return null;
+}
+
+// Extract ISBN from API responses
+function extractISBN(olData: any, gbData: any) {
+  let isbn = null;
+  let isbn13 = null;
+  
+  // Try Open Library first
+  if (olData?.docs?.[0]?.isbn) {
+    const isbns = olData.docs[0].isbn;
+    isbn13 = isbns.find((i: string) => i.length === 13);
+    isbn = isbn13 || isbns[0];
+  }
+  
+  // Try Google Books if not found
+  if (!isbn && gbData?.items?.[0]?.volumeInfo?.industryIdentifiers) {
+    const identifiers = gbData.items[0].volumeInfo.industryIdentifiers;
+    const isbn13Obj = identifiers.find((id: any) => id.type === 'ISBN_13');
+    const isbn10Obj = identifiers.find((id: any) => id.type === 'ISBN_10');
+    
+    isbn13 = isbn13Obj?.identifier;
+    isbn = isbn13 || isbn10Obj?.identifier;
+  }
+  
+  return { isbn, isbn13 };
 }
 
 interface BookData {
@@ -58,7 +147,9 @@ interface BookData {
   publication_year: number | null;
   publisher: string | null;
   page_count: number | null;
-  api_source: 'open_library' | 'google_books' | 'hybrid' | 'not_found';
+  isbn: string | null;
+  isbn13: string | null;
+  api_source: 'open_library' | 'google_books' | 'hybrid' | 'internet_archive' | 'not_found';
 }
 
 serve(async (req) => {
@@ -111,8 +202,28 @@ serve(async (req) => {
       publication_year: null,
       publisher: null,
       page_count: null,
+      isbn: null,
+      isbn13: null,
       api_source: 'not_found'
     };
+
+    // Step 1: Try Internet Archive first
+    const internetArchiveKey = Deno.env.get('Internet_Archive');
+    let iaData = null;
+
+    if (internetArchiveKey) {
+      console.log(`[${title}] Fetching from Internet Archive...`);
+      iaData = await fetchFromInternetArchive(title, author, internetArchiveKey);
+      
+      if (iaData) {
+        console.log(`[${title}] Internet Archive found: ${iaData.identifier}`);
+        bookData.cover_url = iaData.coverUrl;
+        bookData.isbn = iaData.isbn;
+        bookData.publication_year = iaData.publicationYear;
+        bookData.publisher = iaData.publisher;
+        bookData.api_source = 'internet_archive';
+      }
+    }
 
     // Try multiple search strategies for better results
     const cleanedTitle = cleanTitleForSearch(title);
@@ -124,7 +235,7 @@ serve(async (req) => {
     
     let olData: any = null;
     
-    // Step 1: Try Open Library first with fallback strategy
+    // Step 2: Try Open Library with fallback strategy
     console.log(`[${title}] Fetching from Open Library with fallback...`);
     try {
       for (const search of searches) {
@@ -184,7 +295,7 @@ serve(async (req) => {
       console.error(`[${title}] Open Library fetch error:`, error);
     }
 
-    // Step 2: Fetch from Google Books (for description and as fallback) with language filtering
+    // Step 3: Fetch from Google Books (for description and as fallback) with language filtering
     console.log(`[${title}] Fetching from Google Books with fallback...`);
     let gbData: any = null;
     
@@ -316,8 +427,27 @@ serve(async (req) => {
       console.error(`[${title}] Google Books fetch error:`, error);
     }
     
+    // Step 4: Extract ISBN from all sources
+    const { isbn, isbn13 } = extractISBN(olData, gbData);
+    bookData.isbn = bookData.isbn || isbn;
+    bookData.isbn13 = isbn13;
+    
+    // Step 5: Try ISBN-based Open Library cover if no cover yet
+    if (!bookData.cover_url && (bookData.isbn || bookData.isbn13)) {
+      console.log(`[${title}] Trying Open Library ISBN cover...`);
+      const isbnToUse = bookData.isbn13 || bookData.isbn;
+      if (isbnToUse) {
+        const isbnCover = await fetchOpenLibraryCoverByISBN(isbnToUse);
+        
+        if (isbnCover) {
+          bookData.cover_url = isbnCover;
+          console.log(`[${title}] Found Open Library ISBN cover: ${isbnCover}`);
+        }
+      }
+    }
+    
     // Final result logging
-    console.log(`[${title}] Final result - api_source: ${bookData.api_source}, has_cover: ${!!bookData.cover_url}, has_summary: ${!!bookData.summary}`);
+    console.log(`[${title}] Final result - api_source: ${bookData.api_source}, has_cover: ${!!bookData.cover_url}, has_summary: ${!!bookData.summary}, isbn: ${bookData.isbn}`);
 
     // Return the combined data
     return new Response(

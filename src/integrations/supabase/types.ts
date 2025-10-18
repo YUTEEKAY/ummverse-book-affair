@@ -59,6 +59,8 @@ export type Database = {
           heat_level: string | null
           id: string
           import_source: string | null
+          isbn: string | null
+          isbn13: string | null
           language: string | null
           mood: string | null
           page_count: number | null
@@ -82,6 +84,8 @@ export type Database = {
           heat_level?: string | null
           id?: string
           import_source?: string | null
+          isbn?: string | null
+          isbn13?: string | null
           language?: string | null
           mood?: string | null
           page_count?: number | null
@@ -105,6 +109,8 @@ export type Database = {
           heat_level?: string | null
           id?: string
           import_source?: string | null
+          isbn?: string | null
+          isbn13?: string | null
           language?: string | null
           mood?: string | null
           page_count?: number | null

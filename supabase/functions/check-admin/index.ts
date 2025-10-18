@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('Error in check-admin function:', error)
     return new Response(
-      JSON.stringify({ isAdmin: false, error: error.message }),
+      JSON.stringify({ isAdmin: false, error: error instanceof Error ? error.message : 'Unknown error' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     )
   }

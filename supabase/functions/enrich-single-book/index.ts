@@ -135,6 +135,16 @@ serve(async (req) => {
       fieldsUpdated.push('page_count');
     }
 
+    if (bookData.isbn && !bookRecord?.isbn) {
+      updates.isbn = bookData.isbn;
+      fieldsUpdated.push('isbn');
+    }
+
+    if (bookData.isbn13 && !bookRecord?.isbn13) {
+      updates.isbn13 = bookData.isbn13;
+      fieldsUpdated.push('isbn13');
+    }
+
     const hasUpdates = Object.keys(updates).length > 0;
 
     if (hasUpdates && bookId) {

@@ -15,7 +15,7 @@ const Index = () => {
       <Hero onDiscoverClick={handleDiscoverClick} />
       <FeaturedMoods />
       <FeaturedTropes />
-      <Footer className="mx-px my-px px-px py-px" />
+      <Footer />
       
       <OnboardingQuiz open={showOnboardingQuiz} onClose={() => setShowOnboardingQuiz(false)} />
     </main>;
