@@ -2,13 +2,15 @@ import { Button } from '@/components/ui/button';
 import { Sparkles, X } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const PremiumBanner = () => {
   const [isVisible, setIsVisible] = useState(true);
   const { profile } = useAuth();
+  const navigate = useNavigate();
 
-  // Don't show banner to premium users
-  if (!isVisible || profile?.is_premium) return null;
+  // Don't show banner to premium users (monthly or lifetime)
+  if (!isVisible || profile?.subscription_tier !== 'free') return null;
 
   return (
     <div className="bg-gradient-to-r from-primary via-dusty-rose to-primary text-primary-foreground py-3 px-4 relative">
@@ -21,9 +23,9 @@ const PremiumBanner = () => {
           size="sm"
           variant="secondary"
           className="hidden md:inline-flex"
-          onClick={() => window.location.href = 'https://ummverse.lemonsqueezy.com/buy/ummverse-premium'}
+          onClick={() => navigate('/pricing')}
         >
-          Unlock Now
+          View Plans
         </Button>
         <button
           onClick={() => setIsVisible(false)}

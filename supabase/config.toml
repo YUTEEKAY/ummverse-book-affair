@@ -27,5 +27,8 @@ verify_jwt = false
 [functions.handle-lemon-squeezy-webhook]
 verify_jwt = false
 
+[functions.create-lemon-squeezy-checkout]
+verify_jwt = true
+
 [functions.recategorize-book-moods]
 verify_jwt = false

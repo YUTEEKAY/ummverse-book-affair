@@ -226,8 +226,13 @@ export type Database = {
           full_name: string | null
           id: string
           is_premium: boolean
+          lemon_squeezy_customer_id: string | null
+          subscription_ends_at: string | null
           subscription_id: string | null
+          subscription_product_id: string | null
           subscription_status: string | null
+          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
+          subscription_variant_id: string | null
           updated_at: string
         }
         Insert: {
@@ -239,8 +244,13 @@ export type Database = {
           full_name?: string | null
           id: string
           is_premium?: boolean
+          lemon_squeezy_customer_id?: string | null
+          subscription_ends_at?: string | null
           subscription_id?: string | null
+          subscription_product_id?: string | null
           subscription_status?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          subscription_variant_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -252,8 +262,13 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_premium?: boolean
+          lemon_squeezy_customer_id?: string | null
+          subscription_ends_at?: string | null
           subscription_id?: string | null
+          subscription_product_id?: string | null
           subscription_status?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          subscription_variant_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -352,7 +367,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      subscription_tier: "free" | "premium_monthly" | "lifetime"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -479,6 +494,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      subscription_tier: ["free", "premium_monthly", "lifetime"],
+    },
   },
 } as const
