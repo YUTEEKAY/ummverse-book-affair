@@ -5,12 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Loader2, BookOpen, MessageSquare, Calendar, Crown } from 'lucide-react';
+import { Loader2, BookOpen, MessageSquare, Calendar, Crown, Shield, Upload, Database, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 
 export default function Profile() {
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   // Fetch user's reviews (no user_id in reviews table, showing all)
@@ -113,6 +113,41 @@ export default function Profile() {
             </div>
           </CardHeader>
         </Card>
+
+        {/* Admin Badge */}
+        {isAdmin && (
+          <Card className="mb-8 bg-gradient-primary text-white">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Shield className="h-6 w-6" />
+                <CardTitle>Administrator Access</CardTitle>
+              </div>
+              <CardDescription className="text-white/90">
+                You have full administrative privileges
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Button
+                  variant="secondary"
+                  className="w-full justify-start"
+                  onClick={() => navigate('/admin/import')}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import Books
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="w-full justify-start"
+                  onClick={() => window.open('https://supabase.com', '_blank')}
+                >
+                  <Database className="h-4 w-4 mr-2" />
+                  View Backend
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
