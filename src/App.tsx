@@ -14,6 +14,7 @@ import AdminImport from "./pages/AdminImport";
 import Auth from "./pages/Auth";
 import Premium from "./pages/Premium";
 import Pricing from "./pages/Pricing";
+import Profile from "./pages/Profile";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Disclaimer from "./pages/Disclaimer";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/premium" element={<Premium />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/mood/:moodId" element={<MoodDetail />} />
             <Route path="/genre/:genreId" element={<GenreDetail />} />
             <Route path="/trope/:tropeId" element={<TropeDetail />} />

@@ -21,17 +21,26 @@ const Hero = ({
       <header className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-blush via-cream to-dusty-rose animate-gradient" />
       
-      {/* Auth Button */}
+      {/* Auth/Profile Button */}
       <div className="absolute top-6 right-6 z-20">
-        {user ? <Button type="button" variant="ghost" onClick={e => {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Sign out clicked');
-          signOut();
-        }} className="bg-white/80 backdrop-blur-sm hover:bg-white">
-            <User className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button> : <Button type="button" onClick={e => {
+        {user ? <div className="flex gap-2">
+            <Button type="button" variant="ghost" onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              navigate('/profile');
+            }} className="bg-white/80 backdrop-blur-sm hover:bg-white">
+              <User className="w-4 h-4 mr-2" />
+              Profile
+            </Button>
+            <Button type="button" variant="ghost" onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Sign out clicked');
+              signOut();
+            }} className="bg-white/80 backdrop-blur-sm hover:bg-white">
+              Sign Out
+            </Button>
+          </div> : <Button type="button" onClick={e => {
           e.preventDefault();
           e.stopPropagation();
           console.log('Sign in clicked');
