@@ -178,6 +178,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  useEffect(() => {
+    if (user?.id) {
+      checkAdminStatus();
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user?.id]);
+
   // Subscription tier helpers
   const isLifetime = profile?.subscription_tier === 'lifetime';
   const isPremiumMonthly = profile?.subscription_tier === 'premium_monthly';
