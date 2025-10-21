@@ -5,15 +5,328 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Loader2, BookOpen, MessageSquare, Calendar, Crown, Shield, Upload, Database, Settings } from 'lucide-react';
+import { Loader2, BookOpen, MessageSquare, Calendar, Crown, Shield, Upload, Database, Users, Eye, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 
-export default function Profile() {
-  const { user, profile, loading, isAdmin } = useAuth();
+// Admin Dashboard Component
+function AdminDashboard() {
+  const navigate = useNavigate();
+  const { profile } = useAuth();
+
+  // Platform-wide analytics queries
+  const { data: platformStats, isLoading: statsLoading } = useQuery({
+    queryKey: ['platform-stats'],
+    queryFn: async () => {
+      const [usersRes, booksRes, reviewsRes, viewsRes] = await Promise.all([
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('books').select('id', { count: 'exact', head: true }),
+        supabase.from('reviews').select('id', { count: 'exact', head: true }),
+        supabase.from('book_views').select('id', { count: 'exact', head: true }),
+      ]);
+
+      return {
+        totalUsers: usersRes.count || 0,
+        totalBooks: booksRes.count || 0,
+        totalReviews: reviewsRes.count || 0,
+        totalViews: viewsRes.count || 0,
+      };
+    },
+  });
+
+  const { data: subscriptionStats } = useQuery({
+    queryKey: ['subscription-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('subscription_tier');
+      
+      if (error) throw error;
+
+      const breakdown = {
+        free: 0,
+        premium_monthly: 0,
+        lifetime: 0,
+      };
+
+      data?.forEach((profile: any) => {
+        breakdown[profile.subscription_tier as keyof typeof breakdown]++;
+      });
+
+      return breakdown;
+    },
+  });
+
+  const { data: recentActivity } = useQuery({
+    queryKey: ['recent-activity'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('book_views')
+        .select(`
+          *,
+          books (title, author),
+          profiles!book_views_user_id_fkey (full_name, email)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: recentReviews } = useQuery({
+    queryKey: ['recent-reviews'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('reviews')
+        .select(`
+          *,
+          books (title, author, cover_url)
+        `)
+        .order('timestamp', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Admin Header */}
+        <Card className="mb-8 bg-gradient-primary text-white">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Shield className="h-8 w-8" />
+                <div>
+                  <CardTitle className="text-3xl">Admin Dashboard</CardTitle>
+                  <CardDescription className="text-white/90">
+                    {profile?.full_name} • {profile?.email}
+                  </CardDescription>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+
+        {/* Admin Tools */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Administrative tools and management</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button
+                variant="default"
+                className="w-full justify-start h-auto py-4"
+                onClick={() => navigate('/admin/import')}
+              >
+                <Upload className="h-5 w-5 mr-3" />
+                <div className="text-left">
+                  <div className="font-semibold">Import Books</div>
+                  <div className="text-xs opacity-80">Batch upload book data</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start h-auto py-4"
+              >
+                <Database className="h-5 w-5 mr-3" />
+                <div className="text-left">
+                  <div className="font-semibold">View Backend</div>
+                  <div className="text-xs opacity-80">Access database and functions</div>
+                </div>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Platform Statistics */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">Platform Statistics</h2>
+          {statsLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Books</CardTitle>
+                  <BookOpen className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{platformStats?.totalBooks.toLocaleString()}</div>
+                  <p className="text-xs text-muted-foreground mt-1">In library</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{platformStats?.totalUsers.toLocaleString()}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Registered accounts</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Book Views</CardTitle>
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{platformStats?.totalViews.toLocaleString()}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Total engagements</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Reviews</CardTitle>
+                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{platformStats?.totalReviews.toLocaleString()}</div>
+                  <p className="text-xs text-muted-foreground mt-1">User reviews</p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
+
+        {/* Subscription Breakdown */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Subscription Overview</CardTitle>
+            <CardDescription>User tier distribution</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div>
+                  <p className="text-sm text-muted-foreground">Free Tier</p>
+                  <p className="text-2xl font-bold">{subscriptionStats?.free || 0}</p>
+                </div>
+                <Badge variant="secondary">Free</Badge>
+              </div>
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div>
+                  <p className="text-sm text-muted-foreground">Premium Monthly</p>
+                  <p className="text-2xl font-bold">{subscriptionStats?.premium_monthly || 0}</p>
+                </div>
+                <Badge className="bg-gradient-primary text-white"><Crown className="h-3 w-3 mr-1" />Premium</Badge>
+              </div>
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div>
+                  <p className="text-sm text-muted-foreground">Lifetime</p>
+                  <p className="text-2xl font-bold">{subscriptionStats?.lifetime || 0}</p>
+                </div>
+                <Badge className="bg-gradient-primary text-white"><Crown className="h-3 w-3 mr-1" />Lifetime</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Tabs for Activity */}
+        <Tabs defaultValue="activity" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="activity">Recent Activity</TabsTrigger>
+            <TabsTrigger value="reviews">Recent Reviews</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="activity" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Latest Book Views</CardTitle>
+                <CardDescription>Real-time platform engagement</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {recentActivity && recentActivity.length > 0 ? (
+                  <div className="space-y-4">
+                    {recentActivity.map((activity: any) => (
+                      <div key={activity.id} className="flex items-center justify-between border-b pb-3 last:border-0">
+                        <div className="flex-1">
+                          <p className="font-medium">{activity.books?.title}</p>
+                          <p className="text-sm text-muted-foreground">by {activity.books?.author}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Viewed by {activity.profiles?.full_name || activity.profiles?.email || 'Anonymous'}
+                          </p>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {format(new Date(activity.created_at), 'MMM dd, HH:mm')}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-muted-foreground py-8">No recent activity</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="reviews" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Latest Reviews</CardTitle>
+                <CardDescription>Recent user feedback</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {recentReviews && recentReviews.length > 0 ? (
+                  <div className="space-y-4">
+                    {recentReviews.map((review: any) => (
+                      <div key={review.id} className="border-b pb-4 last:border-0">
+                        <div className="flex items-start gap-3 mb-2">
+                          {review.books?.cover_url && (
+                            <img
+                              src={review.books.cover_url}
+                              alt={review.books.title}
+                              className="w-12 h-16 object-cover rounded"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <p className="font-medium">{review.books?.title}</p>
+                            <p className="text-sm text-muted-foreground">{review.books?.author}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="text-red-500">{'❤️'.repeat(review.hearts || 0)}</div>
+                              {review.pen_name && (
+                                <Badge variant="outline" className="text-xs">{review.pen_name}</Badge>
+                              )}
+                            </div>
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {format(new Date(review.timestamp), 'MMM dd')}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground pl-15">{review.review_text}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-muted-foreground py-8">No reviews yet</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
+
+// Regular User Profile Component
+function UserProfile() {
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
 
-  // Fetch user's reviews (no user_id in reviews table, showing all)
+  // Fetch user's reviews (no user_id in reviews table, showing all for now)
   const { data: reviews, isLoading: reviewsLoading } = useQuery({
     queryKey: ['user-reviews', user?.id],
     queryFn: async () => {
@@ -64,19 +377,6 @@ export default function Profile() {
     enabled: !!user,
   });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    navigate('/auth');
-    return null;
-  }
-
   const getTierBadge = () => {
     if (profile?.subscription_tier === 'lifetime') {
       return <Badge className="bg-gradient-primary text-white"><Crown className="h-3 w-3 mr-1" />Lifetime</Badge>;
@@ -113,41 +413,6 @@ export default function Profile() {
             </div>
           </CardHeader>
         </Card>
-
-        {/* Admin Badge */}
-        {isAdmin && (
-          <Card className="mb-8 bg-gradient-primary text-white">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Shield className="h-6 w-6" />
-                <CardTitle>Administrator Access</CardTitle>
-              </div>
-              <CardDescription className="text-white/90">
-                You have full administrative privileges
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button
-                  variant="secondary"
-                  className="w-full justify-start"
-                  onClick={() => navigate('/admin/import')}
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Import Books
-                </Button>
-                <Button
-                  variant="secondary"
-                  className="w-full justify-start"
-                  onClick={() => window.open('https://supabase.com', '_blank')}
-                >
-                  <Database className="h-4 w-4 mr-2" />
-                  View Backend
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -314,4 +579,26 @@ export default function Profile() {
       </div>
     </div>
   );
+}
+
+// Main Profile Component with Conditional Rendering
+export default function Profile() {
+  const { user, loading, isAdmin } = useAuth();
+  const navigate = useNavigate();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    navigate('/auth');
+    return null;
+  }
+
+  // Render admin dashboard or regular user profile
+  return isAdmin ? <AdminDashboard /> : <UserProfile />;
 }
