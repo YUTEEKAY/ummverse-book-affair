@@ -4,21 +4,19 @@ import { Check, Crown, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useState } from 'react';
-
 export function PricingTiers() {
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
-
   const handleSubscribe = async (tier: 'monthly' | 'lifetime') => {
     setLoadingTier(tier);
-    
     try {
-      const { data, error } = await supabase.functions.invoke(
-        'create-lemon-squeezy-checkout',
-        {
-          body: { tier }
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-lemon-squeezy-checkout', {
+        body: {
+          tier
         }
-      );
-      
+      });
       if (error) {
         console.error('Error creating checkout:', error);
         toast.error('Failed to create checkout', {
@@ -26,7 +24,6 @@ export function PricingTiers() {
         });
         return;
       }
-      
       if (data?.url) {
         // Redirect to Lemon Squeezy checkout
         window.location.href = data.url;
@@ -40,11 +37,9 @@ export function PricingTiers() {
       setLoadingTier(null);
     }
   };
-  
-  return (
-    <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto px-4">
+  return <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto px-4">
       {/* Premium Monthly Card */}
-      <Card className="p-6 border-2 border-primary bg-card hover:shadow-lg transition-shadow">
+      <Card className="p-6 border-2 border-primary bg-card hover:shadow-lg transition-shadow bg-[#ee7dc1]">
         <div className="flex items-center gap-2 mb-4">
           <Zap className="w-6 h-6 text-primary" />
           <h3 className="text-2xl font-serif font-bold">Premium Monthly</h3>
@@ -71,11 +66,7 @@ export function PricingTiers() {
             <span>Cancel anytime</span>
           </li>
         </ul>
-        <Button 
-          onClick={() => handleSubscribe('monthly')}
-          className="w-full"
-          disabled={loadingTier !== null}
-        >
+        <Button onClick={() => handleSubscribe('monthly')} className="w-full" disabled={loadingTier !== null}>
           {loadingTier === 'monthly' ? 'Loading...' : 'Subscribe Monthly'}
         </Button>
       </Card>
@@ -111,17 +102,12 @@ export function PricingTiers() {
             <span>Priority support</span>
           </li>
         </ul>
-        <Button 
-          onClick={() => handleSubscribe('lifetime')}
-          className="w-full bg-amber-500 hover:bg-amber-600 text-white"
-          disabled={loadingTier !== null}
-        >
+        <Button onClick={() => handleSubscribe('lifetime')} className="w-full bg-amber-500 hover:bg-amber-600 text-white" disabled={loadingTier !== null}>
           {loadingTier === 'lifetime' ? 'Loading...' : 'Get Lifetime Access'}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-3">
           Save ₦16,000 vs 10 months of Premium
         </p>
       </Card>
-    </div>
-  );
+    </div>;
 }
