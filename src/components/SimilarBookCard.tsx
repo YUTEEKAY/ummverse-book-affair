@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import BookCoverPlaceholder from "@/components/BookCoverPlaceholder";
 import HeatLevelBadge from "@/components/HeatLevelBadge";
-
 interface BookRecommendation {
   id: string;
   title: string;
@@ -14,35 +13,24 @@ interface BookRecommendation {
   heat_level: string | null;
   poeticLine: string;
 }
-
 interface SimilarBookCardProps {
   book: BookRecommendation;
 }
-
-const SimilarBookCard = ({ book }: SimilarBookCardProps) => {
-  return (
-    <Link to={`/book/${book.id}`} className="group block">
-      <motion.div
-        whileHover={{ scale: 1.03 }}
-        transition={{ duration: 0.2 }}
-        className="relative"
-      >
+const SimilarBookCard = ({
+  book
+}: SimilarBookCardProps) => {
+  return <Link to={`/book/${book.id}`} className="group block">
+      <motion.div whileHover={{
+      scale: 1.03
+    }} transition={{
+      duration: 0.2
+    }} className="relative">
         {/* Cover */}
         <div className="aspect-[2/3] rounded-xl overflow-hidden mb-3 shadow-card">
-          {book.cover_url ? (
-            <img 
-              src={book.cover_url}
-              alt={book.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <BookCoverPlaceholder title={book.title} genre={book.genre} mood={book.mood} />
-          )}
-          {book.heat_level && (
-            <div className="absolute top-2 right-2">
+          {book.cover_url ? <img src={book.cover_url} alt={book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <BookCoverPlaceholder title={book.title} genre={book.genre} mood={book.mood} />}
+          {book.heat_level && <div className="absolute top-2 right-2">
               <HeatLevelBadge heatLevel={book.heat_level} size="sm" />
-            </div>
-          )}
+            </div>}
         </div>
         
         {/* Book Info */}
@@ -61,15 +49,10 @@ const SimilarBookCard = ({ book }: SimilarBookCardProps) => {
         </div>
         
         {/* CTA */}
-        <Button 
-          size="sm"
-          className="w-full bg-gradient-to-r from-primary to-primary/80 text-white text-xs hover:shadow-glow transition-all"
-        >
+        <Button size="sm" className="w-full bg-gradient-to-r from-primary to-primary/80 text-xs hover:shadow-glow transition-all text-[#8b0958]">
           Discover 💕
         </Button>
       </motion.div>
-    </Link>
-  );
+    </Link>;
 };
-
 export default SimilarBookCard;
