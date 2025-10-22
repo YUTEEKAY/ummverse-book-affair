@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { Heart, Sparkles, BookOpen, Crown, Zap } from 'lucide-react';
+import { Heart, Sparkles, BookOpen, Crown, Zap, ArrowLeft } from 'lucide-react';
 
 const Premium = () => {
   const { user, loading, profile, subscriptionTier, isLifetime, isPremiumMonthly } = useAuth();
@@ -50,8 +50,17 @@ const Premium = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-blush/10 to-dusty-rose/20 p-4">
-      <Card className="w-full max-w-2xl border-dusty-rose/20 shadow-xl">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blush/10 to-dusty-rose/20 p-4">
+      <div className="container mx-auto max-w-2xl">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/')}
+          className="mb-4 gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Home
+        </Button>
+        <Card className="w-full border-dusty-rose/20 shadow-xl">
         <CardHeader className="text-center space-y-6 pb-8">
           <div className="flex justify-center gap-2">
             <Sparkles className="w-12 h-12 text-primary animate-pulse" />
@@ -126,6 +135,7 @@ const Premium = () => {
           </p>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };

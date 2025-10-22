@@ -1,10 +1,13 @@
 import { PricingTiers } from '@/components/PricingTiers';
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 export default function Pricing() {
   const { profile } = useAuth();
+  const navigate = useNavigate();
   
   // Redirect if user already has premium
   if (profile?.subscription_tier && profile.subscription_tier !== 'free') {
@@ -14,6 +17,14 @@ export default function Pricing() {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="flex-1 container mx-auto py-16">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/')}
+          className="mb-4 gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Home
+        </Button>
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">
             Choose Your Plan

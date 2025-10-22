@@ -44,7 +44,7 @@ export function PricingTiers() {
   return (
     <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto px-4">
       {/* Premium Monthly Card */}
-      <Card className="p-6 border-primary bg-card hover:shadow-lg transition-shadow">
+      <Card className="p-6 border-2 border-primary bg-card hover:shadow-lg transition-shadow">
         <div className="flex items-center gap-2 mb-4">
           <Zap className="w-6 h-6 text-primary" />
           <h3 className="text-2xl font-serif font-bold">Premium Monthly</h3>
@@ -81,7 +81,7 @@ export function PricingTiers() {
       </Card>
       
       {/* Lifetime Card */}
-      <Card className="p-6 border-2 border-amber-500 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-950/30 dark:to-orange-950/30 relative hover:shadow-xl transition-shadow">
+      <Card className="p-6 border-2 border-amber-500 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50 relative hover:shadow-xl transition-shadow">
         <div className="absolute -top-3 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold">
           BEST VALUE
         </div>

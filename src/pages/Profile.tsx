@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Loader2, BookOpen, MessageSquare, Calendar, Crown, Shield, Upload, Database, Users, Eye, TrendingUp } from 'lucide-react';
+import { Loader2, BookOpen, MessageSquare, Calendar, Crown, Shield, Upload, Database, Users, Eye, TrendingUp, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 
@@ -392,6 +392,16 @@ function UserProfile() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Back to Home Button */}
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/')}
+          className="mb-4 gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Home
+        </Button>
+        
         {/* Header Section */}
         <Card className="mb-8">
           <CardHeader>

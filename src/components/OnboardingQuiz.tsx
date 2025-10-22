@@ -83,7 +83,7 @@ const OnboardingQuiz = ({ open, onClose }: OnboardingQuizProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-blush/30 via-cream/30 to-dusty-rose/30 backdrop-blur-lg border-2 border-white/20">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-lg border-2 border-border">
         <button
           onClick={handleSkip}
           className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
