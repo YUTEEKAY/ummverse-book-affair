@@ -37,7 +37,7 @@ const SimilarBookCard = ({
         <h3 className="font-serif font-semibold text-base line-clamp-2 mb-1">
           {book.title}
         </h3>
-        <p className="text-sm text-muted-foreground mb-2">
+        <p className="text-sm text-muted-foreground mb-2 bg-[#c96391] text-[#6a093f]">
           {book.author}
         </p>
         
