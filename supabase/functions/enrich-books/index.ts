@@ -138,33 +138,50 @@ serve(async (req) => {
         const bookData = await bookDataResponse.json();
         console.log(`Fetched data for ${book.title}:`, bookData);
 
+        // Helper function to detect non-English summaries
+        const isEnglishText = (text: string): boolean => {
+          if (!text) return false;
+          const nonEnglishIndicators = [
+            /\bà\b/i, /\bde la\b/i, /\beste\b/i, /\baprès\b/i,
+            /\bétudiant/i, /\buniversité\b/i, /\bloin\b/i,
+            /\bchez\b/i, /\bquand\b/i, /\bsans\b/i
+          ];
+          return !nonEnglishIndicators.some(pattern => pattern.test(text));
+        };
+
         // Prepare updates
         const updates: any = {
-          api_source: bookData.apiSource || 'attempted'
+          api_source: bookData.api_source || 'attempted'
         };
 
         let hasUpdates = false;
 
         // Update cover if found and missing
-        if (bookData.coverUrl && !book.cover_url) {
-          updates.cover_url = bookData.coverUrl;
+        if (bookData.cover_url && (!book.cover_url || book.cover_url === '')) {
+          updates.cover_url = bookData.cover_url;
           hasUpdates = true;
+          console.log(`Adding cover URL for: ${book.title}`);
         }
 
         // Update summary if found and better than existing
         if (bookData.summary) {
+          const hasNonEnglishSummary = book.summary && !isEnglishText(book.summary);
           const shouldUpdateSummary = !book.summary || 
                                       hasGenericSummary || 
+                                      hasNonEnglishSummary ||
                                       bookData.summary.length > (book.summary?.length || 0);
           if (shouldUpdateSummary) {
             updates.summary = bookData.summary;
             hasUpdates = true;
+            if (hasNonEnglishSummary) {
+              console.log(`Replacing non-English summary for: ${book.title}`);
+            }
           }
         }
 
         // Update publication year if missing
-        if (bookData.publicationYear && !book.publication_year) {
-          updates.publication_year = bookData.publicationYear;
+        if (bookData.publication_year && !book.publication_year) {
+          updates.publication_year = bookData.publication_year;
           hasUpdates = true;
         }
 

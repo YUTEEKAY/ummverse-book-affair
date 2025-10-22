@@ -95,6 +95,17 @@ serve(async (req) => {
     const bookData = await bookDataResponse.json();
     console.log('Fetched data:', bookData);
 
+    // Helper function to detect non-English summaries
+    const isEnglishText = (text: string): boolean => {
+      if (!text) return false;
+      const nonEnglishIndicators = [
+        /\bà\b/i, /\bde la\b/i, /\beste\b/i, /\baprès\b/i,
+        /\bétudiant/i, /\buniversité\b/i, /\bloin\b/i,
+        /\bchez\b/i, /\bquand\b/i, /\bsans\b/i
+      ];
+      return !nonEnglishIndicators.some(pattern => pattern.test(text));
+    };
+
     // Prepare updates - always track api_source
     const updates: any = {};
     const fieldsUpdated: string[] = [];
@@ -103,8 +114,8 @@ serve(async (req) => {
     updates.api_source = bookData.api_source || 'attempted';
     fieldsUpdated.push('api_source');
 
-    // Update cover_url if we have a valid one and book doesn't have one (checking for NULL, undefined, or empty string)
-    if (bookData.cover_url && (bookRecord?.cover_url === null || bookRecord?.cover_url === undefined || bookRecord.cover_url === '')) {
+    // Update cover_url if we have a valid one and book doesn't have one
+    if (bookData.cover_url && (!bookRecord?.cover_url || bookRecord.cover_url === '')) {
       updates.cover_url = bookData.cover_url;
       fieldsUpdated.push('cover_url');
       console.log(`Adding cover URL: ${bookData.cover_url}`);
@@ -112,11 +123,17 @@ serve(async (req) => {
 
     if (bookData.summary) {
       const hasGenericSummary = bookRecord?.summary?.includes('A romantic story full of emotions');
-      const shouldUpdate = !bookRecord?.summary || hasGenericSummary || 
+      const hasNonEnglishSummary = bookRecord?.summary && !isEnglishText(bookRecord.summary);
+      const shouldUpdate = !bookRecord?.summary || 
+                          hasGenericSummary || 
+                          hasNonEnglishSummary ||
                           bookData.summary.length > (bookRecord?.summary?.length || 0);
       if (shouldUpdate) {
         updates.summary = bookData.summary;
         fieldsUpdated.push('summary');
+        if (hasNonEnglishSummary) {
+          console.log(`Replacing non-English summary for: ${bookTitle}`);
+        }
       }
     }
 
