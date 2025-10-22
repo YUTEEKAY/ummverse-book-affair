@@ -11,7 +11,7 @@ const PremiumModal = ({
 }: PremiumModalProps) => {
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl border-dusty-rose/20 max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="text-center space-y-4">
+        <DialogHeader className="text-center space-y-4 bg-[#e7a7e1]">
           <div className="flex justify-center gap-2">
             <Heart className="w-12 h-12 text-dusty-rose fill-dusty-rose" />
             <Sparkles className="w-10 h-10 text-primary animate-pulse" />
