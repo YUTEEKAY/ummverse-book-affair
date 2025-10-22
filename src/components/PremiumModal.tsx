@@ -1,21 +1,15 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Heart, Sparkles } from 'lucide-react';
 import { PricingTiers } from './PricingTiers';
-
 interface PremiumModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-const PremiumModal = ({ open, onOpenChange }: PremiumModalProps) => {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+const PremiumModal = ({
+  open,
+  onOpenChange
+}: PremiumModalProps) => {
+  return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl border-dusty-rose/20 max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center space-y-4">
           <div className="flex justify-center gap-2">
@@ -30,7 +24,7 @@ const PremiumModal = ({ open, onOpenChange }: PremiumModalProps) => {
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-6">
+        <div className="py-6 bg-[#c597bc]">
           <PricingTiers />
         </div>
 
@@ -38,8 +32,6 @@ const PremiumModal = ({ open, onOpenChange }: PremiumModalProps) => {
           Your free views will reset in 7 days
         </p>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
 export default PremiumModal;
