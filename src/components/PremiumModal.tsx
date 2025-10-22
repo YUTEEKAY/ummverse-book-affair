@@ -24,7 +24,7 @@ const PremiumModal = ({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-6 bg-[#c597bc]">
+        <div className="py-6 bg-[#c394ba]">
           <PricingTiers />
         </div>
 
