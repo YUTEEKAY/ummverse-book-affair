@@ -895,7 +895,7 @@ export default function AdminImport() {
               </p>
             </div>
 
-            <Button onClick={handleRecategorizeTropes} disabled={recategorizingTropes || bookStats.total === 0} size="lg" className="w-full bg-gradient-romance text-white">
+            <Button onClick={handleRecategorizeTropes} disabled={recategorizingTropes || bookStats.total === 0} size="lg" className="w-full bg-gradient-romance text-pink-800">
               <Sparkles className={`h-4 w-4 mr-2 ${recategorizingTropes ? 'animate-spin' : ''}`} />
               {recategorizingTropes ? 'Analyzing...' : `Analyze All Books (${bookStats.total} books)`}
             </Button>
