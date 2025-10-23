@@ -219,14 +219,14 @@ function AdminDashboard() {
                   <p className="text-sm text-muted-foreground">Premium Monthly</p>
                   <p className="text-2xl font-bold">{subscriptionStats?.premium_monthly || 0}</p>
                 </div>
-                <Badge className="bg-gradient-primary text-white"><Crown className="h-3 w-3 mr-1" />Premium</Badge>
+                <Badge className="bg-gradient-primary text-white bg-[#dd3e9d]"><Crown className="h-3 w-3 mr-1" />Premium</Badge>
               </div>
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
                   <p className="text-sm text-muted-foreground">Lifetime</p>
                   <p className="text-2xl font-bold">{subscriptionStats?.lifetime || 0}</p>
                 </div>
-                <Badge className="bg-gradient-primary text-white"><Crown className="h-3 w-3 mr-1" />Lifetime</Badge>
+                <Badge className="bg-gradient-primary text-white bg-[#de419f]"><Crown className="h-3 w-3 mr-1" />Lifetime</Badge>
               </div>
             </div>
           </CardContent>
