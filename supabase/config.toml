@@ -32,3 +32,6 @@ verify_jwt = true
 
 [functions.recategorize-book-moods]
 verify_jwt = false
+
+[functions.recategorize-book-tropes]
+verify_jwt = false

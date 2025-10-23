@@ -46,6 +46,10 @@ export default function AdminImport() {
   const [recategorizing, setRecategorizing] = useState(false);
   const [recategorizeStats, setRecategorizeStats] = useState<any>(null);
 
+  // Trope recategorization states
+  const [recategorizingTropes, setRecategorizingTropes] = useState(false);
+  const [recategorizeTropeStats, setRecategorizeTropeStats] = useState<any>(null);
+
   // Load book stats on mount
   useEffect(() => {
     loadBookStats();
@@ -527,6 +531,38 @@ export default function AdminImport() {
       setRecategorizing(false);
     }
   };
+
+  const handleRecategorizeTropes = async () => {
+    setRecategorizingTropes(true);
+    setRecategorizeTropeStats(null);
+    try {
+      toast.loading('Using AI to analyze summaries and detect tropes...', {
+        id: 'recategorize-tropes'
+      });
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('recategorize-book-tropes', {
+        body: {}
+      });
+      if (error) throw error;
+      setRecategorizeTropeStats(data);
+      await loadBookStats();
+      toast.success('📚 Tropes recategorized successfully!', {
+        id: 'recategorize-tropes',
+        description: `${data.updated} books updated with AI-detected tropes`,
+        duration: 5000
+      });
+    } catch (error: any) {
+      console.error('Trope recategorization error:', error);
+      toast.error('Trope recategorization failed', {
+        id: 'recategorize-tropes'
+      });
+    } finally {
+      setRecategorizingTropes(false);
+    }
+  };
+
   return <div className="min-h-screen bg-gradient-subtle p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
@@ -545,7 +581,7 @@ export default function AdminImport() {
               Upload CSV File
             </CardTitle>
             <CardDescription>
-              Select a CSV file with columns: id, title, author, genre, trope, mood, heat_level, summary, publisher, publish_year, isbn, language, page_count, rating, description, quote_snippet, source_api
+              Required fields: title, author, summary (50+ characters), heat_level, mood. Optional: genre, trope, publisher, etc.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -825,6 +861,73 @@ export default function AdminImport() {
                     <div className="space-y-1 text-xs">
                       {Object.entries(recategorizeStats.moodDistribution).map(([mood, count]: [string, any]) => <div key={mood} className="flex justify-between">
                           <span>{mood}</span>
+                          <span className="font-semibold">{count} books</span>
+                        </div>)}
+                    </div>
+                  </div>}
+              </div>}
+          </CardContent>
+        </Card>
+
+        {/* Trope Recategorization Section */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5" />
+              AI Trope Detection
+            </CardTitle>
+            <CardDescription>
+              Use AI to analyze book summaries and automatically detect romance tropes
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-secondary/20 p-4 rounded-lg space-y-2">
+              <h3 className="font-semibold text-sm">AI-Detected Tropes:</h3>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                <li>• Enemies to Lovers</li>
+                <li>• Friends to Lovers</li>
+                <li>• Second Chance</li>
+                <li>• Fake Relationship</li>
+                <li>• Forced Proximity</li>
+                <li>• Grumpy/Sunshine</li>
+                <li>• Forbidden Love</li>
+              </ul>
+              <p className="text-xs text-muted-foreground mt-2">
+                ⚠️ This process analyzes summaries using AI and may take several minutes depending on the number of books.
+              </p>
+            </div>
+
+            <Button 
+              onClick={handleRecategorizeTropes} 
+              disabled={recategorizingTropes || bookStats.total === 0} 
+              size="lg" 
+              className="w-full bg-gradient-romance text-white"
+            >
+              <Sparkles className={`h-4 w-4 mr-2 ${recategorizingTropes ? 'animate-spin' : ''}`} />
+              {recategorizingTropes ? 'Analyzing...' : `Analyze All Books (${bookStats.total} books)`}
+            </Button>
+
+            {recategorizeTropeStats && <div className="bg-secondary/20 p-4 rounded-lg space-y-3">
+                <h3 className="font-semibold">Trope Detection Results:</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <div className="text-2xl font-bold text-green-600">{recategorizeTropeStats.updated}</div>
+                    <div className="text-xs text-muted-foreground">Updated</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{recategorizeTropeStats.unchanged}</div>
+                    <div className="text-xs text-muted-foreground">Unchanged</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-yellow-600">{recategorizeTropeStats.noDetection}</div>
+                    <div className="text-xs text-muted-foreground">No Detection</div>
+                  </div>
+                </div>
+                {recategorizeTropeStats.tropeDistribution && <div>
+                    <h4 className="text-sm font-semibold mb-2">Trope Distribution:</h4>
+                    <div className="space-y-1 text-xs">
+                      {Object.entries(recategorizeTropeStats.tropeDistribution).map(([trope, count]: [string, any]) => <div key={trope} className="flex justify-between">
+                          <span>{trope}</span>
                           <span className="font-semibold">{count} books</span>
                         </div>)}
                     </div>

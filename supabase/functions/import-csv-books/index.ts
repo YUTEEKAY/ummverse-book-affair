@@ -9,13 +9,13 @@ const corsHeaders = {
 
 interface CSVBook {
   id?: string;
-  title: string;
-  author: string;
-  genre?: string;
-  trope?: string;
-  mood?: string;
-  heat_level?: string;
-  summary?: string;
+  title: string;          // REQUIRED
+  author: string;         // REQUIRED
+  summary?: string;       // REQUIRED for AI trope detection
+  heat_level?: string;    // REQUIRED
+  mood?: string;          // REQUIRED
+  genre?: string;         // Optional
+  trope?: string;         // Optional (will be AI-detected)
   publisher?: string;
   publish_year?: string;
   isbn?: string;
@@ -81,6 +81,18 @@ serve(async (req) => {
 
       for (const book of batch) {
         try {
+          // Validate required fields
+          if (!book.title || !book.author) {
+            errors.push(`Missing title or author for row`);
+            continue;
+          }
+          
+          const rawSummary = book.description || book.summary || book.synopsis || '';
+          if (!rawSummary || rawSummary.length < 50) {
+            errors.push(`${book.title}: Summary too short or missing (need at least 50 characters for AI analysis)`);
+            continue;
+          }
+
           // Clean and validate data
           const cleanedBook = await cleanAndValidateBook(book, lovableApiKey);
           
@@ -190,9 +202,17 @@ async function cleanAndValidateBook(
     return null;
   }
 
+  // Use AI to detect trope from summary
+  const detectedTrope = await detectTropeFromSummary(
+    cleanTitle,
+    cleanSummary || '',
+    lovableApiKey
+  );
+
   // Normalize fields only if they exist
   const normalizedGenre = book.genre ? normalizeGenre(book.genre) : null;
-  const normalizedTrope = book.trope ? normalizeTrope(book.trope) : null;
+  const csvTrope = book.trope ? normalizeTrope(book.trope) : null;
+  const finalTrope = detectedTrope || csvTrope; // Prefer AI detection
   const normalizedMood = book.mood ? normalizeMood(book.mood) : null;
   const normalizedHeatLevel = book.heat_level ? normalizeHeatLevel(book.heat_level) : null;
 
@@ -215,7 +235,7 @@ async function cleanAndValidateBook(
     title: cleanTitle,
     author: book.author.trim(),
     genre: normalizedGenre,
-    trope: normalizedTrope,
+    trope: finalTrope,
     mood: normalizedMood,
     heat_level: normalizedHeatLevel,
     summary: cleanSummary,
@@ -225,6 +245,67 @@ async function cleanAndValidateBook(
     rating: rating,
     import_source: importSource
   };
+}
+
+async function detectTropeFromSummary(
+  title: string,
+  summary: string,
+  lovableApiKey: string
+): Promise<string | null> {
+  if (!summary || summary.length < 50) return null;
+  
+  try {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${lovableApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a romance book expert. Analyze the summary and identify the PRIMARY trope. Respond with ONLY ONE of these exact values: "Enemies to Lovers", "Friends to Lovers", "Second Chance", "Fake Relationship", "Forced Proximity", "Grumpy/Sunshine", "Forbidden Love", or "Unknown" if none fit clearly.'
+          },
+          {
+            role: 'user',
+            content: `Book: ${title}\n\nSummary: ${summary.slice(0, 500)}\n\nWhat is the primary romance trope?`
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      console.error('AI trope detection error:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    const trope = data.choices?.[0]?.message?.content?.trim();
+    
+    // Validate response is one of our known tropes
+    const validTropes = [
+      'Enemies to Lovers',
+      'Friends to Lovers',
+      'Second Chance',
+      'Fake Relationship',
+      'Forced Proximity',
+      'Grumpy/Sunshine',
+      'Forbidden Love'
+    ];
+    
+    if (validTropes.includes(trope)) {
+      console.log(`✅ AI detected trope for "${title}": ${trope}`);
+      return trope;
+    }
+    
+    console.log(`⚠️ AI returned unknown trope for "${title}": ${trope}`);
+    return null;
+  } catch (error) {
+    console.error('Trope detection error:', error);
+    return null;
+  }
 }
 
 async function validateRomanceNovel(

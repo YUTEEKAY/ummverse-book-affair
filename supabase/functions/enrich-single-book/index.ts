@@ -95,6 +95,31 @@ serve(async (req) => {
     const bookData = await bookDataResponse.json();
     console.log('Fetched data:', bookData);
 
+    // Validate the fetched book matches the requested book
+    if (!validateBookMatch(
+      bookTitle,
+      bookRecord.author,
+      bookData.title,
+      bookData.author
+    )) {
+      console.log(`⚠️ Skipping enrichment - book mismatch detected`);
+      
+      await supabase.from('enrichment_logs').insert({
+        book_id: bookId,
+        status: 'skipped',
+        data_source: 'validation_failed',
+        error_message: 'Title/author mismatch - wrong book data returned by API'
+      });
+      
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'Book data validation failed - API returned wrong book'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Helper function to detect non-English summaries
     const isEnglishText = (text: string): boolean => {
       if (!text) return false;
@@ -224,3 +249,85 @@ serve(async (req) => {
     );
   }
 });
+
+// Validation helper functions
+function validateBookMatch(
+  requestedTitle: string,
+  requestedAuthor: string,
+  fetchedTitle: string | null,
+  fetchedAuthor: string | null
+): boolean {
+  if (!fetchedTitle) return false;
+  
+  // Normalize titles for comparison (remove series info, punctuation)
+  const normalizeForComparison = (str: string) => {
+    return str
+      .toLowerCase()
+      .replace(/[^\w\s]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+  
+  const reqTitle = normalizeForComparison(requestedTitle);
+  const fetTitle = normalizeForComparison(fetchedTitle);
+  
+  // Title must have at least 70% similarity (or exact match)
+  const titleMatch = fetTitle.includes(reqTitle) || 
+                    reqTitle.includes(fetTitle) ||
+                    similarityScore(reqTitle, fetTitle) > 0.7;
+  
+  if (!titleMatch) {
+    console.log(`❌ Title mismatch: "${requestedTitle}" vs "${fetchedTitle}"`);
+    return false;
+  }
+  
+  // Author check (if provided by API)
+  if (fetchedAuthor && requestedAuthor) {
+    const reqAuthor = normalizeForComparison(requestedAuthor);
+    const fetAuthor = normalizeForComparison(fetchedAuthor);
+    
+    const authorMatch = fetAuthor.includes(reqAuthor) || 
+                       reqAuthor.includes(fetAuthor) ||
+                       similarityScore(reqAuthor, fetAuthor) > 0.7;
+    
+    if (!authorMatch) {
+      console.log(`⚠️ Author mismatch: "${requestedAuthor}" vs "${fetchedAuthor}"`);
+      // Still allow if title is exact match (sometimes author names vary)
+      return reqTitle === fetTitle;
+    }
+  }
+  
+  return true;
+}
+
+function similarityScore(str1: string, str2: string): number {
+  const longer = str1.length > str2.length ? str1 : str2;
+  const shorter = str1.length > str2.length ? str2 : str1;
+  
+  if (longer.length === 0) return 1.0;
+  
+  const editDistance = levenshteinDistance(longer, shorter);
+  return (longer.length - editDistance) / longer.length;
+}
+
+function levenshteinDistance(str1: string, str2: string): number {
+  const matrix = Array(str2.length + 1).fill(null).map(() => 
+    Array(str1.length + 1).fill(null)
+  );
+  
+  for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
+  for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
+  
+  for (let j = 1; j <= str2.length; j++) {
+    for (let i = 1; i <= str1.length; i++) {
+      const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
+      matrix[j][i] = Math.min(
+        matrix[j][i - 1] + 1,
+        matrix[j - 1][i] + 1,
+        matrix[j - 1][i - 1] + indicator
+      );
+    }
+  }
+  
+  return matrix[str2.length][str1.length];
+}
