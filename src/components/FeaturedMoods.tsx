@@ -15,16 +15,21 @@ interface Mood {
 }
 
 const moodGradients: Record<string, string> = {
-  warm: "bg-gradient-to-br from-warm-peach via-blush to-dusty-rose",
-  hot: "bg-gradient-to-br from-red-400 via-orange-400 to-yellow-400",
-  mystical: "bg-gradient-to-br from-purple-400 via-blue-400 to-indigo-400",
-  default: "bg-gradient-romance",
+  hot: "bg-gradient-to-br from-red-500 via-rose-500 to-pink-500",
+  mystical: "bg-gradient-to-br from-purple-600 via-indigo-500 to-blue-500",
+  warm: "bg-gradient-to-br from-amber-400 via-orange-300 to-yellow-300",
+  dark: "bg-gradient-to-br from-slate-800 via-purple-900 to-black",
+  soft: "bg-gradient-to-br from-pink-400 via-rose-300 to-purple-300",
+  bright: "bg-gradient-to-br from-yellow-400 via-lime-400 to-green-400",
+  regal: "bg-gradient-to-br from-purple-700 via-fuchsia-600 to-pink-600",
+  default: "bg-gradient-to-br from-rose-400 via-pink-400 to-purple-400",
 };
 
 const featuredMoodNames = [
   "Spicy & Steamy",
   "Magical & Enchanting",
-  "Cozy & Comforting"
+  "Cozy & Comforting",
+  "Dark & Intense"
 ];
 
 const FeaturedMoods = () => {
@@ -75,7 +80,7 @@ const FeaturedMoods = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
         >
           {moods.map((mood) => {
             const gradientClass = moodGradients[mood.color_theme || ""] || moodGradients.default;

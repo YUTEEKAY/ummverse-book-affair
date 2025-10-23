@@ -13,13 +13,15 @@ interface Trope {
 }
 
 const tropeGradients: Record<string, string> = {
-  warm: "bg-gradient-to-br from-warm-peach via-blush to-dusty-rose",
-  hot: "bg-gradient-to-br from-red-400 via-orange-400 to-yellow-400",
-  mystical: "bg-gradient-to-br from-purple-400 via-blue-400 to-indigo-400",
-  soft: "bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300",
-  bright: "bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-300",
-  dark: "bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900",
-  default: "bg-gradient-romance",
+  hot: "bg-gradient-to-br from-orange-500 via-red-600 to-rose-700",
+  warm: "bg-gradient-to-br from-orange-300 via-amber-300 to-yellow-300",
+  mystical: "bg-gradient-to-br from-indigo-600 via-violet-500 to-fuchsia-500",
+  soft: "bg-gradient-to-br from-sky-300 via-blue-300 to-indigo-300",
+  bright: "bg-gradient-to-br from-cyan-400 via-teal-400 to-emerald-400",
+  dark: "bg-gradient-to-br from-gray-800 via-slate-900 to-zinc-900",
+  contemporary: "bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-500",
+  regal: "bg-gradient-to-br from-violet-600 via-purple-500 to-indigo-600",
+  default: "bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500",
 };
 
 const FeaturedTropes = () => {
