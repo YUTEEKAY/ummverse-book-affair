@@ -531,7 +531,6 @@ export default function AdminImport() {
       setRecategorizing(false);
     }
   };
-
   const handleRecategorizeTropes = async () => {
     setRecategorizingTropes(true);
     setRecategorizeTropeStats(null);
@@ -562,7 +561,6 @@ export default function AdminImport() {
       setRecategorizingTropes(false);
     }
   };
-
   return <div className="min-h-screen bg-gradient-subtle p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
@@ -741,7 +739,7 @@ export default function AdminImport() {
 
             {/* Action Buttons */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <Button onClick={() => handleEnrichBooks(false)} disabled={enriching} size="lg" className="bg-gradient-romance text-white">
+              <Button onClick={() => handleEnrichBooks(false)} disabled={enriching} size="lg" className="bg-gradient-romance text-zinc-950">
                 <RefreshCw className={`h-4 w-4 mr-2 ${enriching ? 'animate-spin' : ''}`} />
                 Enrich Missing Data
               </Button>
@@ -897,12 +895,7 @@ export default function AdminImport() {
               </p>
             </div>
 
-            <Button 
-              onClick={handleRecategorizeTropes} 
-              disabled={recategorizingTropes || bookStats.total === 0} 
-              size="lg" 
-              className="w-full bg-gradient-romance text-white"
-            >
+            <Button onClick={handleRecategorizeTropes} disabled={recategorizingTropes || bookStats.total === 0} size="lg" className="w-full bg-gradient-romance text-white">
               <Sparkles className={`h-4 w-4 mr-2 ${recategorizingTropes ? 'animate-spin' : ''}`} />
               {recategorizingTropes ? 'Analyzing...' : `Analyze All Books (${bookStats.total} books)`}
             </Button>
