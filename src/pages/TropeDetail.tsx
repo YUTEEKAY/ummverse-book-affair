@@ -175,6 +175,9 @@ const TropeDetail = () => {
           />
         </div>
 
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/20" />
+
         <div className="container mx-auto max-w-6xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -190,7 +193,8 @@ const TropeDetail = () => {
                 navigate("/");
               }}
               variant="ghost"
-              className={`${themeStyle.textColor} hover:bg-white/20 mb-8 relative z-20`}
+              className="text-white hover:bg-white/20 mb-8 relative z-20"
+              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Home
@@ -201,7 +205,8 @@ const TropeDetail = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className={`text-5xl md:text-7xl font-serif font-bold ${themeStyle.textColor} mb-4`}
+            className="text-5xl md:text-7xl font-serif font-bold text-white mb-4"
+            style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
           >
             {trope.name}
           </motion.h1>
@@ -211,7 +216,8 @@ const TropeDetail = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className={`text-xl md:text-2xl ${themeStyle.accentColor} font-serif italic max-w-2xl`}
+              className="text-xl md:text-2xl text-white/90 font-serif italic max-w-2xl"
+              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
             >
               {trope.description}
             </motion.p>

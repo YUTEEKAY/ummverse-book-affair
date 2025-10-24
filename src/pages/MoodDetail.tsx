@@ -165,9 +165,12 @@ const MoodDetail = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className={`bg-gradient-to-br ${gradientClass} py-20 px-6 relative`}
+        className={`bg-gradient-to-br ${gradientClass} py-20 px-6 relative overflow-hidden`}
       >
-        <div className="max-w-6xl mx-auto">
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/20" />
+        
+        <div className="max-w-6xl mx-auto relative z-10">
           <Button
             type="button"
             variant="ghost"
@@ -178,6 +181,7 @@ const MoodDetail = () => {
               navigate("/");
             }}
             className="mb-8 text-white hover:bg-white/20 relative z-20"
+            style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
@@ -187,6 +191,7 @@ const MoodDetail = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="text-5xl md:text-6xl font-serif font-bold text-white mb-4"
+            style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
           >
             {mood.name}
           </motion.h1>
@@ -196,6 +201,7 @@ const MoodDetail = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="text-xl text-white/90 italic"
+              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
             >
               {mood.tagline}
             </motion.p>

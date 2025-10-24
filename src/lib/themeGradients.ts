@@ -8,42 +8,42 @@ export const themeGradients: Record<string, ThemeStyle> = {
   // Dark Romance – burgundy tones
   'dark romance': {
     gradient: "from-burgundy via-red-900/80 to-gray-900/90",
-    textColor: "text-gray-100",
-    accentColor: "text-red-400"
+    textColor: "text-white",
+    accentColor: "text-red-200"
   },
   
   // Fantasy Romance – lavender and mystical
   'fantasy romance': {
     gradient: "from-lavender via-purple-400/70 to-indigo-500/70",
     textColor: "text-white",
-    accentColor: "text-lavender"
+    accentColor: "text-purple-100"
   },
   
   // Contemporary Romance – pastel blue
   'contemporary romance': {
     gradient: "from-pastel-blue via-blue-300/60 to-cyan-200/50",
-    textColor: "text-gray-800",
-    accentColor: "text-blue-600"
+    textColor: "text-white",
+    accentColor: "text-blue-100"
   },
   
   // Historical Romance – vintage gold + parchment
   'historical romance': {
     gradient: "from-vintage-gold via-amber-200/70 to-stone-200/60",
-    textColor: "text-amber-900",
-    accentColor: "text-vintage-gold"
+    textColor: "text-white",
+    accentColor: "text-amber-100"
   },
   
   // Generic mappings
   historical: {
     gradient: "from-vintage-gold via-amber-200/70 to-stone-200/60",
-    textColor: "text-amber-900",
-    accentColor: "text-vintage-gold"
+    textColor: "text-white",
+    accentColor: "text-amber-100"
   },
   
   contemporary: {
     gradient: "from-pastel-blue via-blue-300/60 to-cyan-200/50",
-    textColor: "text-gray-800",
-    accentColor: "text-blue-600"
+    textColor: "text-white",
+    accentColor: "text-blue-100"
   },
   
   fantasy: {
@@ -54,20 +54,26 @@ export const themeGradients: Record<string, ThemeStyle> = {
   
   mystical: {
     gradient: "from-purple-400/70 via-blue-400/60 to-indigo-400/70",
-    textColor: "text-blue-50",
-    accentColor: "text-purple-200"
+    textColor: "text-white",
+    accentColor: "text-purple-100"
   },
   
   crime: {
     gradient: "from-gray-800/90 via-red-900/80 to-gray-900/90",
-    textColor: "text-gray-100",
-    accentColor: "text-red-400"
+    textColor: "text-white",
+    accentColor: "text-red-200"
   },
   
   regal: {
     gradient: "from-emerald-600/70 via-yellow-500/60 to-amber-400/70",
-    textColor: "text-emerald-50",
-    accentColor: "text-yellow-200"
+    textColor: "text-white",
+    accentColor: "text-yellow-100"
+  },
+  
+  soft: {
+    gradient: "from-sky-300 via-blue-300 to-indigo-300",
+    textColor: "text-white",
+    accentColor: "text-sky-100"
   },
   
   warm: {
