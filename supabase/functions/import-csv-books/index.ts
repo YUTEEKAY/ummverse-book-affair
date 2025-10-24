@@ -209,12 +209,20 @@ async function cleanAndValidateBook(
     lovableApiKey
   );
 
+  // Use AI to detect heat level from summary if not provided
+  const detectedHeatLevel = !book.heat_level ? await detectHeatLevelFromSummary(
+    cleanTitle,
+    cleanSummary || '',
+    lovableApiKey
+  ) : null;
+
   // Normalize fields only if they exist
   const normalizedGenre = book.genre ? normalizeGenre(book.genre) : null;
   const csvTrope = book.trope ? normalizeTrope(book.trope) : null;
   const finalTrope = detectedTrope || csvTrope; // Prefer AI detection
   const normalizedMood = book.mood ? normalizeMood(book.mood) : null;
-  const normalizedHeatLevel = book.heat_level ? normalizeHeatLevel(book.heat_level) : null;
+  const csvHeatLevel = book.heat_level ? normalizeHeatLevel(book.heat_level) : null;
+  const finalHeatLevel = detectedHeatLevel || csvHeatLevel; // Prefer AI detection
 
   // Parse publication year - support multiple field names
   const yearString = book.publish_year || book.PublishYear || book['release year'];
@@ -237,7 +245,7 @@ async function cleanAndValidateBook(
     genre: normalizedGenre,
     trope: finalTrope,
     mood: normalizedMood,
-    heat_level: normalizedHeatLevel,
+    heat_level: finalHeatLevel,
     summary: cleanSummary,
     publisher: (book.publisher || book.Publisher)?.trim(),
     publication_year: publicationYear,
@@ -252,9 +260,13 @@ async function detectTropeFromSummary(
   summary: string,
   lovableApiKey: string
 ): Promise<string | null> {
-  if (!summary || summary.length < 50) return null;
+  if (!summary || summary.length < 50) {
+    console.log(`⚠️ Summary too short for trope detection: "${title}"`);
+    return null;
+  }
   
   try {
+    console.log(`🔍 Detecting trope for: "${title}"`);
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -272,12 +284,14 @@ async function detectTropeFromSummary(
             role: 'user',
             content: `Book: ${title}\n\nSummary: ${summary.slice(0, 500)}\n\nWhat is the primary romance trope?`
           }
-        ]
+        ],
+        max_completion_tokens: 50
       })
     });
 
     if (!response.ok) {
-      console.error('AI trope detection error:', response.status);
+      const errorText = await response.text();
+      console.error(`❌ AI trope detection error for "${title}":`, response.status, errorText);
       return null;
     }
 
@@ -300,11 +314,70 @@ async function detectTropeFromSummary(
       return trope;
     }
     
-    console.log(`⚠️ AI returned unknown trope for "${title}": ${trope}`);
+    console.log(`⚠️ AI returned unknown trope for "${title}": "${trope}"`);
     return null;
   } catch (error) {
-    console.error('Trope detection error:', error);
+    console.error(`❌ Trope detection error for "${title}":`, error);
     return null;
+  }
+}
+
+async function detectHeatLevelFromSummary(
+  title: string,
+  summary: string,
+  lovableApiKey: string
+): Promise<string | null> {
+  if (!summary || summary.length < 50) {
+    console.log(`⚠️ Summary too short for heat level detection: "${title}"`);
+    return null;
+  }
+  
+  try {
+    console.log(`🔍 Detecting heat level for: "${title}"`);
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${lovableApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a romance book expert. Analyze the summary and determine the heat/spice level. Respond with ONLY ONE of these exact values:\n- "sweet" for clean romance with no explicit content\n- "warm" for mild romance with some kissing/tension\n- "hot" for steamy romance with explicit scenes\n- "scorching" for very explicit/erotic romance'
+          },
+          {
+            role: 'user',
+            content: `Book: ${title}\n\nSummary: ${summary.slice(0, 500)}\n\nWhat is the heat/spice level?`
+          }
+        ],
+        max_completion_tokens: 20
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ AI heat level detection error for "${title}":`, response.status, errorText);
+      return null;
+    }
+
+    const data = await response.json();
+    const heatLevel = data.choices?.[0]?.message?.content?.trim().toLowerCase();
+    
+    // Validate response is one of our known heat levels
+    const validHeatLevels = ['sweet', 'warm', 'hot', 'scorching'];
+    
+    if (validHeatLevels.includes(heatLevel)) {
+      console.log(`✅ AI detected heat level for "${title}": ${heatLevel}`);
+      return heatLevel;
+    }
+    
+    console.log(`⚠️ AI returned unknown heat level for "${title}": "${heatLevel}", defaulting to warm`);
+    return 'warm'; // Default fallback
+  } catch (error) {
+    console.error(`❌ Heat level detection error for "${title}":`, error);
+    return 'warm'; // Default fallback on error
   }
 }
 
@@ -354,7 +427,7 @@ async function validateRomanceNovel(
             content: `Is this a romance novel?\n\nTitle: ${title}\nAuthor: ${author}${genre ? `\nGenre: ${genre}` : ''}${summary ? `\nSummary: ${summary.slice(0, 500)}` : ''}`
           }
         ],
-        max_tokens: 10
+        max_completion_tokens: 10
       })
     });
 
