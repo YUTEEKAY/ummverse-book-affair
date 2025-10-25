@@ -36,8 +36,20 @@ serve(async (req) => {
   }
 
   try {
+    // Validate category input
     const { category } = await req.json();
-    console.log('Getting recommendations for category:', category);
+    
+    if (!category || typeof category !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid category parameter' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Sanitize category to prevent injection
+    const sanitizedCategory = category.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+    
+    console.log('Getting recommendations for category:', sanitizedCategory);
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -47,7 +59,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Build database query
-    const filters = categoryFilters[category] || {};
+    const filters = categoryFilters[sanitizedCategory] || {};
     let query = supabase.from('books').select('*');
 
     if (filters.trope) {
@@ -75,7 +87,7 @@ serve(async (req) => {
 
     // Fetch from external APIs if needed
     if (allBooks.length < 3) {
-      const keyword = searchKeywords[category];
+      const keyword = searchKeywords[sanitizedCategory];
       const needed = 6 - allBooks.length;
       
       try {

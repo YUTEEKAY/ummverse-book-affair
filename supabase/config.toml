@@ -1,19 +1,19 @@
 project_id = "spwlnjuqephrodvymixr"
 
 [functions.submit-review]
-verify_jwt = false
+verify_jwt = true
 
 [functions.fetch-book-data]
 verify_jwt = false
 
 [functions.enrich-books]
-verify_jwt = false
+verify_jwt = true
 
 [functions.enrich-single-book]
-verify_jwt = false
+verify_jwt = true
 
 [functions.batch-enrich-books]
-verify_jwt = false
+verify_jwt = true
 
 [functions.get-recommendations]
 verify_jwt = false
@@ -22,7 +22,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.import-csv-books]
-verify_jwt = false
+verify_jwt = true
 
 [functions.handle-lemon-squeezy-webhook]
 verify_jwt = false
@@ -31,7 +31,7 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.recategorize-book-moods]
-verify_jwt = false
+verify_jwt = true
 
 [functions.recategorize-book-tropes]
-verify_jwt = false
+verify_jwt = true

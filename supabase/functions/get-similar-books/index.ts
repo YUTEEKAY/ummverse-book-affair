@@ -15,6 +15,24 @@ serve(async (req) => {
   try {
     const { contextType, contextId, currentBookData, limit = 4 } = await req.json();
     
+    // Validate inputs
+    if (!contextType || !['book', 'genre', 'mood'].includes(contextType)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid context type' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!contextId || (typeof contextId !== 'string' && typeof contextId !== 'number')) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid context ID' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate and sanitize limit
+    const sanitizedLimit = Math.min(Math.max(parseInt(limit) || 4, 1), 20);
+    
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
@@ -32,19 +50,19 @@ serve(async (req) => {
           .select('*')
           .ilike('trope', `%${currentBookData.trope}%`)
           .neq('id', contextId)
-          .limit(limit);
+          .limit(sanitizedLimit);
         if (data && data.length > 0) recommendations.push(...data);
       }
 
       // Priority 2: Shared mood + heat level
-      if (recommendations.length < limit && currentBookData.mood && currentBookData.heat_level) {
+      if (recommendations.length < sanitizedLimit && currentBookData.mood && currentBookData.heat_level) {
         const { data } = await supabase
           .from('books')
           .select('*')
           .ilike('mood', `%${currentBookData.mood}%`)
           .eq('heat_level', currentBookData.heat_level)
           .neq('id', contextId)
-          .limit(limit - recommendations.length);
+          .limit(sanitizedLimit - recommendations.length);
         if (data) {
           const filtered = data.filter(b => !recommendations.find(r => r.id === b.id));
           recommendations.push(...filtered);
@@ -52,13 +70,13 @@ serve(async (req) => {
       }
 
       // Priority 3: Same genre
-      if (recommendations.length < limit && currentBookData.genre) {
+      if (recommendations.length < sanitizedLimit && currentBookData.genre) {
         const { data } = await supabase
           .from('books')
           .select('*')
           .eq('genre', currentBookData.genre)
           .neq('id', contextId)
-          .limit(limit - recommendations.length);
+          .limit(sanitizedLimit - recommendations.length);
         if (data) {
           const filtered = data.filter(b => !recommendations.find(r => r.id === b.id));
           recommendations.push(...filtered);
@@ -66,13 +84,13 @@ serve(async (req) => {
       }
 
       // Priority 4: Any one matching attribute
-      if (recommendations.length < limit) {
+      if (recommendations.length < sanitizedLimit) {
         const { data } = await supabase
           .from('books')
           .select('*')
           .or(`mood.ilike.%${currentBookData.mood || ''}%,trope.ilike.%${currentBookData.trope || ''}%,genre.eq.${currentBookData.genre || ''}`)
           .neq('id', contextId)
-          .limit(limit - recommendations.length);
+          .limit(sanitizedLimit - recommendations.length);
         if (data) {
           const filtered = data.filter(b => !recommendations.find(r => r.id === b.id));
           recommendations.push(...filtered);
@@ -91,7 +109,7 @@ serve(async (req) => {
           .from('books')
           .select('*')
           .eq('genre', genreData.name)
-          .limit(limit);
+          .limit(sanitizedLimit);
         if (data) recommendations = data;
       }
     } else if (contextType === 'mood') {
@@ -107,13 +125,13 @@ serve(async (req) => {
           .from('books')
           .select('*')
           .ilike('mood', `%${moodData.name}%`)
-          .limit(limit);
+          .limit(sanitizedLimit);
         if (data) recommendations = data;
       }
     }
 
     // Limit results
-    recommendations = recommendations.slice(0, limit);
+    recommendations = recommendations.slice(0, sanitizedLimit);
 
     // Generate poetic lines using Lovable AI
     if (lovableApiKey && recommendations.length > 0) {

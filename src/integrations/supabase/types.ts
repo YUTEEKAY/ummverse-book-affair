@@ -303,27 +303,42 @@ export type Database = {
       reviews: {
         Row: {
           book_id: string | null
+          created_at: string | null
           hearts: number | null
           id: string
+          nickname: string | null
           pen_name: string | null
+          rating: number | null
           review_text: string
           timestamp: string | null
+          user_id: string | null
+          user_ip: string | null
         }
         Insert: {
           book_id?: string | null
+          created_at?: string | null
           hearts?: number | null
           id?: string
+          nickname?: string | null
           pen_name?: string | null
+          rating?: number | null
           review_text: string
           timestamp?: string | null
+          user_id?: string | null
+          user_ip?: string | null
         }
         Update: {
           book_id?: string | null
+          created_at?: string | null
           hearts?: number | null
           id?: string
+          nickname?: string | null
           pen_name?: string | null
+          rating?: number | null
           review_text?: string
           timestamp?: string | null
+          user_id?: string | null
+          user_ip?: string | null
         }
         Relationships: [
           {
