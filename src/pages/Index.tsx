@@ -4,6 +4,7 @@ import FeaturedMoods from "@/components/FeaturedMoods";
 import FeaturedTropes from "@/components/FeaturedTropes";
 import Footer from "@/components/Footer";
 import PremiumBanner from "@/components/PremiumBanner";
+import PremiumQuotes from "@/components/PremiumQuotes";
 import OnboardingQuiz from "@/components/OnboardingQuiz";
 const Index = () => {
   const [showOnboardingQuiz, setShowOnboardingQuiz] = useState(false);
@@ -13,6 +14,7 @@ const Index = () => {
   return <main className="min-h-screen">
       <PremiumBanner />
       <Hero onDiscoverClick={handleDiscoverClick} />
+      <PremiumQuotes />
       <FeaturedMoods />
       <FeaturedTropes />
       <Footer />

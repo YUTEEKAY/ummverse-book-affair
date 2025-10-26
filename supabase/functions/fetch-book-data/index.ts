@@ -150,6 +150,7 @@ interface BookData {
   isbn: string | null;
   isbn13: string | null;
   api_source: 'open_library' | 'google_books' | 'hybrid' | 'internet_archive' | 'not_found';
+  quotes: string[];
 }
 
 serve(async (req) => {
@@ -204,7 +205,8 @@ serve(async (req) => {
       page_count: null,
       isbn: null,
       isbn13: null,
-      api_source: 'not_found'
+      api_source: 'not_found',
+      quotes: []
     };
 
     // Step 1: Try Internet Archive first
@@ -416,6 +418,28 @@ serve(async (req) => {
           }
           if (!bookData.publisher && volumeInfo.publisher) {
             bookData.publisher = volumeInfo.publisher;
+          }
+          
+          // Extract quotes from searchInfo snippets if available
+          if (gbData.items && gbData.items.length > 0) {
+            const quotes: string[] = [];
+            for (const item of gbData.items.slice(0, 3)) { // Check first 3 results
+              if (item.searchInfo?.textSnippet) {
+                const snippet = item.searchInfo.textSnippet
+                  .replace(/<[^>]*>/g, '') // Remove HTML tags
+                  .replace(/\.\.\./g, '')  // Remove ellipsis
+                  .trim();
+                
+                // Only add if it's a substantial quote (50+ chars) and English
+                if (snippet.length >= 50 && snippet.length <= 300 && isEnglishText(snippet)) {
+                  quotes.push(snippet);
+                }
+              }
+            }
+            
+            // Get up to 3 unique quotes
+            bookData.quotes = [...new Set(quotes)].slice(0, 3);
+            console.log(`[${title}] Extracted ${bookData.quotes.length} quotes from Google Books`);
           }
           
           console.log(`[${title}] Google Books data extraction complete`);

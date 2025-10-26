@@ -277,6 +277,25 @@ serve(async (req) => {
             throw updateError;
           }
 
+          // Store quotes if available
+          if (bookData.quotes && bookData.quotes.length > 0) {
+            for (const quoteText of bookData.quotes) {
+              const { error: quoteError } = await supabase
+                .from('quotes')
+                .insert({
+                  text: quoteText,
+                  author: book.author,
+                  book_title: book.title,
+                  source: bookData.api_source
+                });
+              
+              if (quoteError) {
+                console.error(`Error inserting quote for ${book.title}:`, quoteError);
+              }
+            }
+            console.log(`✓ Stored ${bookData.quotes.length} quotes for ${book.title}`);
+          }
+
           // Log successful enrichment
           await supabase.from('enrichment_logs').insert({
             book_id: book.id,
