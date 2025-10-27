@@ -35,3 +35,6 @@ verify_jwt = true
 
 [functions.recategorize-book-tropes]
 verify_jwt = true
+
+[functions.admin-reset-password]
+verify_jwt = true

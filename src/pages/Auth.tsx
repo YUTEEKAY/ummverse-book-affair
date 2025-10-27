@@ -33,10 +33,11 @@ const authSchema = z.object({
 type AuthFormData = z.infer<typeof authSchema>;
 
 const Auth = () => {
-  const { signUpWithEmail, signInWithEmail, user, loading: authLoading } = useAuth();
+  const { signUpWithEmail, signInWithEmail, resetPassword, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isResetMode, setIsResetMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<AuthFormData>({
@@ -53,7 +54,23 @@ const Auth = () => {
     setIsSubmitting(true);
     
     try {
-      if (isSignUp) {
+      if (isResetMode) {
+        const { error } = await resetPassword(data.email);
+        if (error) {
+          toast({
+            variant: "destructive",
+            title: "Password reset failed",
+            description: error.message || "Could not send reset email. Please try again.",
+          });
+        } else {
+          toast({
+            title: "Reset email sent!",
+            description: "Check your email for a password reset link.",
+          });
+          setIsResetMode(false);
+          reset();
+        }
+      } else if (isSignUp) {
         const { error } = await signUpWithEmail(data.email, data.password);
         if (error) {
           toast({
@@ -101,7 +118,11 @@ const Auth = () => {
             Welcome to Ummverse
           </CardTitle>
           <CardDescription className="text-base">
-            {isSignUp ? 'Create your account to get started' : 'Sign in to access your personalized romance book recommendations'}
+            {isResetMode 
+              ? 'Enter your email to receive a password reset link' 
+              : isSignUp 
+                ? 'Create your account to get started' 
+                : 'Sign in to access your personalized romance book recommendations'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -120,21 +141,23 @@ const Auth = () => {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                {...register('password')}
-                disabled={isSubmitting}
-              />
-              {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
-              )}
-            </div>
+            {!isResetMode && (
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  {...register('password')}
+                  disabled={isSubmitting}
+                />
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
+              </div>
+            )}
 
-            {isSignUp && (
+            {isSignUp && !isResetMode && (
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <Input
@@ -159,25 +182,48 @@ const Auth = () => {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {isSignUp ? 'Creating Account...' : 'Signing In...'}
+                  {isResetMode ? 'Sending Reset Email...' : isSignUp ? 'Creating Account...' : 'Signing In...'}
                 </>
               ) : (
-                isSignUp ? 'Create Account' : 'Sign In'
+                isResetMode ? 'Send Reset Email' : isSignUp ? 'Create Account' : 'Sign In'
               )}
             </Button>
+            
+            {!isResetMode && !isSignUp && (
+              <Button
+                type="button"
+                variant="link"
+                onClick={() => {
+                  setIsResetMode(true);
+                  reset();
+                }}
+                disabled={isSubmitting}
+                className="text-sm text-muted-foreground hover:text-dusty-rose w-full"
+              >
+                Forgot your password?
+              </Button>
+            )}
           </form>
 
           <div className="text-center">
             <Button
               variant="link"
               onClick={() => {
-                setIsSignUp(!isSignUp);
+                if (isResetMode) {
+                  setIsResetMode(false);
+                } else {
+                  setIsSignUp(!isSignUp);
+                }
                 reset();
               }}
               disabled={isSubmitting}
               className="text-sm text-muted-foreground hover:text-dusty-rose"
             >
-              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+              {isResetMode 
+                ? 'Back to sign in' 
+                : isSignUp 
+                  ? 'Already have an account? Sign in' 
+                  : "Don't have an account? Sign up"}
             </Button>
           </div>
           
