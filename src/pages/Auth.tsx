@@ -11,24 +11,36 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Heart, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const authSchema = z.object({
+const passwordSchema = z.string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number')
+  .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
+
+const resetSchema = z.object({
+  mode: z.literal('reset'),
   email: z.string().email('Invalid email address').max(255, 'Email too long'),
-  password: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number')
-    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
-  confirmPassword: z.string().optional(),
-}).refine((data) => {
-  if (data.confirmPassword !== undefined) {
-    return data.password === data.confirmPassword;
-  }
-  return true;
-}, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
 });
+
+const signInSchema = z.object({
+  mode: z.literal('signin'),
+  email: z.string().email('Invalid email address').max(255, 'Email too long'),
+  password: passwordSchema,
+});
+
+const signUpSchema = z.object({
+  mode: z.literal('signup'),
+  email: z.string().email('Invalid email address').max(255, 'Email too long'),
+  password: passwordSchema,
+  confirmPassword: z.string(),
+});
+
+const authSchema = z.discriminatedUnion('mode', [resetSchema, signInSchema, signUpSchema])
+  .refine(
+    (d) => d.mode !== 'signup' || (d as any).password === (d as any).confirmPassword,
+    { path: ['confirmPassword'], message: "Passwords don't match" }
+  );
 
 type AuthFormData = z.infer<typeof authSchema>;
 
@@ -40,9 +52,10 @@ const Auth = () => {
   const [isResetMode, setIsResetMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<AuthFormData>({
-    resolver: zodResolver(authSchema),
-  });
+const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<AuthFormData>({
+  resolver: zodResolver(authSchema),
+  defaultValues: { mode: 'signin' },
+});
 
   useEffect(() => {
     if (user && !authLoading) {
@@ -71,7 +84,7 @@ const Auth = () => {
           reset();
         }
       } else if (isSignUp) {
-        const { error } = await signUpWithEmail(data.email, data.password);
+        const { error } = await signUpWithEmail(data.email as string, (data as any).password as string);
         if (error) {
           toast({
             variant: "destructive",
@@ -87,7 +100,7 @@ const Auth = () => {
           reset();
         }
       } else {
-        const { error } = await signInWithEmail(data.email, data.password);
+        const { error } = await signInWithEmail(data.email as string, (data as any).password as string);
         if (error) {
           toast({
             variant: "destructive",
@@ -127,6 +140,7 @@ const Auth = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <input type="hidden" {...register('mode')} value={isResetMode ? 'reset' : (isSignUp ? 'signup' : 'signin')} />
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -151,8 +165,8 @@ const Auth = () => {
                   {...register('password')}
                   disabled={isSubmitting}
                 />
-                {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                {(errors as any).password && (
+                  <p className="text-sm text-destructive">{String((errors as any).password?.message)}</p>
                 )}
               </div>
             )}
@@ -167,8 +181,8 @@ const Auth = () => {
                   {...register('confirmPassword')}
                   disabled={isSubmitting}
                 />
-                {errors.confirmPassword && (
-                  <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                {(errors as any).confirmPassword && (
+                  <p className="text-sm text-destructive">{String((errors as any).confirmPassword?.message)}</p>
                 )}
               </div>
             )}
@@ -195,7 +209,7 @@ const Auth = () => {
                 variant="link"
                 onClick={() => {
                   setIsResetMode(true);
-                  reset();
+                  reset({ mode: 'reset' });
                 }}
                 disabled={isSubmitting}
                 className="text-sm text-muted-foreground hover:text-dusty-rose w-full"
@@ -211,10 +225,12 @@ const Auth = () => {
               onClick={() => {
                 if (isResetMode) {
                   setIsResetMode(false);
+                  reset({ mode: 'signin' });
                 } else {
-                  setIsSignUp(!isSignUp);
+                  const nextIsSignUp = !isSignUp;
+                  setIsSignUp(nextIsSignUp);
+                  reset({ mode: nextIsSignUp ? 'signup' : 'signin' });
                 }
-                reset();
               }}
               disabled={isSubmitting}
               className="text-sm text-muted-foreground hover:text-dusty-rose"
