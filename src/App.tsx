@@ -10,6 +10,7 @@ import MoodDetail from "./pages/MoodDetail";
 import GenreDetail from "./pages/GenreDetail";
 import TropeDetail from "./pages/TropeDetail";
 import BookDetail from "./pages/BookDetail";
+import Admin from "./pages/Admin";
 import AdminImport from "./pages/AdminImport";
 import Auth from "./pages/Auth";
 import Premium from "./pages/Premium";
@@ -39,6 +40,14 @@ const App = () => (
             <Route path="/genre/:genreId" element={<GenreDetail />} />
             <Route path="/trope/:tropeId" element={<TropeDetail />} />
             <Route path="/book/:bookId" element={<BookDetail />} />
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedAdminRoute>
+                  <Admin />
+                </ProtectedAdminRoute>
+              } 
+            />
             <Route 
               path="/admin/import" 
               element={
