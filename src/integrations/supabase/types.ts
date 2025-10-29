@@ -219,14 +219,20 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string
           email: string | null
+          favorite_genres: string[] | null
           free_views_count: number
           free_views_reset_date: string
           full_name: string | null
           id: string
           is_premium: boolean
           lemon_squeezy_customer_id: string | null
+          notification_preferences: Json | null
+          preferred_heat_levels: string[] | null
+          profile_visibility: string | null
+          reading_goal_monthly: number | null
           subscription_ends_at: string | null
           subscription_id: string | null
           subscription_product_id: string | null
@@ -237,14 +243,20 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string | null
+          favorite_genres?: string[] | null
           free_views_count?: number
           free_views_reset_date?: string
           full_name?: string | null
           id: string
           is_premium?: boolean
           lemon_squeezy_customer_id?: string | null
+          notification_preferences?: Json | null
+          preferred_heat_levels?: string[] | null
+          profile_visibility?: string | null
+          reading_goal_monthly?: number | null
           subscription_ends_at?: string | null
           subscription_id?: string | null
           subscription_product_id?: string | null
@@ -255,14 +267,20 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string | null
+          favorite_genres?: string[] | null
           free_views_count?: number
           free_views_reset_date?: string
           full_name?: string | null
           id?: string
           is_premium?: boolean
           lemon_squeezy_customer_id?: string | null
+          notification_preferences?: Json | null
+          preferred_heat_levels?: string[] | null
+          profile_visibility?: string | null
+          reading_goal_monthly?: number | null
           subscription_ends_at?: string | null
           subscription_id?: string | null
           subscription_product_id?: string | null
@@ -373,6 +391,74 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_type: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          achievement_type: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          achievement_type?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_reading_lists: {
+        Row: {
+          added_at: string
+          book_id: string
+          id: string
+          list_type: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          book_id: string
+          id?: string
+          list_type: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          book_id?: string
+          id?: string
+          list_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_reading_lists_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_reading_lists_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

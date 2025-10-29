@@ -158,14 +158,18 @@ const BookDetail = () => {
     setIsSubmitting(true);
 
     try {
+      console.log('Submitting review:', { bookId, rating: formRating, review: reviewText, nickname });
+      
       const { error } = await supabase.functions.invoke('submit-review', {
         body: {
           bookId,
           rating: formRating,
-          reviewText,
+          review: reviewText,
           nickname: nickname || 'Anonymous'
         }
       });
+
+      console.log('Submit review response:', { error });
 
       if (error) throw error;
 
