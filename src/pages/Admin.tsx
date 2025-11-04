@@ -4,14 +4,23 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Loader2, Shield, Upload, BookOpen, Users, Eye, MessageSquare, Plus } from 'lucide-react';
+import { Loader2, Shield, Upload, BookOpen, Users, Eye, MessageSquare, Sparkles, RefreshCw, Image, Languages, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { BookManagement } from '@/components/admin/BookManagement';
 import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 export default function Admin() {
   const navigate = useNavigate();
   const { profile } = useAuth();
+  const [enriching, setEnriching] = useState(false);
+  const [bookStats, setBookStats] = useState({
+    total: 0,
+    missingCovers: 0,
+    missingSummaries: 0,
+    noApiSource: 0
+  });
 
   // Platform-wide analytics queries
   const { data: platformStats, isLoading: statsLoading } = useQuery({
@@ -51,6 +60,48 @@ export default function Admin() {
     }
   });
 
+  // Load book enrichment stats
+  useEffect(() => {
+    loadBookStats();
+  }, []);
+
+  const loadBookStats = async () => {
+    const { data: books } = await supabase
+      .from('books')
+      .select('cover_url, summary, api_source');
+    
+    if (books) {
+      setBookStats({
+        total: books.length,
+        missingCovers: books.filter(b => !b.cover_url).length,
+        missingSummaries: books.filter(b => !b.summary).length,
+        noApiSource: books.filter(b => !b.api_source).length
+      });
+    }
+  };
+
+  const handleQuickEnrich = async () => {
+    setEnriching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('batch-enrich-books', {
+        body: { batchSize: 50, forceRefresh: false }
+      });
+
+      if (error) throw error;
+
+      toast.success("✨ Quick enrichment complete!", {
+        description: `${data?.updated || 0} books updated`
+      });
+      
+      await loadBookStats();
+    } catch (error: any) {
+      console.error('Quick enrichment error:', error);
+      toast.error('Quick enrichment failed');
+    } finally {
+      setEnriching(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -74,28 +125,105 @@ export default function Admin() {
           </CardHeader>
         </Card>
 
-        {/* Quick Actions */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Administrative tools and management</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Admin Navigation */}
+        <div className="flex gap-2 mb-6">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate('/admin/import')}
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Import & Enrichment Tools
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate('/')}
+          >
+            <Home className="h-4 w-4 mr-2" />
+            View Site
+          </Button>
+        </div>
+
+        {/* Quick Actions & Enrichment Tools */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Enrichment Tools */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                Book Enrichment
+              </CardTitle>
+              <CardDescription>Add covers, summaries, and metadata</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-2 text-sm mb-4">
+                <div className="p-3 bg-muted rounded-lg">
+                  <div className="text-muted-foreground">Missing Covers</div>
+                  <div className="text-2xl font-bold">{bookStats.missingCovers}</div>
+                </div>
+                <div className="p-3 bg-muted rounded-lg">
+                  <div className="text-muted-foreground">Missing Summaries</div>
+                  <div className="text-2xl font-bold">{bookStats.missingSummaries}</div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Button 
+                  className="w-full justify-start"
+                  onClick={handleQuickEnrich}
+                  disabled={enriching}
+                >
+                  {enriching ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4 mr-2" />
+                  )}
+                  Quick Enrich (50 Books)
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => navigate('/admin/import')}
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Advanced Enrichment Tools
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>Common administrative tasks</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
               <Button 
-                variant="default" 
-                className="w-full justify-start h-auto py-4"
+                variant="outline" 
+                className="w-full justify-start"
                 onClick={() => navigate('/admin/import')}
               >
-                <Upload className="h-5 w-5 mr-3" />
-                <div className="text-left">
-                  <div className="font-semibold">Import Books</div>
-                  <div className="text-xs opacity-80">Batch upload via CSV</div>
-                </div>
+                <Upload className="h-4 w-4 mr-2" />
+                Import Books from CSV
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+              
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => {
+                  navigate('/admin/import');
+                  toast.info('Navigate to Import page for recategorization tools');
+                }}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Recategorize Moods & Tropes
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Platform Statistics */}
         <div className="mb-8">

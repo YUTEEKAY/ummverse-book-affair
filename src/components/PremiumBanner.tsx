@@ -5,13 +5,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 const PremiumBanner = () => {
   const [isVisible, setIsVisible] = useState(true);
-  const {
-    profile
-  } = useAuth();
+  const { profile, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  // Don't show banner to premium users (monthly or lifetime)
-  if (!isVisible || profile?.subscription_tier !== 'free') return null;
+  // Don't show banner to premium users (monthly or lifetime) or admins
+  if (!isVisible || profile?.subscription_tier !== 'free' || isAdmin) return null;
   return <div className="bg-gradient-to-r from-primary via-dusty-rose to-primary text-primary-foreground py-3 px-4 relative">
       <div className="container mx-auto flex items-center justify-center gap-3 text-sm md:text-base">
         <Sparkles className="w-5 h-5 flex-shrink-0 animate-pulse" />

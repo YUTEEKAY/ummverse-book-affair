@@ -6,8 +6,13 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 export default function Pricing() {
-  const { profile } = useAuth();
+  const { profile, isAdmin } = useAuth();
   const navigate = useNavigate();
+  
+  // Redirect admins to their dashboard
+  if (isAdmin) {
+    return <Navigate to="/admin" replace />;
+  }
   
   // Redirect if user already has premium
   if (profile?.subscription_tier && profile.subscription_tier !== 'free') {
