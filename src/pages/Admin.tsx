@@ -42,7 +42,7 @@ export default function Admin() {
     }
   });
 
-  const { data: subscriptionStats } = useQuery({
+  const { data: subscriptionStats, isLoading: subsLoading, error: subsError, refetch: refetchSubs } = useQuery({
     queryKey: ['subscription-stats'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -57,7 +57,8 @@ export default function Admin() {
       });
       
       return breakdown;
-    }
+    },
+    refetchOnMount: 'always'
   });
 
   // Load book enrichment stats
@@ -284,33 +285,55 @@ export default function Admin() {
         {/* Subscription Breakdown */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Subscription Overview</CardTitle>
-            <CardDescription>User tier distribution</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Subscription Overview</CardTitle>
+                <CardDescription>User tier distribution</CardDescription>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => refetchSubs()}
+                disabled={subsLoading}
+              >
+                <RefreshCw className={`h-4 w-4 ${subsLoading ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <p className="text-sm text-muted-foreground">Free Tier</p>
-                  <p className="text-2xl font-bold">{subscriptionStats?.free || 0}</p>
-                </div>
-                <Badge variant="secondary">Free</Badge>
+            {subsLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <p className="text-sm text-muted-foreground">Premium Monthly</p>
-                  <p className="text-2xl font-bold">{subscriptionStats?.premium_monthly || 0}</p>
-                </div>
-                <Badge variant="default">Premium</Badge>
+            ) : subsError ? (
+              <div className="text-center py-8 text-destructive">
+                Error loading subscription data: {subsError.message}
               </div>
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <p className="text-sm text-muted-foreground">Lifetime</p>
-                  <p className="text-2xl font-bold">{subscriptionStats?.lifetime || 0}</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Free Tier</p>
+                    <p className="text-2xl font-bold">{subscriptionStats?.free || 0}</p>
+                  </div>
+                  <Badge variant="secondary">Free</Badge>
                 </div>
-                <Badge variant="default">Lifetime</Badge>
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Premium Monthly</p>
+                    <p className="text-2xl font-bold">{subscriptionStats?.premium_monthly || 0}</p>
+                  </div>
+                  <Badge variant="default">Premium</Badge>
+                </div>
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Lifetime</p>
+                    <p className="text-2xl font-bold">{subscriptionStats?.lifetime || 0}</p>
+                  </div>
+                  <Badge variant="default">Lifetime</Badge>
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
