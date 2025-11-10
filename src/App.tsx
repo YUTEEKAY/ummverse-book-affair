@@ -2,9 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
+import { useEffect } from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedAdminRoute } from "@/components/ProtectedAdminRoute";
 import Index from "./pages/Index";
@@ -25,6 +26,22 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+function RecoveryRedirector() {
+  // Redirect any recovery hash present on non-/auth routes to /auth preserving hash
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    if (type === 'recovery' && location.pathname !== '/auth') {
+      navigate('/auth' + window.location.hash, { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -32,6 +49,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <RecoveryRedirector />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />

@@ -128,13 +128,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    const redirectUrl = 'https://ummverse.com.ng/auth';
+    const redirectUrl = `${window.location.origin}/`;
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
     });
     return { error };
   };
-
   const signOut = async () => {
     await supabase.auth.signOut();
     setProfile(null);
