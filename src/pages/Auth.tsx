@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { Heart, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const passwordSchema = z.string()
   .min(8, 'Password must be at least 8 characters')
@@ -36,9 +37,19 @@ const signUpSchema = z.object({
   confirmPassword: z.string(),
 });
 
-const authSchema = z.discriminatedUnion('mode', [resetSchema, signInSchema, signUpSchema])
+const recoverySchema = z.object({
+  mode: z.literal('recovery'),
+  password: passwordSchema,
+  confirmPassword: z.string(),
+});
+
+const authSchema = z.discriminatedUnion('mode', [resetSchema, signInSchema, signUpSchema, recoverySchema])
   .refine(
     (d) => d.mode !== 'signup' || (d as any).password === (d as any).confirmPassword,
+    { path: ['confirmPassword'], message: "Passwords don't match" }
+  )
+  .refine(
+    (d) => d.mode !== 'recovery' || (d as any).password === (d as any).confirmPassword,
     { path: ['confirmPassword'], message: "Passwords don't match" }
   );
 
@@ -50,6 +61,7 @@ const Auth = () => {
   const { toast } = useToast();
   const [isSignUp, setIsSignUp] = useState(false);
   const [isResetMode, setIsResetMode] = useState(false);
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<AuthFormData>({
@@ -57,17 +69,50 @@ const { register, handleSubmit, formState: { errors }, reset, setValue } = useFo
   defaultValues: { mode: 'signin' },
 });
 
+  // Check for recovery token in URL hash
   useEffect(() => {
-    if (user && !authLoading) {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    
+    if (type === 'recovery') {
+      setIsRecoveryMode(true);
+      setValue('mode', 'recovery');
+    }
+  }, [setValue]);
+
+  useEffect(() => {
+    if (user && !authLoading && !isRecoveryMode) {
       navigate('/');
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, isRecoveryMode, navigate]);
 
   const onSubmit = async (data: AuthFormData) => {
     setIsSubmitting(true);
     
     try {
-      if (isResetMode) {
+      if (isRecoveryMode) {
+        // Handle password recovery/reset
+        const { error } = await supabase.auth.updateUser({
+          password: (data as any).password
+        });
+        
+        if (error) {
+          toast({
+            variant: "destructive",
+            title: "Password update failed",
+            description: error.message || "Could not update password. The link may have expired.",
+          });
+        } else {
+          toast({
+            title: "Password updated!",
+            description: "Your password has been successfully updated. You can now sign in.",
+          });
+          // Clear hash and redirect to home
+          window.location.hash = '';
+          setIsRecoveryMode(false);
+          navigate('/');
+        }
+      } else if (isResetMode && 'email' in data) {
         const { error } = await resetPassword(data.email);
         if (error) {
           toast({
@@ -83,7 +128,7 @@ const { register, handleSubmit, formState: { errors }, reset, setValue } = useFo
           setIsResetMode(false);
           reset();
         }
-      } else if (isSignUp) {
+      } else if (isSignUp && 'email' in data) {
         const { error } = await signUpWithEmail(data.email as string, (data as any).password as string);
         if (error) {
           toast({
@@ -99,7 +144,7 @@ const { register, handleSubmit, formState: { errors }, reset, setValue } = useFo
           setIsSignUp(false);
           reset();
         }
-      } else {
+      } else if ('email' in data) {
         const { error } = await signInWithEmail(data.email as string, (data as any).password as string);
         if (error) {
           toast({
@@ -131,33 +176,38 @@ const { register, handleSubmit, formState: { errors }, reset, setValue } = useFo
             Welcome to Ummverse
           </CardTitle>
           <CardDescription className="text-base">
-            {isResetMode 
-              ? 'Enter your email to receive a password reset link' 
-              : isSignUp 
-                ? 'Create your account to get started' 
-                : 'Sign in to access your personalized romance book recommendations'}
+            {isRecoveryMode
+              ? 'Enter your new password below'
+              : isResetMode 
+                ? 'Enter your email to receive a password reset link' 
+                : isSignUp 
+                  ? 'Create your account to get started' 
+                  : 'Sign in to access your personalized romance book recommendations'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <input type="hidden" {...register('mode')} value={isResetMode ? 'reset' : (isSignUp ? 'signup' : 'signin')} />
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                {...register('email')}
-                disabled={isSubmitting}
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
-              )}
-            </div>
+            <input type="hidden" {...register('mode')} value={isRecoveryMode ? 'recovery' : isResetMode ? 'reset' : (isSignUp ? 'signup' : 'signin')} />
+            
+            {!isRecoveryMode && (
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  {...register('email' as any)}
+                  disabled={isSubmitting}
+                />
+                {'email' in errors && errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
+              </div>
+            )}
 
             {!isResetMode && (
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{isRecoveryMode ? 'New Password' : 'Password'}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -171,7 +221,7 @@ const { register, handleSubmit, formState: { errors }, reset, setValue } = useFo
               </div>
             )}
 
-            {isSignUp && !isResetMode && (
+            {(isSignUp || isRecoveryMode) && !isResetMode && (
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <Input
@@ -196,14 +246,14 @@ const { register, handleSubmit, formState: { errors }, reset, setValue } = useFo
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {isResetMode ? 'Sending Reset Email...' : isSignUp ? 'Creating Account...' : 'Signing In...'}
+                  {isRecoveryMode ? 'Updating Password...' : isResetMode ? 'Sending Reset Email...' : isSignUp ? 'Creating Account...' : 'Signing In...'}
                 </>
               ) : (
-                isResetMode ? 'Send Reset Email' : isSignUp ? 'Create Account' : 'Sign In'
+                isRecoveryMode ? 'Update Password' : isResetMode ? 'Send Reset Email' : isSignUp ? 'Create Account' : 'Sign In'
               )}
             </Button>
             
-            {!isResetMode && !isSignUp && (
+            {!isResetMode && !isSignUp && !isRecoveryMode && (
               <Button
                 type="button"
                 variant="link"
@@ -219,29 +269,31 @@ const { register, handleSubmit, formState: { errors }, reset, setValue } = useFo
             )}
           </form>
 
-          <div className="text-center">
-            <Button
-              variant="link"
-              onClick={() => {
-                if (isResetMode) {
-                  setIsResetMode(false);
-                  reset({ mode: 'signin' });
-                } else {
-                  const nextIsSignUp = !isSignUp;
-                  setIsSignUp(nextIsSignUp);
-                  reset({ mode: nextIsSignUp ? 'signup' : 'signin' });
-                }
-              }}
-              disabled={isSubmitting}
-              className="text-sm text-muted-foreground hover:text-dusty-rose"
-            >
-              {isResetMode 
-                ? 'Back to sign in' 
-                : isSignUp 
-                  ? 'Already have an account? Sign in' 
-                  : "Don't have an account? Sign up"}
-            </Button>
-          </div>
+          {!isRecoveryMode && (
+            <div className="text-center">
+              <Button
+                variant="link"
+                onClick={() => {
+                  if (isResetMode) {
+                    setIsResetMode(false);
+                    reset({ mode: 'signin' });
+                  } else {
+                    const nextIsSignUp = !isSignUp;
+                    setIsSignUp(nextIsSignUp);
+                    reset({ mode: nextIsSignUp ? 'signup' : 'signin' });
+                  }
+                }}
+                disabled={isSubmitting}
+                className="text-sm text-muted-foreground hover:text-dusty-rose"
+              >
+                {isResetMode 
+                  ? 'Back to sign in' 
+                  : isSignUp 
+                    ? 'Already have an account? Sign in' 
+                    : "Don't have an account? Sign up"}
+              </Button>
+            </div>
+          )}
           
           <div className="text-center text-sm text-muted-foreground border-t pt-4">
             <p>✨ Free users get 3 book views per week</p>
