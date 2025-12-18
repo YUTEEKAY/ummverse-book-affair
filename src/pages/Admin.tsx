@@ -4,16 +4,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Loader2, Shield, Upload, BookOpen, Users, Eye, MessageSquare, Sparkles, RefreshCw, Image, Languages, Home } from 'lucide-react';
+import { Loader2, Shield, Upload, BookOpen, Users, Eye, MessageSquare, Sparkles, RefreshCw, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { BookManagement } from '@/components/admin/BookManagement';
-import { Badge } from '@/components/ui/badge';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 export default function Admin() {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { user } = useAuth();
   const [enriching, setEnriching] = useState(false);
   const [bookStats, setBookStats] = useState({
     total: 0,
@@ -40,25 +39,6 @@ export default function Admin() {
         totalViews: viewsRes.count || 0
       };
     }
-  });
-
-  const { data: subscriptionStats, isLoading: subsLoading, error: subsError, refetch: refetchSubs } = useQuery({
-    queryKey: ['subscription-stats'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('subscription_tier');
-      
-      if (error) throw error;
-
-      const breakdown = { free: 0, premium_monthly: 0, lifetime: 0 };
-      data?.forEach((profile: any) => {
-        breakdown[profile.subscription_tier as keyof typeof breakdown]++;
-      });
-      
-      return breakdown;
-    },
-    refetchOnMount: 'always'
   });
 
   // Load book enrichment stats
@@ -115,7 +95,7 @@ export default function Admin() {
                 <div>
                   <CardTitle className="text-3xl">Admin Dashboard</CardTitle>
                   <CardDescription className="text-base">
-                    {profile?.full_name} • {profile?.email}
+                    {user?.email}
                   </CardDescription>
                 </div>
               </div>
@@ -281,61 +261,6 @@ export default function Admin() {
             </div>
           )}
         </div>
-
-        {/* Subscription Breakdown */}
-        <Card className="mb-8">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Subscription Overview</CardTitle>
-                <CardDescription>User tier distribution</CardDescription>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => refetchSubs()}
-                disabled={subsLoading}
-              >
-                <RefreshCw className={`h-4 w-4 ${subsLoading ? 'animate-spin' : ''}`} />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {subsLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            ) : subsError ? (
-              <div className="text-center py-8 text-destructive">
-                Error loading subscription data: {subsError.message}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Free Tier</p>
-                    <p className="text-2xl font-bold">{subscriptionStats?.free || 0}</p>
-                  </div>
-                  <Badge variant="secondary">Free</Badge>
-                </div>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Premium Monthly</p>
-                    <p className="text-2xl font-bold">{subscriptionStats?.premium_monthly || 0}</p>
-                  </div>
-                  <Badge variant="default">Premium</Badge>
-                </div>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Lifetime</p>
-                    <p className="text-2xl font-bold">{subscriptionStats?.lifetime || 0}</p>
-                  </div>
-                  <Badge variant="default">Lifetime</Badge>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
         {/* Book Management Tabs */}
         <Tabs defaultValue="books" className="w-full">

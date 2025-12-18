@@ -2,10 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
-import { useEffect } from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedAdminRoute } from "@/components/ProtectedAdminRoute";
 import Index from "./pages/Index";
@@ -15,32 +14,13 @@ import TropeDetail from "./pages/TropeDetail";
 import BookDetail from "./pages/BookDetail";
 import Admin from "./pages/Admin";
 import AdminImport from "./pages/AdminImport";
-import Auth from "./pages/Auth";
-import Premium from "./pages/Premium";
-import Pricing from "./pages/Pricing";
-import Profile from "./pages/Profile";
+import AdminAuth from "./pages/AdminAuth";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Disclaimer from "./pages/Disclaimer";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
-
-function RecoveryRedirector() {
-  // Redirect any recovery hash present on non-/auth routes to /auth preserving hash
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get('type');
-    if (type === 'recovery' && location.pathname !== '/auth') {
-      navigate('/auth' + window.location.hash, { replace: true });
-    }
-  }, [location.pathname, navigate]);
-
-  return null;
-}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -49,13 +29,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <RecoveryRedirector />
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/premium" element={<Premium />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/admin-login" element={<AdminAuth />} />
             <Route path="/mood/:moodId" element={<MoodDetail />} />
             <Route path="/genre/:genreId" element={<GenreDetail />} />
             <Route path="/trope/:tropeId" element={<TropeDetail />} />
