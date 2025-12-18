@@ -5,13 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Loader2, Shield, Upload, BookOpen, Users, Eye, MessageSquare, Sparkles, RefreshCw, Home } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BookManagement } from '@/components/admin/BookManagement';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 export default function Admin() {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [enriching, setEnriching] = useState(false);
   const [bookStats, setBookStats] = useState({
@@ -99,8 +98,8 @@ export default function Admin() {
                   </CardDescription>
                 </div>
               </div>
-              <Button variant="outline" onClick={() => navigate('/')}>
-                Back to Site
+              <Button variant="outline" asChild>
+                <Link to="/">Back to Site</Link>
               </Button>
             </div>
           </CardHeader>
@@ -108,21 +107,17 @@ export default function Admin() {
 
         {/* Admin Navigation */}
         <div className="flex gap-2 mb-6">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => navigate('/admin/import')}
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Import & Enrichment Tools
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/admin/import">
+              <Upload className="h-4 w-4 mr-2" />
+              Import & Enrichment Tools
+            </Link>
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => navigate('/')}
-          >
-            <Home className="h-4 w-4 mr-2" />
-            View Site
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/">
+              <Home className="h-4 w-4 mr-2" />
+              View Site
+            </Link>
           </Button>
         </div>
 
@@ -163,13 +158,11 @@ export default function Admin() {
                   Quick Enrich (50 Books)
                 </Button>
                 
-                <Button 
-                  variant="outline"
-                  className="w-full justify-start"
-                  onClick={() => navigate('/admin/import')}
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Advanced Enrichment Tools
+                <Button variant="outline" className="w-full justify-start" asChild>
+                  <Link to="/admin/import">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Advanced Enrichment Tools
+                  </Link>
                 </Button>
               </div>
             </CardContent>
@@ -182,25 +175,18 @@ export default function Admin() {
               <CardDescription>Common administrative tasks</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button 
-                variant="outline" 
-                className="w-full justify-start"
-                onClick={() => navigate('/admin/import')}
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Import Books from CSV
+              <Button variant="outline" className="w-full justify-start" asChild>
+                <Link to="/admin/import">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import Books from CSV
+                </Link>
               </Button>
               
-              <Button 
-                variant="outline" 
-                className="w-full justify-start"
-                onClick={() => {
-                  navigate('/admin/import');
-                  toast.info('Navigate to Import page for recategorization tools');
-                }}
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Recategorize Moods & Tropes
+              <Button variant="outline" className="w-full justify-start" asChild>
+                <Link to="/admin/import">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Recategorize Moods & Tropes
+                </Link>
               </Button>
             </CardContent>
           </Card>
