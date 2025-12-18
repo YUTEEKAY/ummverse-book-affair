@@ -4,8 +4,6 @@ import Hero from "@/components/Hero";
 import FeaturedMoods from "@/components/FeaturedMoods";
 import FeaturedTropes from "@/components/FeaturedTropes";
 import Footer from "@/components/Footer";
-import PremiumBanner from "@/components/PremiumBanner";
-import PremiumQuotes from "@/components/PremiumQuotes";
 import OnboardingQuiz from "@/components/OnboardingQuiz";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -22,15 +20,16 @@ const Index = () => {
     setShowOnboardingQuiz(true);
   };
   
-  return <main className="min-h-screen">
-      <PremiumBanner />
+  return (
+    <main className="min-h-screen">
       <Hero onDiscoverClick={handleDiscoverClick} />
-      <PremiumQuotes />
       <FeaturedMoods />
       <FeaturedTropes />
       <Footer />
       
       <OnboardingQuiz open={showOnboardingQuiz} onClose={() => setShowOnboardingQuiz(false)} />
-    </main>;
+    </main>
+  );
 };
+
 export default Index;

@@ -26,7 +26,7 @@ export function ProtectedAdminRoute({ children }: { children: React.ReactNode })
   }
 
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/admin-login" replace />;
   }
 
   if (!isAdmin) {
