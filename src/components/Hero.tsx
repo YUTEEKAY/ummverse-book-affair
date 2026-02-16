@@ -24,23 +24,23 @@ const Hero = ({
       {/* Auth/Profile Button */}
       <div className="absolute top-6 right-6 z-20">
         {user ? <div className="flex gap-2">
-            <Button type="button" variant="ghost" onClick={e => {
-              e.preventDefault();
-              e.stopPropagation();
-              navigate('/profile');
-            }} className="bg-white/80 backdrop-blur-sm hover:bg-white">
+            <Button type="button" variant="ghost" onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            navigate('/profile');
+          }} className="bg-white/80 backdrop-blur-sm hover:bg-white">
               <User className="w-4 h-4 mr-2" />
               Profile
             </Button>
-            <Button type="button" variant="ghost" onClick={e => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('Sign out clicked');
-              signOut();
-            }} className="bg-white/80 backdrop-blur-sm hover:bg-white">
+            <Button type="button" variant="ghost" onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Sign out clicked');
+            signOut();
+          }} className="bg-white/80 backdrop-blur-sm hover:bg-white">
               Sign Out
             </Button>
-          </div> : <Button type="button" onClick={e => {
+          </div> : <Button type="button" onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           console.log('Sign in clicked');
@@ -124,7 +124,7 @@ const Hero = ({
           delay: 1.1,
           duration: 0.6
         }} className="flex justify-center">
-          <Button type="button" onClick={e => {
+          <Button type="button" onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             if (onDiscoverClick) {
