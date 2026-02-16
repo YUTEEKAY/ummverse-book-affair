@@ -49,7 +49,7 @@ const SimilarBookCard = ({
         </div>
         
         {/* CTA */}
-        <Button size="sm" className="w-full bg-gradient-to-r from-primary to-primary/80 text-xs hover:shadow-glow transition-all text-[#8b0958]">
+        <Button size="sm" className="w-full bg-gradient-to-r from-primary to-primary/80 text-xs hover:shadow-glow transition-all text-blush">
           Discover 💕
         </Button>
       </motion.div>
