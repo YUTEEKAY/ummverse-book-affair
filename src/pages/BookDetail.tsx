@@ -137,14 +137,16 @@ const BookDetail = () => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.functions.invoke('submit-review', {
-        body: {
-          bookId,
+      const { error } = await supabase
+        .from('reviews')
+        .insert({
+          book_id: bookId,
           rating: formRating,
-          review: reviewText,
-          nickname: nickname || 'Anonymous'
-        }
-      });
+          review_text: reviewText,
+          nickname: nickname || 'Anonymous',
+          hearts: formRating,
+          pen_name: nickname || 'Anonymous',
+        });
 
       if (error) throw error;
 
