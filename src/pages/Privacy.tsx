@@ -29,7 +29,7 @@ const Privacy = () => (
       </> },
       { heading: "Your browser's storage", body: <p>We store your sign-in session and free-try counter in your browser's local storage. These are needed for the site to work.</p> },
       { heading: "Retention & your rights", body: <p>We keep your data while your account is active. You can ask to access, correct or delete your data, or close your account, by emailing us. You may also have rights under the Nigeria Data Protection Act 2023 and other local laws.</p> },
-      { heading: "Contact", body: <p>Ummverse Ventures – <a href="mailto:hello@ummverse.com.ng">hello@ummverse.com.ng</a>.</p> },
+      { heading: "Contact", body: <p>Ummverse Ventures – <a href="mailto:ummatanko@gmail.com">ummatanko@gmail.com</a>.</p> },
     ]}
   />
 );

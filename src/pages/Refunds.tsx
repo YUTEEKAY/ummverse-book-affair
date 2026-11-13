@@ -12,7 +12,7 @@ const Refunds = () => (
       { heading: "Free trials", body: <p>Your 2 free tries cost nothing and require no payment details, so you can try Ummverse before subscribing.</p> },
       { heading: "Billing errors", body: <p>If you were charged twice or charged after cancelling, contact us within 14 days and Ummverse Ventures will review it. Where required by law, your statutory rights are not affected.</p> },
       { heading: "Book purchases", body: <p>Ummverse does not sell books. Refunds for books bought from vendors listed on Ummverse must be requested from that vendor. See the vendor disclaimer in our <Link to="/terms">Terms of Service</Link>.</p> },
-      { heading: "Contact", body: <p>Email <a href="mailto:hello@ummverse.com.ng">hello@ummverse.com.ng</a>.</p> },
+      { heading: "Contact", body: <p>Email <a href="mailto:ummatanko@gmail.com">ummatanko@gmail.com</a>.</p> },
     ]}
   />
 );

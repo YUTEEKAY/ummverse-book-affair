@@ -135,8 +135,8 @@ const Disclaimer = () => {
               <p className="text-muted-foreground">
                 If you are a copyright holder and believe that content on Ummverse infringes your rights,
                 please contact us immediately at{" "}
-                <a href="mailto:support@ummverse.com.ng" className="text-primary hover:underline">
-                  support@ummverse.com.ng
+                <a href="mailto:ummatanko@gmail.com" className="text-primary hover:underline">
+                  ummatanko@gmail.com
                 </a>
                 {" "}and we will promptly review and address your concerns.
               </p>
@@ -153,8 +153,8 @@ const Disclaimer = () => {
               </p>
               <p className="text-muted-foreground">
                 <strong>Email:</strong>{" "}
-                <a href="mailto:support@ummverse.com.ng" className="text-primary hover:underline">
-                  support@ummverse.com.ng
+                <a href="mailto:ummatanko@gmail.com" className="text-primary hover:underline">
+                  ummatanko@gmail.com
                 </a>
               </p>
               <p className="text-muted-foreground">

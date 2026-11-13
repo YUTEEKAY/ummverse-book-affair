@@ -29,7 +29,7 @@ const Terms = () => (
       { heading: "Content & intellectual property", body: <p>Book descriptions, covers and metadata may come from publishers and public sources such as Open Library and belong to their owners. The Ummverse name, design and original content belong to Ummverse Ventures.</p> },
       { heading: "Disclaimers & limitation of liability", body: <p>Ummverse is provided “as is”. Recommendations, spice levels and content warnings are guidance only. To the fullest extent permitted by law, Ummverse Ventures is not liable for indirect or consequential losses, and our total liability is limited to the amount you paid us in the 12 months before the claim.</p> },
       { heading: "Changes & governing law", body: <p>We may update these terms and will post the new date above. These terms are governed by the laws of the Federal Republic of Nigeria.</p> },
-      { heading: "Contact", body: <p>Questions? Contact Ummverse Ventures at <a href="mailto:hello@ummverse.com.ng">hello@ummverse.com.ng</a>.</p> },
+      { heading: "Contact", body: <p>Questions? Contact Ummverse Ventures at <a href="mailto:ummatanko@gmail.com">ummatanko@gmail.com</a>.</p> },
     ]}
   />
 );
