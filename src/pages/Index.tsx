@@ -3,6 +3,8 @@ import { Navigate } from "react-router-dom";
 import Hero from "@/components/Hero";
 import FeaturedMoods from "@/components/FeaturedMoods";
 import FeaturedTropes from "@/components/FeaturedTropes";
+import MostSearchedBooksCarousel from "@/components/MostSearchedBooksCarousel";
+import TodaysQuote from "@/components/TodaysQuote";
 import Footer from "@/components/Footer";
 import OnboardingQuiz from "@/components/OnboardingQuiz";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,7 +25,9 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <Hero onDiscoverClick={handleDiscoverClick} />
+      <TodaysQuote />
       <FeaturedMoods />
+      <MostSearchedBooksCarousel />
       <FeaturedTropes />
       <Footer />
       

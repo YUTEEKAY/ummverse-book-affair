@@ -51,6 +51,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        blush: "hsl(var(--blush))",
+        cream: "hsl(var(--cream))",
+        "dusty-rose": "hsl(var(--dusty-rose))",
+        "warm-peach": "hsl(var(--warm-peach))",
+        burgundy: "hsl(var(--burgundy))",
+        lavender: "hsl(var(--lavender))",
+        "pastel-blue": "hsl(var(--pastel-blue))",
+        "vintage-gold": "hsl(var(--vintage-gold))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -60,19 +68,14 @@ export default {
         "3xl": "1.5rem",
       },
       boxShadow: {
-        soft: "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
-        glow: "0 0 20px rgba(255, 182, 193, 0.4)",
-        "glow-strong": "0 0 30px rgba(255, 182, 193, 0.6)",
+        soft: "var(--shadow-soft)",
+        card: "var(--shadow-card)",
+        glow: "var(--shadow-glow)",
+        "glow-strong": "var(--shadow-glow)",
       },
       textShadow: {
         sm: "0 1px 2px rgba(0, 0, 0, 0.1)",
         md: "0 2px 4px rgba(0, 0, 0, 0.15)",
-      },
-      colors: {
-        blush: "hsl(var(--blush))",
-        cream: "hsl(var(--cream))",
-        "dusty-rose": "hsl(var(--dusty-rose))",
-        "warm-peach": "hsl(var(--warm-peach))",
       },
       keyframes: {
         "accordion-down": {

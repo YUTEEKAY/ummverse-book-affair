@@ -8,93 +8,109 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 60% 95%;
-    --foreground: 345 40% 12%;
+    --background: 36 24% 97%;
+    --foreground: 346 26% 14%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 345 40% 12%;
+    --card: 36 26% 99%;
+    --card-foreground: 346 26% 14%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 345 40% 12%;
+    --popover: 36 26% 99%;
+    --popover-foreground: 346 26% 14%;
 
-    --primary: 345 60% 35%;
-    --primary-foreground: 0 60% 95%;
+    --primary: 348 46% 29%;
+    --primary-foreground: 36 32% 97%;
 
-    --secondary: 345 45% 92%;
-    --secondary-foreground: 345 40% 12%;
+    --secondary: 151 22% 91%;
+    --secondary-foreground: 158 30% 21%;
 
-    --muted: 0 30% 92%;
-    --muted-foreground: 345 15% 40%;
+    --muted: 34 17% 92%;
+    --muted-foreground: 345 12% 43%;
 
-    --accent: 38 85% 65%;
-    --accent-foreground: 345 35% 15%;
+    --accent: 40 56% 58%;
+    --accent-foreground: 346 28% 15%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 60% 95%;
 
-    --border: 345 20% 88%;
-    --input: 345 20% 88%;
-    --ring: 345 60% 40%;
+    --border: 35 16% 85%;
+    --input: 35 16% 85%;
+    --ring: 348 46% 38%;
 
     --radius: 0.75rem;
 
-    --blush: 0 60% 95%;
-    --cream: 40 50% 96%;
-    --dusty-rose: 345 50% 70%;
-    --warm-peach: 25 80% 85%;
-    
-    /* Genre-specific accent colors */
-    --burgundy: 350 60% 35%;
-    --lavender: 270 40% 75%;
-    --pastel-blue: 190 40% 75%;
-    --vintage-gold: 30 50% 65%;
+    --blush: 350 34% 92%;
+    --cream: 37 28% 96%;
+    --dusty-rose: 344 35% 61%;
+    --warm-peach: 28 61% 81%;
+    --burgundy: 350 46% 29%;
+    --lavender: 274 23% 72%;
+    --pastel-blue: 195 28% 70%;
+    --vintage-gold: 40 56% 52%;
 
-    --gradient-romance: linear-gradient(135deg, hsl(345, 75%, 45%), hsl(345, 70%, 50%));
-    --gradient-hero: linear-gradient(180deg, hsl(0, 60%, 95%), hsl(0, 60%, 98%));
-    --shadow-soft: 0 4px 20px -4px hsl(345, 45%, 75% / 0.25);
-    --shadow-card: 0 2px 12px -2px hsl(345, 35%, 65% / 0.15);
-    --shadow-glow: 0 0 30px hsl(345 60% 40% / 0.35);
+    --field-wine: 349 46% 25%;
+    --field-berry: 325 31% 31%;
+    --field-forest: 158 27% 27%;
+    --field-sage: 148 21% 37%;
+    --field-plum: 280 24% 32%;
+    --field-ocean: 198 30% 30%;
+    --field-gold: 38 47% 39%;
+    --field-rose: 343 39% 43%;
+
+    --quote-background: 157 25% 20%;
+    --quote-foreground: 38 27% 96%;
+    --gradient-romance: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--dusty-rose)));
+    --gradient-hero: linear-gradient(180deg, hsl(var(--background)), hsl(var(--blush)));
+    --shadow-soft: 0 14px 35px -24px hsl(var(--foreground) / 0.32);
+    --shadow-card: 0 5px 18px -12px hsl(var(--foreground) / 0.3);
+    --shadow-glow: 0 14px 30px -18px hsl(var(--primary) / 0.55);
   }
 
   .dark {
-    --background: 345 35% 8%;
-    --foreground: 28 40% 98%;
+    --background: 157 19% 9%;
+    --foreground: 36 26% 96%;
 
-    --card: 345 30% 12%;
-    --card-foreground: 28 40% 98%;
+    --card: 157 17% 13%;
+    --card-foreground: 36 26% 96%;
 
-    --popover: 345 30% 12%;
-    --popover-foreground: 28 40% 98%;
+    --popover: 157 17% 13%;
+    --popover-foreground: 36 26% 96%;
 
-    --primary: 345 65% 55%;
-    --primary-foreground: 345 35% 8%;
+    --primary: 345 47% 66%;
+    --primary-foreground: 157 20% 10%;
 
-    --secondary: 345 25% 18%;
-    --secondary-foreground: 28 40% 98%;
+    --secondary: 157 19% 20%;
+    --secondary-foreground: 36 26% 96%;
 
-    --muted: 345 20% 16%;
-    --muted-foreground: 28 20% 70%;
+    --muted: 157 15% 17%;
+    --muted-foreground: 36 15% 72%;
 
-    --accent: 38 85% 60%;
-    --accent-foreground: 345 35% 8%;
+    --accent: 39 57% 61%;
+    --accent-foreground: 157 20% 10%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 28 40% 98%;
 
-    --border: 345 20% 20%;
-    --input: 345 20% 20%;
-    --ring: 345 65% 55%;
+    --border: 157 13% 26%;
+    --input: 157 13% 26%;
+    --ring: 345 47% 66%;
 
-    --blush: 345 40% 25%;
-    --cream: 40 20% 20%;
-    --dusty-rose: 345 35% 35%;
-    --warm-peach: 25 40% 30%;
+    --blush: 345 24% 22%;
+    --cream: 36 18% 18%;
+    --dusty-rose: 345 33% 43%;
+    --warm-peach: 28 30% 31%;
 
-    --gradient-romance: linear-gradient(135deg, hsl(345, 70%, 50%), hsl(345, 65%, 55%));
-    --gradient-hero: linear-gradient(180deg, hsl(345, 30%, 12%), hsl(345, 35%, 8%));
-    --shadow-soft: 0 4px 20px -4px hsl(345, 65%, 25% / 0.5);
-    --shadow-card: 0 2px 12px -2px hsl(345, 55%, 35% / 0.4);
-    --shadow-glow: 0 0 30px hsl(345 65% 45% / 0.5);
+    --burgundy: 350 47% 55%;
+    --lavender: 274 27% 65%;
+    --pastel-blue: 195 29% 62%;
+    --vintage-gold: 40 55% 60%;
+    --quote-background: 157 24% 16%;
+    --quote-foreground: 38 27% 96%;
+
+    --gradient-romance: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--dusty-rose)));
+    --gradient-hero: linear-gradient(180deg, hsl(var(--background)), hsl(var(--blush)));
+    --shadow-soft: 0 14px 35px -24px hsl(0 0% 0% / 0.65);
+    --shadow-card: 0 5px 18px -12px hsl(0 0% 0% / 0.65);
+    --shadow-glow: 0 14px 30px -18px hsl(var(--primary) / 0.4);
   }
 }
 
@@ -219,5 +235,31 @@ All colors MUST be HSL.
   
   .animate-sparkle {
     animation: sparkle 2s ease-in-out infinite;
+  }
+}
+
+@layer components {
+  .editorial-field--hot { background-image: linear-gradient(145deg, hsl(var(--field-wine)), hsl(var(--field-berry))); }
+  .editorial-field--mystical { background-image: linear-gradient(145deg, hsl(var(--field-plum)), hsl(var(--field-ocean))); }
+  .editorial-field--warm { background-image: linear-gradient(145deg, hsl(var(--field-gold)), hsl(var(--field-wine))); }
+  .editorial-field--dark { background-image: linear-gradient(145deg, hsl(var(--field-forest)), hsl(var(--field-wine))); }
+  .editorial-field--soft { background-image: linear-gradient(145deg, hsl(var(--field-rose)), hsl(var(--field-plum))); }
+  .editorial-field--bright { background-image: linear-gradient(145deg, hsl(var(--field-sage)), hsl(var(--field-ocean))); }
+  .editorial-field--regal { background-image: linear-gradient(145deg, hsl(var(--field-wine)), hsl(var(--field-gold))); }
+  .editorial-field--contemporary { background-image: linear-gradient(145deg, hsl(var(--field-ocean)), hsl(var(--field-forest))); }
+  .editorial-field--default { background-image: linear-gradient(145deg, hsl(var(--field-berry)), hsl(var(--field-forest))); }
+
+  .editorial-quote-panel {
+    background-color: hsl(var(--quote-background));
+    color: hsl(var(--quote-foreground));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

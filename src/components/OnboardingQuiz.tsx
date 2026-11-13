@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -118,11 +118,7 @@ const OnboardingQuiz = ({
     return false;
   };
   return <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-lg border-2 border-border">
-        <button onClick={handleSkip} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors">
-          <X className="w-5 h-5" />
-        </button>
-
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto border-border bg-background/95 backdrop-blur-lg">
         <AnimatePresence mode="wait">
           {!showResults ? <motion.div key={step} initial={{
           opacity: 0,
@@ -133,7 +129,7 @@ const OnboardingQuiz = ({
         }} exit={{
           opacity: 0,
           x: -20
-        }} className="space-y-8 pt-4 bg-[#e9a0e2]">
+        }} className="space-y-8 bg-background pt-4">
               {/* Progress Indicator */}
               <div className="flex gap-2 justify-center">
                 {[...Array(totalSteps)].map((_, i) => <div key={i} className={`h-2 w-12 rounded-full transition-all ${i + 1 <= step ? "bg-primary" : "bg-muted"}`} />)}

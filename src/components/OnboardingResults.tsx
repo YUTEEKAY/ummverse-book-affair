@@ -13,7 +13,7 @@ interface OnboardingResultsProps {
 const OnboardingResults = ({
   answers,
   onRetake,
-  onClose
+  onClose: _onClose
 }: OnboardingResultsProps) => {
   const [books, setBooks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ const OnboardingResults = ({
   }} animate={{
     opacity: 1,
     y: 0
-  }} className="space-y-6 bg-[#f29cf2]">
+  }} className="space-y-6 bg-background">
       <div className="text-center space-y-2">
         <motion.div initial={{
         scale: 0

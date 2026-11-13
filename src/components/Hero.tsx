@@ -1,6 +1,7 @@
-import { Heart } from "lucide-react";
+import { ArrowDown, ArrowRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import readingRoom from "@/assets/ummverse-editorial.jpg";
 
 interface HeroProps {
   onDiscoverClick?: () => void;
@@ -8,40 +9,58 @@ interface HeroProps {
 
 const Hero = ({ onDiscoverClick }: HeroProps) => {
   return (
-    <header className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-blush via-cream to-dusty-rose animate-gradient" />
+    <header className="relative isolate flex min-h-[min(660px,82svh)] items-center overflow-hidden bg-foreground text-primary-foreground">
+      <img
+        src={readingRoom}
+        alt="A quiet reading room with an open book and a cup of tea"
+        width={1920}
+        height={1152}
+        fetchPriority="high"
+        className="absolute inset-0 h-full w-full object-cover object-center"
+      />
+      <div className="absolute inset-0 bg-foreground/70" />
+      <div className="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-foreground/80 via-foreground/55 to-transparent" />
 
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }} className="flex justify-center mb-8">
-          <Heart className="w-20 h-20 text-primary fill-primary animate-float" />
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-6 py-7 sm:px-10 lg:px-14">
+        <div className="flex items-center justify-between border-b border-primary-foreground/25 pb-4 text-xs font-medium uppercase tracking-[0.14em] text-primary-foreground/85 sm:text-sm">
+          <span className="flex items-center gap-2"><Heart className="h-4 w-4" /> The Book Affair</span>
+          <a href="#featured-moods" className="inline-flex items-center gap-2 transition-colors hover:text-primary-foreground">
+            Explore the shelves <ArrowDown className="h-4 w-4" />
+          </a>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65 }}
+          className="max-w-2xl py-9 sm:py-12"
+        >
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/80 sm:text-sm">A love letter to your next read</p>
+          <h1 className="mb-4 font-serif text-6xl font-semibold leading-[0.92] text-primary-foreground sm:text-7xl lg:text-8xl">
+            Ummverse<span className="text-accent">.</span>
+          </h1>
+          <p className="max-w-xl font-serif text-2xl leading-snug text-primary-foreground sm:text-3xl lg:text-4xl">
+            Find romance that feels right — not by genre, but by emotion.
+          </p>
+          <p className="mt-3 font-serif text-base italic text-primary-foreground/80 sm:text-lg">
+            Fall for the words. Stay for the feels.
+          </p>
+
+          <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Button
+              type="button"
+              onClick={onDiscoverClick}
+              size="lg"
+              className="h-12 gap-2 rounded-md bg-primary-foreground px-5 font-semibold text-primary shadow-soft hover:bg-primary-foreground/90"
+            >
+              Discover by feeling <ArrowRight className="h-4 w-4" />
+            </Button>
+            <a href="#featured-moods" className="inline-flex items-center gap-2 text-sm font-medium text-primary-foreground transition-colors hover:text-accent">
+              Browse moods <ArrowDown className="h-4 w-4" />
+            </a>
+          </div>
         </motion.div>
-
-        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.6 }} className="text-6xl md:text-8xl font-bold mb-6 font-serif text-primary" style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.15)" }}>
-          Ummverse
-        </motion.h1>
-
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7, duration: 0.6 }} className="text-2xl md:text-4xl font-serif mb-3 text-foreground leading-relaxed" style={{ textShadow: "0 1px 2px rgba(0, 0, 0, 0.1)" }}>
-          Find romance that feels right — not by genre, but by emotion.
-        </motion.p>
-
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9, duration: 0.6 }} className="text-lg md:text-xl text-muted-foreground mb-12 italic font-serif" style={{ textShadow: "0 1px 2px rgba(0, 0, 0, 0.1)" }}>
-          Fall for the words. Stay for the feels.
-        </motion.p>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1, duration: 0.6 }} className="flex justify-center">
-          <Button type="button" onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (onDiscoverClick) {
-              onDiscoverClick();
-            } else {
-              document.getElementById('featured-moods')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }} size="lg" className="text-xl px-12 py-7 rounded-2xl shadow-soft hover:shadow-glow hover:scale-105 transition-all duration-300 bg-gradient-romance font-semibold border-none [text-shadow:_0_2px_8px_rgb(0_0_0_/_30%)] text-red-900 bg-[#d495c0]/95">
-            Discover by Feeling
-          </Button>
-        </motion.div>
-      </motion.div>
+      </div>
     </header>
   );
 };

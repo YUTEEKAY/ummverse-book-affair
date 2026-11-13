@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/carousel";
 import { motion } from "framer-motion";
 import BookCard from "@/components/BookCard";
-import { TrendingUp } from "lucide-react";
+import { ArrowRight, TrendingUp } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface Book {
   id: string;
@@ -36,14 +37,10 @@ const MostSearchedBooksCarousel = () => {
         .select('book_id')
         .gte('created_at', thirtyDaysAgo.toISOString());
 
-      if (error) {
-        console.error('Error fetching views:', error);
-        setLoading(false);
-        return;
-      }
+      if (error) console.error('Error fetching views:', error);
 
       // Count views per book
-      const viewCounts = viewData.reduce((acc, view) => {
+      const viewCounts = (viewData || []).reduce((acc, view) => {
         acc[view.book_id] = (acc[view.book_id] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
@@ -55,7 +52,7 @@ const MostSearchedBooksCarousel = () => {
         .map(([id]) => id);
 
       if (topBookIds.length === 0) {
-        // Fallback: show highest rated books if no views yet
+        // Fallback: show highest rated books if no views are available yet.
         const { data: fallbackBooks } = await supabase
           .from('books')
           .select('id, title, author, cover_url, rating, heat_level')
@@ -94,24 +91,20 @@ const MostSearchedBooksCarousel = () => {
   if (loading || books.length === 0) return null;
 
   return (
-    <section className="py-16 px-6 bg-gradient-to-b from-background to-dusty-rose/10">
+    <section aria-labelledby="popular-books-title" className="px-6 py-14 sm:py-20">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="mb-8 flex flex-col justify-between gap-3 sm:mb-10 sm:flex-row sm:items-end"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <TrendingUp className="w-8 h-8 text-primary" />
-            <h2 className="text-4xl md:text-5xl font-serif text-primary">
-              Most Searched Books
-            </h2>
+          <div>
+            <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary"><TrendingUp className="h-4 w-4" /> Reader favorites</p>
+            <h2 id="popular-books-title" className="font-serif text-4xl font-semibold text-foreground sm:text-5xl">One more chapter.</h2>
           </div>
-          <p className="text-lg text-muted-foreground italic">
-            What romance readers are discovering right now
-          </p>
+          <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">Books readers are exploring right now.</p>
         </motion.div>
 
         <Carousel
@@ -136,6 +129,11 @@ const MostSearchedBooksCarousel = () => {
             <CarouselNext className="shadow-soft" />
           </div>
         </Carousel>
+        <div className="mt-7 flex justify-end">
+          <Link to="/mood" className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-foreground">
+            Browse all moods <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </div>
     </section>
   );

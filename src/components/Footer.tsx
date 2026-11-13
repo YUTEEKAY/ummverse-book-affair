@@ -1,9 +1,8 @@
-import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 const Footer = () => {
-  return <footer className="relative py-12 px-6 bg-gradient-to-t from-blush/30 to-background border-t border-dusty-rose/20">
+  return <footer className="relative border-t border-border bg-secondary/50 px-6 py-12">
       <div className="max-w-4xl mx-auto text-center space-y-8">
         <motion.div initial={{
         opacity: 0,
@@ -73,7 +72,7 @@ const Footer = () => {
         duration: 0.6
       }} className="text-xs text-muted-foreground/80 space-y-2">
           <p>
-            © 2025 Ummverse: The Book Affair • All Rights Reserved
+          © 2026 Ummverse: The Book Affair • All Rights Reserved
           </p>
           
         </motion.div>

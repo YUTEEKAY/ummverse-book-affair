@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { ArrowUpRight } from "lucide-react";
 
 interface Mood {
   id: string;
@@ -14,15 +14,15 @@ interface Mood {
   genre_list: string[] | null;
 }
 
-const moodGradients: Record<string, string> = {
-  hot: "bg-gradient-to-br from-red-500 via-rose-500 to-pink-500",
-  mystical: "bg-gradient-to-br from-purple-600 via-indigo-500 to-blue-500",
-  warm: "bg-gradient-to-br from-amber-400 via-orange-300 to-yellow-300",
-  dark: "bg-gradient-to-br from-slate-800 via-purple-900 to-black",
-  soft: "bg-gradient-to-br from-pink-400 via-rose-300 to-purple-300",
-  bright: "bg-gradient-to-br from-yellow-400 via-lime-400 to-green-400",
-  regal: "bg-gradient-to-br from-purple-700 via-fuchsia-600 to-pink-600",
-  default: "bg-gradient-to-br from-rose-400 via-pink-400 to-purple-400",
+const moodFields: Record<string, string> = {
+  hot: "editorial-field--hot",
+  mystical: "editorial-field--mystical",
+  warm: "editorial-field--warm",
+  dark: "editorial-field--dark",
+  soft: "editorial-field--soft",
+  bright: "editorial-field--bright",
+  regal: "editorial-field--regal",
+  default: "editorial-field--default",
 };
 
 const featuredMoodNames = [
@@ -34,7 +34,6 @@ const featuredMoodNames = [
 
 const FeaturedMoods = () => {
   const [moods, setMoods] = useState<Mood[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -73,36 +72,45 @@ const FeaturedMoods = () => {
   };
 
   return (
-    <section id="featured-moods" className="py-20 px-6 bg-gradient-to-b from-background to-blush/10">
+    <section id="featured-moods" className="scroll-mt-8 px-6 py-14 sm:py-20">
       <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-8 flex flex-col justify-between gap-3 sm:mb-10 sm:flex-row sm:items-end"
+        >
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">Find your feeling</p>
+            <h2 className="font-serif text-4xl font-semibold text-foreground sm:text-5xl">Choose the mood.</h2>
+          </div>
+          <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">Some days call for a little danger. Others, a softer place to land.</p>
+        </motion.div>
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
         >
           {moods.map((mood) => {
-            const gradientClass = moodGradients[mood.color_theme || ""] || moodGradients.default;
+            const fieldClass = moodFields[mood.color_theme || ""] || moodFields.default;
 
             return (
               <motion.div key={mood.id} variants={item}>
-                <Card
-                  onClick={() => navigate(`/mood/${mood.id}`)}
-                  className={`group relative overflow-hidden rounded-3xl shadow-soft hover:shadow-glow-strong transition-all duration-500 cursor-pointer h-72 border-none ${gradientClass}`}
+                <Link
+                  to={`/mood/${mood.id}`}
+                  className={`group relative flex min-h-52 flex-col justify-between overflow-hidden rounded-md p-5 text-primary-foreground shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:min-h-60 sm:p-6 ${fieldClass}`}
                 >
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
-                  <div className="relative h-full flex flex-col items-center justify-center p-8 text-center text-white">
-                    <h3 className="text-3xl md:text-4xl font-serif font-bold mb-3 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg">
-                      {mood.name}
-                    </h3>
-                    {mood.tagline && (
-                      <p className="text-base md:text-lg italic opacity-90 drop-shadow-md">
-                        {mood.tagline}
-                      </p>
-                    )}
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground/70">Read by feeling</span>
+                    <ArrowUpRight className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </div>
-                </Card>
+                  <div>
+                    <h3 className="max-w-[15ch] font-serif text-3xl font-semibold leading-tight sm:text-4xl">{mood.name}</h3>
+                    {mood.tagline && <p className="mt-2 max-w-[30ch] text-sm leading-relaxed text-primary-foreground/80">{mood.tagline}</p>}
+                  </div>
+                </Link>
               </motion.div>
             );
           })}

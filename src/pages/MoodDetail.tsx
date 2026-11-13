@@ -27,11 +27,12 @@ interface Book {
 }
 
 const moodGradients: Record<string, string> = {
-  warm: "from-warm-peach via-blush to-dusty-rose",
-  hot: "from-red-400 via-orange-400 to-yellow-400",
-  mystical: "from-purple-400 via-blue-400 to-indigo-400",
-  regal: "from-purple-900 via-red-900 to-amber-700",
-  default: "from-blush via-dusty-rose to-warm-peach",
+  warm: "editorial-field--warm",
+  hot: "editorial-field--hot",
+  mystical: "editorial-field--mystical",
+  regal: "editorial-field--regal",
+  dark: "editorial-field--dark",
+  default: "editorial-field--default",
 };
 
 const MoodDetail = () => {
@@ -119,7 +120,7 @@ const MoodDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <div className={`bg-gradient-to-br ${gradientClass} py-20 px-6`}>
+        <div className={`${gradientClass} px-6 py-20`}>
           <div className="max-w-6xl mx-auto">
             <Skeleton className="h-10 w-32 mb-8" />
             <Skeleton className="h-16 w-64 mb-4" />
@@ -165,7 +166,7 @@ const MoodDetail = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className={`bg-gradient-to-br ${gradientClass} py-20 px-6 relative overflow-hidden`}
+        className={`${gradientClass} relative overflow-hidden px-6 py-16`}
       >
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-black/20" />
