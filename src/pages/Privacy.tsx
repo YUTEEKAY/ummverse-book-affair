@@ -1,198 +1,36 @@
-import { motion } from "framer-motion";
-import { ArrowLeft, Shield } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { UserMenu } from "@/components/UserMenu";
-import Footer from "@/components/Footer";
+import { LegalPage } from "@/components/LegalPage";
 
-const Privacy = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-blush/10 to-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <Link to="/">
-            <Button variant="ghost" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
-          <UserMenu />
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="container py-12 md:py-16"
-      >
-        <div className="flex flex-col items-center text-center space-y-4">
-          <Shield className="h-16 w-16 text-primary" />
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
-            Privacy Policy
-          </h1>
-          <Badge variant="secondary" className="text-sm">
-            Last updated: October 2025
-          </Badge>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Your privacy matters to us. This Policy explains what data Ummverse collects and how it is used.
-          </p>
-        </div>
-      </motion.section>
-
-      {/* Content */}
-      <div className="container pb-16">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          className="max-w-4xl mx-auto space-y-6"
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">1. Data We Collect</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none space-y-4">
-              <div>
-                <h4 className="font-semibold text-foreground mb-2">Non-personal Data:</h4>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                  <li>Device information</li>
-                  <li>Browser type and version</li>
-                  <li>IP address</li>
-                  <li>Usage data and analytics</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-2">Optional Data:</h4>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                  <li>Email address (for subscriptions)</li>
-                  <li>Review texts</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">2. How We Use Data</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                <li>To deliver book recommendations</li>
-                <li>To improve user experience</li>
-                <li>To send transactional or service-related emails</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">3. Third Parties</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none space-y-4">
-              <div>
-                <h4 className="font-semibold text-foreground mb-2">Payment Processing:</h4>
-                <p className="text-muted-foreground">
-                  Payments are handled securely via <strong>Lemon Squeezy</strong>
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-2">Book Data:</h4>
-                <p className="text-muted-foreground">
-                  Book information sourced from <strong>Google Books API</strong> & <strong>Open Library API</strong>
-                </p>
-              </div>
-              <p className="text-foreground font-semibold">
-                We do not sell or trade your personal data.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">4. Cookies</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p className="text-muted-foreground">
-                We use cookies for analytics and session management. You can disable cookies in your browser settings.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">5. Data Retention</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p className="text-muted-foreground">
-                Analytics data is stored for up to <strong>12 months</strong>. User data can be deleted upon request to{" "}
-                <a href="mailto:support@ummverse.com.ng" className="text-primary hover:underline">
-                  support@ummverse.com.ng
-                </a>
-                .
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">6. Security</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p className="text-muted-foreground">
-                All data is transmitted over <strong>HTTPS</strong>. We follow best practices to protect your data.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">7. Children's Privacy</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p className="text-muted-foreground">
-                We do not knowingly collect data from users under <strong>18 years old</strong>. If detected, such data will be deleted immediately.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">8. Changes</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p className="text-muted-foreground">
-                We may update this policy and will notify users through website notice or email.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-blush/20 to-dusty-rose/20 border-dusty-rose/30">
-            <CardHeader>
-              <CardTitle className="font-serif">Contact Us</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <p className="text-muted-foreground">
-                <strong>Email:</strong>{" "}
-                <a href="mailto:support@ummverse.com.ng" className="text-primary hover:underline">
-                  support@ummverse.com.ng
-                </a>
-              </p>
-              <p className="text-muted-foreground">
-                <strong>Address:</strong> Remote, Abuja, Nigeria
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-
-      <Footer />
-    </div>
-  );
-};
-
+const Privacy = () => (
+  <LegalPage
+    title="Privacy Policy"
+    updated="13 November 2026"
+    intro="Ummverse – The Book Affair is owned, operated and managed by Ummverse Ventures, which is responsible for your personal data. This policy explains what we collect and why."
+    sections={[
+      { heading: "What we collect", body: <ul>
+        <li><strong>Google account information</strong> when you sign in: your name, email address and profile picture.</li>
+        <li><strong>Reading activity:</strong> quiz answers and results, saved books and reviews you write.</li>
+        <li><strong>Trial usage:</strong> how many of your 2 free tries you have used, stored against your account.</li>
+        <li><strong>Device identifier for trial enforcement:</strong> a small counter saved in your browser's local storage so tries can be counted before you sign in. We do not use invasive fingerprinting.</li>
+        <li><strong>Subscription details</strong> from our payment partner: plan, status and renewal date. We never see or store your full card details.</li>
+      </ul> },
+      { heading: "How we use it", body: <p>To run your account, give recommendations, enforce the free-trial limit, provide Premium features, process subscriptions, prevent abuse, and improve the site.</p> },
+      { heading: "Storage & security", body: <p>Your data is stored securely with Supabase, our cloud database provider, with access rules that limit each person to their own data. Only authorised Ummverse Ventures administrators can view account data, for support and moderation.</p> },
+      { heading: "We never sell your data", body: <p><strong>Ummverse Ventures never sells, rents or trades your personal data to third parties.</strong></p> },
+      { heading: "Service providers", body: <ul>
+        <li><strong>Google</strong> – sign-in.</li>
+        <li><strong>Paddle</strong> – payments and subscription management (merchant of record).</li>
+        <li><strong>Supabase</strong> – secure data storage and authentication.</li>
+        <li><strong>Vercel Analytics & Speed Insights</strong> – anonymous traffic and performance measurement.</li>
+        <li><strong>Google Fonts and Open Library</strong> – fonts and book covers load from their servers, which receive your IP address.</li>
+      </ul> },
+      { heading: "Site analytics", body: <>
+        <p>We also use Lovable's built-in visitor analytics. It uses no cookies, stores nothing on your device, doesn't keep IP addresses and doesn't identify visitors. Lovable collects this data for us. <a href="https://lovable.dev/privacy" target="_blank" rel="noreferrer">Lovable's privacy policy</a> explains how it handles it.</p>
+        <p>It records the pages visited, where visitors came from, their country, browser, operating system and device type, how long they stay, how fast pages load, errors, and which buttons and links are clicked. This is recorded for every visitor. Detailed data is kept for 90 days and daily summaries for a year.</p>
+      </> },
+      { heading: "Your browser's storage", body: <p>We store your sign-in session and free-try counter in your browser's local storage. These are needed for the site to work.</p> },
+      { heading: "Retention & your rights", body: <p>We keep your data while your account is active. You can ask to access, correct or delete your data, or close your account, by emailing us. You may also have rights under the Nigeria Data Protection Act 2023 and other local laws.</p> },
+      { heading: "Contact", body: <p>Ummverse Ventures – <a href="mailto:hello@ummverse.com.ng">hello@ummverse.com.ng</a>.</p> },
+    ]}
+  />
+);
 export default Privacy;

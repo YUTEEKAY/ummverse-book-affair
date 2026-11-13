@@ -1,187 +1,36 @@
-import { motion } from "framer-motion";
-import { ArrowLeft, Scale } from "lucide-react";
+import { LegalPage } from "@/components/LegalPage";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { UserMenu } from "@/components/UserMenu";
-import Footer from "@/components/Footer";
 
-const Terms = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-blush/10 to-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <Link to="/">
-            <Button variant="ghost" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
-          <UserMenu />
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="container py-12 md:py-16"
-      >
-        <div className="flex flex-col items-center text-center space-y-4">
-          <Scale className="h-16 w-16 text-primary" />
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
-            Terms & Conditions
-          </h1>
-          <Badge variant="secondary" className="text-sm">
-            Last updated: October 2025
-          </Badge>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Please read these terms carefully before using Ummverse: The Book Affair
-          </p>
-        </div>
-      </motion.section>
-
-      {/* Content */}
-      <div className="container pb-16">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          className="max-w-4xl mx-auto space-y-6"
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">Welcome</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p>
-                Welcome to Ummverse: The Book Affair ("the Platform"). By using this website
-                (https://ummverse.com.ng) and services, you agree to these Terms & Conditions ("Terms"). If you
-                do not agree, please discontinue use.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">1. Eligibility & Accounts</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p>
-                You must be at least <strong>18 years old</strong> (or the age of majority in your jurisdiction). You may use the
-                Platform anonymously or via guest access. Premium features require subscription.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">2. Subscription & Payment</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p>
-                Access to certain content and features requires a paid subscription processed via Lemon Squeezy.
-                Payments are <strong>non-refundable</strong> unless required by law.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">3. User Conduct</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p>
-                You may leave anonymous reviews but must not post illegal, obscene, or defamatory content. We
-                reserve the right to remove violating content.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">4. Intellectual Property</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p>
-                All content, branding, and designs on Ummverse are property of Ummverse or licensed to it. You
-                may not copy or reuse brand elements without permission.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">5. Disclaimer of Warranties</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p>
-                The Platform is provided <strong>"as is"</strong>. Ummverse disclaims all warranties, express or implied, including
-                fitness for a particular purpose.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">6. Limitation of Liability</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p>
-                Ummverse shall not be liable for damages arising from use or inability to use the Platform.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">7. Governing Law</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p>
-                These Terms are governed by the laws of the <strong>Federal Republic of Nigeria</strong>. Disputes shall be
-                resolved in Abuja courts.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif">8. Changes</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-slate max-w-none">
-              <p>
-                Ummverse may revise these Terms at any time with notice via website or email.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-blush/20 to-dusty-rose/20 border-dusty-rose/30">
-            <CardHeader>
-              <CardTitle className="font-serif">Contact Us</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <p className="text-muted-foreground">
-                <strong>Email:</strong>{" "}
-                <a href="mailto:support@ummverse.com.ng" className="text-primary hover:underline">
-                  support@ummverse.com.ng
-                </a>
-              </p>
-              <p className="text-muted-foreground">
-                <strong>Address:</strong> Remote, Abuja, Nigeria
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-
-      <Footer />
-    </div>
-  );
-};
-
+const Terms = () => (
+  <LegalPage
+    title="Terms of Service"
+    updated="13 November 2026"
+    intro="Ummverse – The Book Affair (“Ummverse”) is owned, operated and managed by Ummverse Ventures, a registered Business Name. By using Ummverse you agree to these terms."
+    sections={[
+      { heading: "Who we are", body: <p>References to “we”, “us” or “our” mean Ummverse Ventures, the owner and operator of Ummverse. Ummverse helps readers discover romance books by mood, trope and spice level.</p> },
+      { heading: "Accounts", body: <p>You can sign in with your Google account. You are responsible for activity on your account and must give accurate information. You must be old enough to form a binding contract where you live.</p> },
+      { heading: "Free trials", body: <p>Every visitor gets <strong>2 free tries</strong> (for example, quiz recommendations). Tries are counted per browser and per account, and carry over when you sign in. After 2 tries, a paid subscription is required to continue.</p> },
+      { heading: "Subscriptions & billing", body: <>
+        <ul>
+          <li><strong>Monthly:</strong> $5 USD per month.</li>
+          <li><strong>Annual:</strong> $60 USD per year.</li>
+        </ul>
+        <p>Subscriptions <strong>renew automatically</strong> at the end of each billing period at the then-current price until you cancel. Payments are processed by our payment partner, Paddle, which acts as the merchant of record. You can cancel any time from your dashboard's billing portal; cancellation stops future renewals and access continues until the end of the paid period. See our <Link to="/refunds">Refund Policy</Link>.</p>
+        <p>We may change prices with advance notice; changes apply from your next renewal.</p>
+      </> },
+      { heading: "Third-party vendor disclaimer", body: <>
+        <p>Ummverse acts <strong>strictly as an informational and discovery directory</strong> for book vendors, including Instagram vendors, online stores and local bookstores. We do not sell books, take payment for books, or act as an agent for any vendor.</p>
+        <p>Any purchase, communication or arrangement you make with a vendor is solely between you and that vendor. <strong>Ummverse Ventures assumes zero liability</strong> for any transaction, dispute, payment, delivery or shipping issue, product quality, misrepresentation or fraud arising between you and any third-party vendor listed on the platform. Listing a vendor is not an endorsement or guarantee. Please do your own checks before paying anyone.</p>
+      </> },
+      { heading: "User conduct & reviews", body: <>
+        <p>You agree not to post content that is unlawful, hateful, harassing, sexually explicit beyond book discussion, spam, misleading, or that infringes others' rights, and not to misuse, scrape or disrupt the service.</p>
+        <p>We reserve the right to edit or remove any review or content, and to suspend or terminate any account that violates these terms or our platform standards, at our discretion and without prior notice. You keep ownership of your reviews but grant us a licence to display them on Ummverse.</p>
+      </> },
+      { heading: "Content & intellectual property", body: <p>Book descriptions, covers and metadata may come from publishers and public sources such as Open Library and belong to their owners. The Ummverse name, design and original content belong to Ummverse Ventures.</p> },
+      { heading: "Disclaimers & limitation of liability", body: <p>Ummverse is provided “as is”. Recommendations, spice levels and content warnings are guidance only. To the fullest extent permitted by law, Ummverse Ventures is not liable for indirect or consequential losses, and our total liability is limited to the amount you paid us in the 12 months before the claim.</p> },
+      { heading: "Changes & governing law", body: <p>We may update these terms and will post the new date above. These terms are governed by the laws of the Federal Republic of Nigeria.</p> },
+      { heading: "Contact", body: <p>Questions? Contact Ummverse Ventures at <a href="mailto:hello@ummverse.com.ng">hello@ummverse.com.ng</a>.</p> },
+    ]}
+  />
+);
 export default Terms;

@@ -1,82 +1,25 @@
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { Separator } from "@/components/ui/separator";
-const Footer = () => {
-  return <footer className="relative border-t border-border bg-secondary/50 px-6 py-12">
-      <div className="max-w-4xl mx-auto text-center space-y-8">
-        <motion.div initial={{
-        opacity: 0,
-        y: 20
-      }} whileInView={{
-        opacity: 1,
-        y: 0
-      }} viewport={{
-        once: true
-      }} transition={{
-        duration: 0.6
-      }} className="flex items-center justify-center gap-2">
-          <p className="text-lg text-muted-foreground font-serif">
-            Made with love and reverence for every romantic soul — where passion meets pages and stories breathe tenderness.
-          </p>
-          
-        </motion.div>
+import { Link, useLocation } from "react-router-dom";
 
-        <motion.p initial={{
-        opacity: 0
-      }} whileInView={{
-        opacity: 1
-      }} viewport={{
-        once: true
-      }} transition={{
-        delay: 0.3,
-        duration: 0.6
-      }} className="text-sm text-muted-foreground italic">
-          Where every page turns into a love story
-        </motion.p>
+const Footer = () => (
+  <footer className="border-t border-border bg-secondary/50 px-6 py-10">
+    <div className="mx-auto max-w-4xl space-y-4 text-center">
+      <p className="font-serif text-muted-foreground">Where every page turns into a love story</p>
+      <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
+        <Link to="/terms" className="text-muted-foreground hover:text-primary">Terms of Service</Link>
+        <Link to="/privacy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link>
+        <Link to="/refunds" className="text-muted-foreground hover:text-primary">Refund Policy</Link>
+        <Link to="/disclaimer" className="text-muted-foreground hover:text-primary">Disclaimer</Link>
+      </nav>
+      <p className="text-xs text-muted-foreground/80">© {new Date().getFullYear()} Ummverse – The Book Affair is owned and operated by Ummverse Ventures. All rights reserved.</p>
+    </div>
+  </footer>
+);
 
-        <Separator className="max-w-xs mx-auto" />
+export function SiteFooter() {
+  // Rendered once for the whole site; the admin area has its own layout.
+  const { pathname } = useLocation();
+  if (pathname.startsWith("/admin")) return null;
+  return <Footer />;
+}
 
-        {/* Legal Links */}
-        <motion.nav initial={{
-        opacity: 0
-      }} whileInView={{
-        opacity: 1
-      }} viewport={{
-        once: true
-      }} transition={{
-        delay: 0.4,
-        duration: 0.6
-      }} className="flex flex-wrap items-center justify-center gap-2 text-sm" aria-label="Legal">
-          <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors">
-            Terms & Conditions
-          </Link>
-          <span className="text-muted-foreground/50">•</span>
-          <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
-            Privacy Policy
-          </Link>
-          <span className="text-muted-foreground/50">•</span>
-          <Link to="/disclaimer" className="text-muted-foreground hover:text-primary transition-colors">
-            Disclaimer
-          </Link>
-        </motion.nav>
-
-        {/* Contact & Copyright */}
-        <motion.div initial={{
-        opacity: 0
-      }} whileInView={{
-        opacity: 1
-      }} viewport={{
-        once: true
-      }} transition={{
-        delay: 0.5,
-        duration: 0.6
-      }} className="text-xs text-muted-foreground/80 space-y-2">
-          <p>
-          © 2026 Ummverse: The Book Affair • All Rights Reserved
-          </p>
-          
-        </motion.div>
-      </div>
-    </footer>;
-};
 export default Footer;

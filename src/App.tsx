@@ -17,6 +17,8 @@ import SignIn from "./pages/SignIn";
 import Dashboard from "./pages/Dashboard";
 import { ProtectedUserRoute } from "./components/ProtectedUserRoute";
 import Admin from "./pages/Admin";
+import Refunds from "./pages/Refunds";
+import { SiteFooter } from "@/components/Footer";
 import AdminImport from "./pages/AdminImport";
 import AdminAuth from "./pages/AdminAuth";
 import Terms from "./pages/Terms";
@@ -61,10 +63,12 @@ const App = () => (
             />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/refunds" element={<Refunds />} />
             <Route path="/disclaimer" element={<Disclaimer />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <SiteFooter />
         </BrowserRouter>
         <SpeedInsights />
         <Analytics />
