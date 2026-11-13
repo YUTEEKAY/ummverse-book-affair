@@ -7,6 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedAdminRoute } from "@/components/ProtectedAdminRoute";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import Index from "./pages/Index";
 import MoodDetail from "./pages/MoodDetail";
 import GenreDetail from "./pages/GenreDetail";
@@ -28,6 +29,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <PaymentTestModeBanner />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />

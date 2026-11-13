@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import OnboardingResults from "./OnboardingResults";
+import { UpgradeModal } from "./UpgradeModal";
+import { useTrialGate } from "@/hooks/useTrialGate";
 import { saveOnboardingData, type QuizAnswers } from "@/lib/quizStorage";
 import { mapFeelingToMood } from "@/lib/quizLogic";
 interface OnboardingQuizProps {
@@ -18,6 +20,9 @@ const OnboardingQuiz = ({
 }: OnboardingQuizProps) => {
   const [step, setStep] = useState(1);
   const [showResults, setShowResults] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const { consume } = useTrialGate();
   const [answers, setAnswers] = useState<QuizAnswers>({
     feeling: "",
     trope: "",
@@ -79,10 +84,17 @@ const OnboardingQuiz = ({
     label: "Scorching",
     desc: "Explicit, no limits"
   }];
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      setChecking(true);
+      const allowed = await consume();
+      setChecking(false);
+      if (!allowed) {
+        setShowUpgrade(true);
+        return;
+      }
       // Submit quiz
       const recommendedMood = mapFeelingToMood(answers.feeling);
       saveOnboardingData(answers, recommendedMood);
@@ -117,7 +129,9 @@ const OnboardingQuiz = ({
     if (step === 3) return answers.heatLevel !== "";
     return false;
   };
-  return <Dialog open={open} onOpenChange={onClose}>
+  return <>
+    <UpgradeModal open={showUpgrade} onClose={() => setShowUpgrade(false)} />
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto border-border bg-background/95 backdrop-blur-lg">
         <AnimatePresence mode="wait">
           {!showResults ? <motion.div key={step} initial={{
@@ -248,7 +262,7 @@ const OnboardingQuiz = ({
                   Skip for now
                 </Button>
 
-                <Button onClick={handleNext} disabled={!canProceed()} size="lg" className="gap-2">
+                <Button onClick={handleNext} disabled={!canProceed() || checking} size="lg" className="gap-2">
                   {step === totalSteps ? "Show Results" : "Next"}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -256,6 +270,7 @@ const OnboardingQuiz = ({
             </motion.div> : <OnboardingResults answers={answers} onRetake={handleRetake} onClose={onClose} />}
         </AnimatePresence>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  </>;
 };
 export default OnboardingQuiz;

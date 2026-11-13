@@ -41,3 +41,9 @@ verify_jwt = true
 
 [functions.generate-quote]
 verify_jwt = false
+
+[functions.payments-webhook]
+verify_jwt = false
+
+[functions.get-paddle-price]
+verify_jwt = false
