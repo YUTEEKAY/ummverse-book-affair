@@ -5,3 +5,4 @@
 - Run AI book enrichment through the `ai-enrich-book` backend function (admin-only), so the AI key and prompts stay on the server.
 - Signed-in reader pages (`/dashboard`) sit behind `ProtectedUserRoute`, which sends visitors to `/signin?next=…`; Google sign-in returns to `/signin`, which then forwards to the saved path, because OAuth must return to a public page.
 - Show vendor contact details only through the `get_book_vendors` database function: it returns only a seller count to free visitors and full details to paid members and admins, because direct vendor table reads are locked to paid members and admins.
+- Admin checks send a current session token, discard results after account changes, and validate claims plus `has_role` server-side; this avoids signed-out request races without granting client-side privileges.

@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
 
   try {
     const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
+    if (!authHeader?.startsWith('Bearer ') || !authHeader.slice(7).trim()) {
       return new Response(
         JSON.stringify({ isAdmin: false, error: 'No authorization header' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
@@ -21,14 +21,15 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
     )
 
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    const token = authHeader.slice(7).trim()
+    const { data, error: authError } = await supabase.auth.getClaims(token)
+    const userId = data?.claims?.sub
 
-    if (authError || !user) {
-      console.error('Auth error:', authError)
+    if (authError || !userId || data?.claims?.role !== 'authenticated') {
       return new Response(
         JSON.stringify({ isAdmin: false, error: 'Invalid token' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
@@ -36,23 +37,22 @@ Deno.serve(async (req) => {
     }
 
     // Check if user has admin role
-    const { data: roles, error: roleError } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('role', 'admin')
-      .single()
+    const { data: hasAdminRole, error: roleError } = await supabase.rpc('has_role', {
+      _user_id: userId,
+      _role: 'admin',
+    })
 
     if (roleError) {
-      console.log('No admin role found for user:', user.email)
+      console.error('Admin role lookup failed:', roleError.code)
+      return new Response(JSON.stringify({ isAdmin: false, error: 'Unable to check role' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500,
+      })
     }
 
-    const isAdmin = !!roles
-
-    console.log(`Admin check for ${user.email}: ${isAdmin}`)
+    const isAdmin = hasAdminRole === true
 
     return new Response(
-      JSON.stringify({ isAdmin, userId: user.id, email: user.email }),
+      JSON.stringify({ isAdmin, userId }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
