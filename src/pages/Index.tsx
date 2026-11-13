@@ -4,6 +4,7 @@ import Hero from "@/components/Hero";
 import FeaturedMoods from "@/components/FeaturedMoods";
 import FeaturedTropes from "@/components/FeaturedTropes";
 import MostSearchedBooksCarousel from "@/components/MostSearchedBooksCarousel";
+import HowItWorks from "@/components/HowItWorks";
 import TodaysQuote from "@/components/TodaysQuote";
 import Footer from "@/components/Footer";
 import OnboardingQuiz from "@/components/OnboardingQuiz";
@@ -25,6 +26,7 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <Hero onDiscoverClick={handleDiscoverClick} />
+      <HowItWorks />
       <TodaysQuote />
       <FeaturedMoods />
       <MostSearchedBooksCarousel />
