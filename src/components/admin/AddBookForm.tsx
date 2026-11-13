@@ -23,7 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
+import { aiEnrichBook } from '@/lib/aiEnrich';
 
 const bookFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -50,6 +51,27 @@ interface AddBookFormProps {
 
 export function AddBookForm({ onSuccess }: AddBookFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEnriching, setIsEnriching] = useState(false);
+
+  const handleAiFill = async () => {
+    const title = form.getValues('title').trim();
+    if (!title) { form.setError('title', { message: 'Enter a title first' }); return; }
+    setIsEnriching(true);
+    try {
+      const { enrichment: e } = await aiEnrichBook({ title, author: form.getValues('author').trim() || undefined });
+      const opts = { shouldDirty: true, shouldValidate: true };
+      form.setValue('summary', e.description, opts);
+      if (e.genres[0]) form.setValue('genre', e.genres[0], opts);
+      if (e.mood_tags[0]) form.setValue('mood', e.mood_tags[0], opts);
+      if (e.cover_url) form.setValue('cover_url', e.cover_url, opts);
+      if (e.isbn13 && !form.getValues('isbn13')) form.setValue('isbn13', e.isbn13, opts);
+      toast.success('Filled in with AI', { description: e.themes.length ? `Themes: ${e.themes.join(', ')}` : undefined });
+    } catch (err: any) {
+      toast.error('AI enrichment failed', { description: err.message });
+    } finally {
+      setIsEnriching(false);
+    }
+  };
 
   const form = useForm<BookFormValues>({
     resolver: zodResolver(bookFormSchema),
@@ -114,6 +136,16 @@ export function AddBookForm({ onSuccess }: AddBookFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
+          <div className="flex-1 text-sm">
+            <p className="font-medium">AI Book Enricher</p>
+            <p className="text-muted-foreground">Enter a title (and author if you know it), then let AI fill in the synopsis, genre, mood and cover.</p>
+          </div>
+          <Button type="button" variant="secondary" onClick={handleAiFill} disabled={isEnriching}>
+            {isEnriching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+            {isEnriching ? 'Enriching…' : 'Fill with AI'}
+          </Button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}

@@ -1,8 +1,5 @@
 project_id = "spwlnjuqephrodvymixr"
 
-[functions.submit-review]
-verify_jwt = true
-
 [functions.fetch-book-data]
 verify_jwt = false
 
@@ -46,4 +43,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.get-paddle-price]
+verify_jwt = false
+
+[functions.ai-enrich-book]
 verify_jwt = false

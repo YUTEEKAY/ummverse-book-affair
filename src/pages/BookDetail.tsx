@@ -19,6 +19,8 @@ import { useToast } from "@/hooks/use-toast";
 import SimilarBooksSection from "@/components/SimilarBooksSection";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBookEnrichment } from "@/hooks/useBookEnrichment";
+import { useSubscription } from "@/hooks/useSubscription";
+import { UpgradeModal } from "@/components/UpgradeModal";
 
 interface Book {
   id: string;
@@ -49,7 +51,11 @@ const BookDetail = () => {
   const { bookId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
+  const { isActive: isPaid } = useSubscription();
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const canReview = isPaid;
   const { enrichBook } = useBookEnrichment();
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -86,30 +92,32 @@ const BookDetail = () => {
           view_type: 'detail_page'
         });
 
-        // Fetch reviews
-        const { data: reviewsData } = await supabase
-          .from("reviews")
-          .select("id, review_text, pen_name, hearts, timestamp")
-          .eq("book_id", bookId)
-          .order("timestamp", { ascending: false });
-
-        if (reviewsData) {
-          const mappedReviews = reviewsData.map(review => ({
-            id: review.id,
-            review_text: review.review_text,
-            nickname: review.pen_name,
-            rating: review.hearts,
-            created_at: review.timestamp
-          }));
-          setReviews(mappedReviews);
-        }
+        await loadReviews();
       }
 
       setLoading(false);
     };
 
     fetchBookAndReviews();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookId]);
+
+  // Reload reviews when sign-in or subscription changes
+  useEffect(() => {
+    if (bookId) loadReviews();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, isPaid]);
+
+  async function loadReviews() {
+    if (!bookId) return;
+    const { data, error } = await supabase.rpc("get_book_reviews", { _book_id: bookId });
+    if (error) { console.error("Failed to load reviews:", error); return; }
+    const rows = data ?? [];
+    setReviews(rows.map((r) => ({
+      id: r.id, review_text: r.review_text, nickname: r.pen_name, rating: r.hearts, created_at: r.created_at,
+    })));
+    setTotalReviews(Number(rows[0]?.total_count ?? 0));
+  }
 
   const calculateAverageRating = () => {
     if (reviews.length === 0) return 0;
@@ -146,6 +154,7 @@ const BookDetail = () => {
           rating: formRating,
           review_text: reviewText,
           nickname: nickname || 'Anonymous',
+          user_id: user?.id,
           hearts: formRating,
           pen_name: nickname || 'Anonymous',
         });
@@ -166,23 +175,7 @@ const BookDetail = () => {
       setReviewText("");
       setNickname("");
 
-      // Refresh reviews
-      const { data: reviewsData } = await supabase
-        .from("reviews")
-        .select("id, review_text, pen_name, hearts, timestamp")
-        .eq("book_id", bookId)
-        .order("timestamp", { ascending: false });
-
-      if (reviewsData) {
-        const mappedReviews = reviewsData.map(review => ({
-          id: review.id,
-          review_text: review.review_text,
-          nickname: review.pen_name,
-          rating: review.hearts,
-          created_at: review.timestamp
-        }));
-        setReviews(mappedReviews);
-      }
+      await loadReviews();
 
     } catch (error) {
       console.error('Error submitting review:', error);
@@ -393,8 +386,8 @@ const BookDetail = () => {
 
         <Separator className="my-12" />
 
-        {/* Submit Review - Open to everyone */}
-        <motion.div
+        {/* Submit Review - paid members only */}
+        {canReview && (<motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -466,7 +459,7 @@ const BookDetail = () => {
               </Button>
             </div>
           </Card>
-        </motion.div>
+        </motion.div>)}
 
         {/* Existing Reviews */}
         {reviews.length > 0 && (
@@ -479,7 +472,7 @@ const BookDetail = () => {
             <h3 className="text-2xl font-serif font-semibold mb-6 flex items-center gap-2">
               Reader Reviews
               <span className="text-base font-normal text-muted-foreground">
-                ({reviews.length})
+                ({totalReviews})
               </span>
             </h3>
 
@@ -514,6 +507,24 @@ const BookDetail = () => {
             </div>
           </motion.div>
         )}
+
+        {!canReview && (
+          <Card className="p-6 md:p-8 mb-12 text-center bg-card/80 border-primary/20">
+            <Heart className="w-8 h-8 mx-auto mb-3 text-dusty-rose" />
+            <h3 className="text-xl font-serif font-semibold mb-2">
+              Upgrade to read all reviews and share your own thoughts
+            </h3>
+            <p className="text-muted-foreground mb-5">
+              {totalReviews > reviews.length
+                ? `You're seeing the top ${reviews.length} of ${totalReviews} reviews.`
+                : "Premium members can write reviews and read every one."}
+            </p>
+            <Button onClick={() => setShowUpgrade(true)} className="bg-gradient-to-r from-primary to-dusty-rose">
+              See plans
+            </Button>
+          </Card>
+        )}
+        <UpgradeModal open={showUpgrade} onClose={() => setShowUpgrade(false)} />
 
         {/* Similar Books */}
         <SimilarBooksSection 

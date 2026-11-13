@@ -4,7 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, Loader2, Sparkles } from 'lucide-react';
+import { aiEnrichBook } from '@/lib/aiEnrich';
 import { AddBookForm } from './AddBookForm';
 import { EditBookForm } from './EditBookForm';
 import { toast } from 'sonner';
@@ -24,6 +25,20 @@ export function BookManagement() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingBook, setEditingBook] = useState<any>(null);
   const [deletingBookId, setDeletingBookId] = useState<string | null>(null);
+  const [enrichingId, setEnrichingId] = useState<string | null>(null);
+
+  const handleAiEnrich = async (book: any) => {
+    setEnrichingId(book.id);
+    try {
+      await aiEnrichBook({ book_id: book.id });
+      toast.success(`Enriched "${book.title}"`, { description: 'Synopsis, genre, mood and cover updated.' });
+      refetch();
+    } catch (err: any) {
+      toast.error(`Couldn't enrich "${book.title}"`, { description: err.message });
+    } finally {
+      setEnrichingId(null);
+    }
+  };
 
   const { data: books, isLoading, refetch } = useQuery({
     queryKey: ['admin-books', searchQuery],
@@ -184,6 +199,16 @@ export function BookManagement() {
                     </div>
                   </div>
                   <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      title="Enrich with AI"
+                      aria-label={`Enrich ${book.title} with AI`}
+                      disabled={enrichingId === book.id}
+                      onClick={() => handleAiEnrich(book)}
+                    >
+                      {enrichingId === book.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"

@@ -576,6 +576,18 @@ export type Database = {
         Args: { check_env?: string; device_uses: number }
         Returns: Json
       }
+      get_book_reviews: {
+        Args: { _book_id: string }
+        Returns: {
+          created_at: string
+          full_access: boolean
+          hearts: number
+          id: string
+          pen_name: string
+          review_text: string
+          total_count: number
+        }[]
+      }
       has_active_subscription: {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean
@@ -587,6 +599,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_paid_member: { Args: { _uid: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
