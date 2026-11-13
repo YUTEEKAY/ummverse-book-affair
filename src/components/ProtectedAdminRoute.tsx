@@ -4,18 +4,23 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 
 export function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading, isAdmin, checkAdminStatus } = useAuth();
-  const [checking, setChecking] = useState(true);
+  const { user, loading, checkAdminStatus } = useAuth();
+  // null = still checking for the current user
+  const [verified, setVerified] = useState<{ userId: string; ok: boolean } | null>(null);
 
   useEffect(() => {
-    const verify = async () => {
-      if (!loading && user) {
-        await checkAdminStatus();
-      }
-      setChecking(false);
-    };
-    verify();
-  }, [user, loading, checkAdminStatus]);
+    if (loading || !user) return;
+    if (verified?.userId === user.id) return;
+    let cancelled = false;
+    checkAdminStatus().then((ok) => {
+      if (!cancelled) setVerified({ userId: user.id, ok });
+    });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, loading]);
+
+  const checking = !!user && verified?.userId !== user.id;
+  const isAdmin = !!verified?.ok;
 
   if (loading || checking) {
     return (

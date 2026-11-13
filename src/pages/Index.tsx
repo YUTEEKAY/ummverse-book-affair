@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
 import Hero from "@/components/Hero";
 import FeaturedMoods from "@/components/FeaturedMoods";
 import FeaturedTropes from "@/components/FeaturedTropes";
@@ -8,16 +7,9 @@ import HowItWorks from "@/components/HowItWorks";
 import TodaysQuote from "@/components/TodaysQuote";
 import Footer from "@/components/Footer";
 import OnboardingQuiz from "@/components/OnboardingQuiz";
-import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
-  const { isAdmin, loading } = useAuth();
   const [showOnboardingQuiz, setShowOnboardingQuiz] = useState(false);
-
-  // Redirect admin users to their dashboard
-  if (!loading && isAdmin) {
-    return <Navigate to="/admin" replace />;
-  }
 
   const handleDiscoverClick = () => {
     setShowOnboardingQuiz(true);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -564,6 +565,9 @@ export default function AdminImport() {
   return <div className="min-h-screen bg-gradient-subtle p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
+          <Button asChild variant="ghost" size="sm" className="mb-4 -ml-2">
+            <Link to="/admin">← Back to Admin Dashboard</Link>
+          </Button>
           <h1 className="text-4xl font-serif font-bold mb-2">
             Book Import Center
           </h1>
