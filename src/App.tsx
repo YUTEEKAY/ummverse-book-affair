@@ -19,6 +19,7 @@ import { ProtectedUserRoute } from "./components/ProtectedUserRoute";
 import Admin from "./pages/Admin";
 import Refunds from "./pages/Refunds";
 import { SiteFooter } from "@/components/Footer";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import AdminImport from "./pages/AdminImport";
 import AdminAuth from "./pages/AdminAuth";
 import Terms from "./pages/Terms";
@@ -36,6 +37,7 @@ const App = () => (
         <Sonner />
         <PaymentTestModeBanner />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/admin-login" element={<AdminAuth />} />
