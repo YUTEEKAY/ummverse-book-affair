@@ -36,6 +36,13 @@
       "when": 1794582260594,
       "tag": "0004_safe_enrich_trigger",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794582710665,
+      "tag": "0005_vendors",
+      "breakpoints": true
     }
   ]
 }

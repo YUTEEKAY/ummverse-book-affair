@@ -13,7 +13,7 @@ export async function aiEnrichBook(input: { title?: string; author?: string; boo
     if (error instanceof FunctionsHttpError) {
       try { msg = (await error.context.json()).error ?? msg; } catch { /* keep default */ }
     }
-    throw new Error(typeof msg === "string" ? msg : "AI enrichment failed");
+    throw new Error(typeof msg === "string" ? msg : "Auto-fill failed");
   }
   return data as { enrichment: AiEnrichment; saved: boolean };
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BookCard from "@/components/BookCard";
 import { getRecommendationsFromQuiz } from "@/lib/quizLogic";
@@ -53,7 +53,7 @@ const OnboardingResults = ({
         delay: 0.2,
         type: "spring"
       }}>
-          <Sparkles className="w-12 h-12 mx-auto text-primary" />
+          <Zap className="w-12 h-12 mx-auto text-primary" />
         </motion.div>
         <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
           Your Perfect Matches

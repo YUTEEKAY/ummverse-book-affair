@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      book_vendors: {
+        Row: {
+          book_id: string
+          created_at: string
+          vendor_id: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          vendor_id: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_vendors_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_vendors_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       book_views: {
         Row: {
           book_id: string
@@ -600,6 +633,36 @@ export type Database = {
         }
         Relationships: []
       }
+      vendors: {
+        Row: {
+          created_at: string
+          id: string
+          instagram_handle: string | null
+          name: string
+          phone_number: string | null
+          type: string
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          instagram_handle?: string | null
+          name: string
+          phone_number?: string | null
+          type?: string
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          instagram_handle?: string | null
+          name?: string
+          phone_number?: string | null
+          type?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -639,6 +702,19 @@ export type Database = {
           pen_name: string
           review_text: string
           total_count: number
+        }[]
+      }
+      get_book_vendors: {
+        Args: { _book_id: string }
+        Returns: {
+          full_access: boolean
+          id: string
+          instagram_handle: string
+          name: string
+          phone_number: string
+          total_count: number
+          type: string
+          website_url: string
         }[]
       }
       has_active_subscription: {

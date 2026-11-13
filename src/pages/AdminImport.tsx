@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { Upload, FileText, CheckCircle2, XCircle, AlertCircle, RefreshCw, BookOpen, Search, Sparkles } from "lucide-react";
+import { Upload, FileText, CheckCircle2, XCircle, AlertCircle, RefreshCw, BookOpen, Search, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -225,7 +225,7 @@ export default function AdminImport() {
       }
       setEnrichProgress(100);
       await loadBookStats();
-      toast.success("✨ Batch enrichment complete!", {
+      toast.success("Batch update complete", {
         description: `${result.updated} books updated`,
         duration: 5000
       });
@@ -293,7 +293,7 @@ export default function AdminImport() {
       await loadBookStats(); // Refresh stats
 
       // Show success toast
-      toast.success("✨ Ummverse magic — book details and covers added!", {
+      toast.success("Book details and covers added", {
         description: `${enrichStats.updated} books enriched with summaries and covers`,
         duration: 5000
       });
@@ -539,7 +539,7 @@ export default function AdminImport() {
     setRecategorizingTropes(true);
     setRecategorizeTropeStats(null);
     try {
-      toast.loading('Using AI to analyze summaries and detect tropes...', {
+      toast.loading('Analysing summaries and detecting tropes...', {
         id: 'recategorize-tropes'
       });
       const {
@@ -553,7 +553,7 @@ export default function AdminImport() {
       await loadBookStats();
       toast.success('📚 Tropes recategorized successfully!', {
         id: 'recategorize-tropes',
-        description: `${data.updated} books updated with AI-detected tropes`,
+        description: `${data.updated} books updated with detected tropes`,
         duration: 5000
       });
     } catch (error: any) {
@@ -575,7 +575,7 @@ export default function AdminImport() {
             Book Import Center
           </h1>
           <p className="text-muted-foreground">
-            Import romance novels from CSV with AI-powered quality filtering
+            Import romance novels from CSV with automatic quality checks
           </p>
         </div>
 
@@ -630,7 +630,7 @@ export default function AdminImport() {
               </label>
 
               {file && <Button onClick={handleImport} disabled={isProcessing} className="w-full bg-gradient-romance text-white" size="lg">
-                  {isProcessing ? "Processing..." : "Start Import with AI Filtering"}
+                  {isProcessing ? "Processing..." : "Start Import"}
                 </Button>}
 
               {isProcessing && <div className="space-y-2">
@@ -878,16 +878,16 @@ export default function AdminImport() {
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5" />
-              AI Trope Detection
+              <Zap className="h-5 w-5" />
+              Trope Detection
             </CardTitle>
             <CardDescription>
-              Use AI to analyze book summaries and automatically detect romance tropes
+              Analyse book summaries and automatically detect romance tropes
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="bg-secondary/20 p-4 rounded-lg space-y-2">
-              <h3 className="font-semibold text-sm">AI-Detected Tropes:</h3>
+              <h3 className="font-semibold text-sm">Detected Tropes:</h3>
               <ul className="text-xs text-muted-foreground space-y-1">
                 <li>• Enemies to Lovers</li>
                 <li>• Friends to Lovers</li>
@@ -898,12 +898,12 @@ export default function AdminImport() {
                 <li>• Forbidden Love</li>
               </ul>
               <p className="text-xs text-muted-foreground mt-2">
-                ⚠️ This process analyzes summaries using AI and may take several minutes depending on the number of books.
+                This process analyses summaries and may take several minutes depending on the number of books.
               </p>
             </div>
 
             <Button onClick={handleRecategorizeTropes} disabled={recategorizingTropes || bookStats.total === 0} size="lg" className="w-full bg-gradient-romance text-pink-800">
-              <Sparkles className={`h-4 w-4 mr-2 ${recategorizingTropes ? 'animate-spin' : ''}`} />
+              <Zap className={`h-4 w-4 mr-2 ${recategorizingTropes ? 'animate-spin' : ''}`} />
               {recategorizingTropes ? 'Analyzing...' : `Analyze All Books (${bookStats.total} books)`}
             </Button>
 

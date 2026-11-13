@@ -1,4 +1,4 @@
-import { Flower2, Sparkles, Flame, Heart } from "lucide-react";
+import { Flower2, Zap, Flame, Heart } from "lucide-react";
 
 export type HeatLevel = "sweet" | "warm" | "hot" | "scorching";
 
@@ -29,7 +29,7 @@ export const heatLevelConfig: Record<HeatLevel, HeatLevelConfig> = {
   warm: {
     value: "warm",
     label: "Warm / Flirty",
-    icon: Sparkles,
+    icon: Zap,
     emoji: "💞",
     gradient: "from-orange-100 via-amber-50 to-yellow-50",
     textColor: "text-orange-600",

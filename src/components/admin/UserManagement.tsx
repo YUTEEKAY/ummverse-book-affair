@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader2, MoreHorizontal, Search, Users, CreditCard, DollarSign, Sparkles, RefreshCw } from "lucide-react";
+import { Loader2, MoreHorizontal, Search, Users, CreditCard, DollarSign, Zap, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 type Filter = "all" | Tier;
@@ -66,7 +66,7 @@ export function UserManagement() {
     { title: "Registered Users", value: kpis.totalUsers.toLocaleString(), sub: "Signed-in accounts", icon: Users },
     { title: "Active Paid Subscribers", value: kpis.paid.toLocaleString(), sub: `${kpis.monthly} Monthly · ${kpis.annual} Annual`, icon: CreditCard },
     { title: "Estimated MRR", value: `$${kpis.mrr.toFixed(2)}`, sub: "Monthly $5 + Annual $70 ÷ 12", icon: DollarSign },
-    { title: "Free Trial Users", value: (kpis.trials[0] + kpis.trials[1] + kpis.trials[2]).toLocaleString(), sub: `0/2: ${kpis.trials[0]} · 1/2: ${kpis.trials[1]} · 2/2: ${kpis.trials[2]}`, icon: Sparkles },
+    { title: "Free Trial Users", value: (kpis.trials[0] + kpis.trials[1] + kpis.trials[2]).toLocaleString(), sub: `0/2: ${kpis.trials[0]} · 1/2: ${kpis.trials[1]} · 2/2: ${kpis.trials[2]}`, icon: Zap },
   ];
 
   if (error) return <Card><CardContent className="py-8 text-destructive">Could not load users: {(error as Error).message}</CardContent></Card>;

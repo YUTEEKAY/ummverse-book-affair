@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -85,7 +85,7 @@ const DiscoverButton = ({ currentId, currentType }: DiscoverButtonProps) => {
       size="lg"
       className="bg-gradient-to-r from-dusty-rose to-blush hover:from-blush hover:to-dusty-rose text-white shadow-glow transform transition-transform hover:scale-105 relative z-20"
     >
-      <Sparkles className="w-5 h-5 mr-2 animate-pulse" />
+      <Zap className="w-5 h-5 mr-2 animate-pulse" />
       {isLoading ? "Discovering..." : "Discover Another World 💞"}
     </Button>
   );

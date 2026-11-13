@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, Pencil, Trash2, Loader2, Sparkles } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, Loader2, Zap } from 'lucide-react';
 import { aiEnrichBook } from '@/lib/aiEnrich';
 import { AddBookForm } from './AddBookForm';
 import { EditBookForm } from './EditBookForm';
@@ -202,12 +202,12 @@ export function BookManagement() {
                     <Button
                       variant="outline"
                       size="sm"
-                      title="Enrich with AI"
-                      aria-label={`Enrich ${book.title} with AI`}
+                      title="Auto-fill metadata"
+                      aria-label={`Auto-fill metadata for ${book.title}`}
                       disabled={enrichingId === book.id}
                       onClick={() => handleAiEnrich(book)}
                     >
-                      {enrichingId === book.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      {enrichingId === book.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
                     </Button>
                     <Button
                       variant="outline"

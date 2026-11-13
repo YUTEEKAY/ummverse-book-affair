@@ -16,7 +16,7 @@ export const useBookEnrichment = () => {
       }
 
       if (data?.updated) {
-        toast.success("✨ Ummverse magic — book details and covers added!", {
+        toast.success("Book details and covers added", {
           description: `Updated ${data.fields?.length || 0} fields`
         });
       } else {

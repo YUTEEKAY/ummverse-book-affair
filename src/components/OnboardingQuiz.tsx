@@ -35,7 +35,7 @@ const OnboardingQuiz = ({
     label: "Passion & Heat"
   }, {
     value: "Magic & Wonder",
-    emoji: "✨",
+    emoji: "🔮",
     label: "Magic & Wonder"
   }, {
     value: "Comfort & Warmth",

@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Zap } from 'lucide-react';
 import { aiEnrichBook } from '@/lib/aiEnrich';
 
 const bookFormSchema = z.object({
@@ -65,9 +65,9 @@ export function AddBookForm({ onSuccess }: AddBookFormProps) {
       if (e.mood_tags[0]) form.setValue('mood', e.mood_tags[0], opts);
       if (e.cover_url) form.setValue('cover_url', e.cover_url, opts);
       if (e.isbn13 && !form.getValues('isbn13')) form.setValue('isbn13', e.isbn13, opts);
-      toast.success('Filled in with AI', { description: e.themes.length ? `Themes: ${e.themes.join(', ')}` : undefined });
+      toast.success('Metadata filled in', { description: e.themes.length ? `Themes: ${e.themes.join(', ')}` : undefined });
     } catch (err: any) {
-      toast.error('AI enrichment failed', { description: err.message });
+      toast.error('Auto-fill failed', { description: err.message });
     } finally {
       setIsEnriching(false);
     }
@@ -138,12 +138,12 @@ export function AddBookForm({ onSuccess }: AddBookFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
           <div className="flex-1 text-sm">
-            <p className="font-medium">AI Book Enricher</p>
-            <p className="text-muted-foreground">Enter a title (and author if you know it), then let AI fill in the synopsis, genre, mood and cover.</p>
+            <p className="font-medium">Book Data Assistant</p>
+            <p className="text-muted-foreground">Enter a title (and author if you know it), then auto-fill the synopsis, genre, mood and cover.</p>
           </div>
           <Button type="button" variant="secondary" onClick={handleAiFill} disabled={isEnriching}>
-            {isEnriching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-            {isEnriching ? 'Enriching…' : 'Fill with AI'}
+            {isEnriching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
+            {isEnriching ? 'Enriching…' : 'Auto-Fill Metadata'}
           </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

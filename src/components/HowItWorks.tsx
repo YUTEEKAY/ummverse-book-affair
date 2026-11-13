@@ -1,9 +1,9 @@
-import { Heart, Sparkles, BookOpen } from "lucide-react";
+import { Heart, ListChecks, BookOpen } from "lucide-react";
 
 const STEPS = [
   { icon: Heart, title: "Browse by mood", text: "Pick how you want to feel — cozy, spicy, dark, magical or bittersweet — and see romance books that match." },
   { icon: BookOpen, title: "Follow your favourite tropes", text: "Enemies to lovers, second chances, fake dating and more. Every book is tagged by trope and heat level." },
-  { icon: Sparkles, title: "Take the quick quiz", text: "Answer three questions about feeling, trope and heat, and get personal book recommendations." },
+  { icon: ListChecks, title: "Take the quick quiz", text: "Answer three questions about feeling, trope and heat, and get personal book recommendations." },
 ];
 
 const HowItWorks = () => (

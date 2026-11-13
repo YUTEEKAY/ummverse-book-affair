@@ -4,10 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Loader2, Shield, Upload, BookOpen, Users, Eye, MessageSquare, Sparkles, RefreshCw, Home } from 'lucide-react';
+import { Loader2, Shield, Upload, BookOpen, Users, Eye, MessageSquare, Zap, RefreshCw, Home, Store } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { BookManagement } from '@/components/admin/BookManagement';
 import { UserManagement } from '@/components/admin/UserManagement';
+import { VendorManager } from '@/components/admin/VendorManager';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -70,7 +71,7 @@ export default function Admin() {
 
       if (error) throw error;
 
-      toast.success("✨ Quick enrichment complete!", {
+      toast.success("Quick update complete", {
         description: `${data?.updated || 0} books updated`
       });
       
@@ -134,7 +135,7 @@ export default function Admin() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
+                <Zap className="h-5 w-5 text-primary" />
                 Book Enrichment
               </CardTitle>
               <CardDescription>Add covers, summaries, and metadata</CardDescription>
@@ -160,7 +161,7 @@ export default function Admin() {
                   {enriching ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   ) : (
-                    <Sparkles className="h-4 w-4 mr-2" />
+                    <Zap className="h-4 w-4 mr-2" />
                   )}
                   Quick Enrich (50 Books)
                 </Button>
@@ -257,12 +258,20 @@ export default function Admin() {
 
         {/* Book Management Tabs */}
         <Tabs defaultValue="books" className="w-full">
-          <TabsList className="grid w-full grid-cols-1">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="books">
               <BookOpen className="h-4 w-4 mr-2" />
               Book Management
             </TabsTrigger>
+            <TabsTrigger value="vendors">
+              <Store className="h-4 w-4 mr-2" />
+              Vendor Manager
+            </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="vendors" className="mt-6">
+            <VendorManager />
+          </TabsContent>
 
           <TabsContent value="books" className="mt-6">
             <BookManagement />

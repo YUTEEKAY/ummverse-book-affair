@@ -21,6 +21,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useBookEnrichment } from "@/hooks/useBookEnrichment";
 import { useSubscription } from "@/hooks/useSubscription";
 import { UpgradeModal } from "@/components/UpgradeModal";
+import { WhereToBuy } from "@/components/WhereToBuy";
 import { SaveBookButton } from "@/components/SaveBookButton";
 
 interface Book {
@@ -526,6 +527,7 @@ const BookDetail = () => {
             </Button>
           </Card>
         )}
+        {bookId && <WhereToBuy bookId={bookId} accessKey={`${user?.id ?? "anon"}-${isPaid}`} onUpgrade={() => setShowUpgrade(true)} />}
         <UpgradeModal open={showUpgrade} onClose={() => setShowUpgrade(false)} />
 
         {/* Similar Books */}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Bookmark, Crown, ExternalLink, History, Loader2, MessageSquare, Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, Bookmark, Crown, ExternalLink, History, Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -146,7 +146,7 @@ export default function Dashboard() {
               <p className="text-sm text-muted-foreground">Each quiz result uses one free try. Unlimited matches, full reviews and your own reviews come with membership.</p>
             </div>
             <Button size="lg" onClick={() => setShowUpgrade(true)}>
-              <Sparkles className="mr-2 h-4 w-4" /> Upgrade to Unlimited
+              <Crown className="mr-2 h-4 w-4" /> Upgrade to Unlimited
             </Button>
           </Card>
         )}
