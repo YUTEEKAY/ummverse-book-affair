@@ -10,7 +10,6 @@ import {
 import { motion } from "framer-motion";
 import BookCard from "@/components/BookCard";
 import { ArrowRight, TrendingUp } from "lucide-react";
-import { Link } from "react-router-dom";
 
 interface Book {
   id: string;
@@ -130,9 +129,9 @@ const MostSearchedBooksCarousel = () => {
           </div>
         </Carousel>
         <div className="mt-7 flex justify-end">
-          <Link to="/mood" className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-foreground">
+          <a href="#featured-moods" className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-foreground">
             Browse all moods <ArrowRight className="h-4 w-4" />
-          </Link>
+          </a>
         </div>
       </div>
     </section>

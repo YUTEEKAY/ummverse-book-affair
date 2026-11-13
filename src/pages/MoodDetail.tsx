@@ -32,6 +32,8 @@ const moodGradients: Record<string, string> = {
   mystical: "editorial-field--mystical",
   regal: "editorial-field--regal",
   dark: "editorial-field--dark",
+  soft: "editorial-field--soft",
+  bright: "editorial-field--bright",
   default: "editorial-field--default",
 };
 
@@ -166,11 +168,8 @@ const MoodDetail = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className={`${gradientClass} relative overflow-hidden px-6 py-16`}
+        className={`${gradientClass} relative overflow-hidden px-6 py-16 sm:py-20`}
       >
-        {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/20" />
-        
         <div className="max-w-6xl mx-auto relative z-10">
           <Button
             type="button"
@@ -181,8 +180,7 @@ const MoodDetail = () => {
               console.log('Back to Home clicked');
               navigate("/");
             }}
-            className="mb-8 text-white hover:bg-white/20 relative z-20"
-            style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
+            className="relative z-20 mb-8 text-primary-foreground hover:bg-primary-foreground/10"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
@@ -191,8 +189,7 @@ const MoodDetail = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-5xl md:text-6xl font-serif font-bold text-white mb-4"
-            style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
+            className="mb-4 font-serif text-5xl font-semibold text-primary-foreground sm:text-6xl"
           >
             {mood.name}
           </motion.h1>
@@ -201,8 +198,7 @@ const MoodDetail = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-xl text-white/90 italic"
-              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
+              className="text-xl italic text-primary-foreground/80"
             >
               {mood.tagline}
             </motion.p>

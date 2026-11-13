@@ -5,7 +5,6 @@ import BookCard from "@/components/BookCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
-import { getThemeStyle } from "@/lib/themeGradients";
 import DiscoverButton from "@/components/DiscoverButton";
 import HeatLevelFilter from "@/components/HeatLevelFilter";
 import type { HeatLevel } from "@/lib/heatLevelConfig";
@@ -88,11 +87,11 @@ const TropeDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blush via-warm-peach to-dusty-rose">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-white text-2xl font-serif"
+          className="font-serif text-2xl text-foreground"
         >
           Loading romance...
         </motion.div>
@@ -102,8 +101,8 @@ const TropeDetail = () => {
 
   if (!trope) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blush via-warm-peach to-dusty-rose">
-        <div className="text-center text-white">
+      <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
+        <div className="text-center">
           <h1 className="text-4xl font-serif mb-4">Trope Not Found</h1>
           <Button 
             type="button"
@@ -123,7 +122,18 @@ const TropeDetail = () => {
     );
   }
 
-  const themeStyle = getThemeStyle(trope.color_theme);
+  const tropeFields: Record<string, string> = {
+    hot: "editorial-field--hot",
+    warm: "editorial-field--warm",
+    mystical: "editorial-field--mystical",
+    dark: "editorial-field--dark",
+    soft: "editorial-field--soft",
+    bright: "editorial-field--bright",
+    contemporary: "editorial-field--contemporary",
+    regal: "editorial-field--regal",
+    default: "editorial-field--default",
+  };
+  const fieldClass = tropeFields[trope.color_theme || ""] || tropeFields.default;
 
   const container = {
     hidden: { opacity: 0 },
@@ -143,42 +153,8 @@ const TropeDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Motion Background */}
-      <section className={`relative bg-gradient-to-br ${themeStyle.gradient} py-24 px-4 overflow-hidden`}>
-        {/* Subtle motion background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
-          <motion.div
-            className="absolute -top-1/2 -left-1/4 w-full h-full rounded-full bg-white/20 blur-3xl"
-            animate={{
-              x: [0, 100, 0],
-              y: [0, 50, 0],
-              scale: [1, 1.3, 1],
-            }}
-            transition={{
-              duration: 15,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="absolute -bottom-1/2 -right-1/4 w-full h-full rounded-full bg-white/20 blur-3xl"
-            animate={{
-              x: [0, -100, 0],
-              y: [0, -50, 0],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2,
-            }}
-          />
-        </div>
-
-        {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/20" />
-
-        <div className="container mx-auto max-w-6xl relative z-10">
+      <section className={`relative overflow-hidden px-4 py-16 text-primary-foreground sm:py-20 ${fieldClass}`}>
+        <div className="container relative z-10 mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -193,8 +169,7 @@ const TropeDetail = () => {
                 navigate("/");
               }}
               variant="ghost"
-              className="text-white hover:bg-white/20 mb-8 relative z-20"
-              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
+              className="relative z-20 mb-8 text-primary-foreground hover:bg-primary-foreground/10"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Home
@@ -205,8 +180,7 @@ const TropeDetail = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-serif font-bold text-white mb-4"
-            style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
+            className="mb-4 font-serif text-5xl font-semibold text-primary-foreground sm:text-6xl"
           >
             {trope.name}
           </motion.h1>
@@ -216,8 +190,7 @@ const TropeDetail = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-xl md:text-2xl text-white/90 font-serif italic max-w-2xl"
-              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
+              className="max-w-2xl font-serif text-xl italic text-primary-foreground/80 sm:text-2xl"
             >
               {trope.description}
             </motion.p>

@@ -22,10 +22,10 @@ const Hero = ({ onDiscoverClick }: HeroProps) => {
       <div className="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-foreground/80 via-foreground/55 to-transparent" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-6 py-7 sm:px-10 lg:px-14">
-        <div className="flex items-center justify-between border-b border-primary-foreground/25 pb-4 text-xs font-medium uppercase tracking-[0.14em] text-primary-foreground/85 sm:text-sm">
-          <span className="flex items-center gap-2"><Heart className="h-4 w-4" /> The Book Affair</span>
-          <a href="#featured-moods" className="inline-flex items-center gap-2 transition-colors hover:text-primary-foreground">
-            Explore the shelves <ArrowDown className="h-4 w-4" />
+        <div className="flex items-center justify-between gap-4 border-b border-primary-foreground/25 pb-4 text-xs font-medium uppercase tracking-[0.14em] text-primary-foreground/85 sm:text-sm">
+          <span className="flex shrink-0 items-center gap-2"><Heart className="h-4 w-4" /> Ummverse</span>
+          <a href="#featured-moods" className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap transition-colors hover:text-primary-foreground">
+            Browse moods <ArrowDown className="h-4 w-4" />
           </a>
         </div>
 

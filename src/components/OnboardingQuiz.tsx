@@ -159,7 +159,7 @@ const OnboardingQuiz = ({
                 }} className={`relative flex flex-col items-center justify-center p-6 h-32 rounded-lg border-2 transition-all ${answers.feeling === feeling.value ? "border-primary border-3 bg-gradient-to-br from-primary/20 to-primary/10 shadow-xl shadow-primary/20 scale-105" : "border-border hover:border-primary/50 hover:bg-accent/50"}`}>
                           <RadioGroupItem value={feeling.value} id={feeling.value} className="sr-only" />
                           {answers.feeling === feeling.value && <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
+                              <Check className="w-4 h-4 text-primary-foreground" />
                             </div>}
                           <span className="text-4xl mb-2">{feeling.emoji}</span>
                           <span className="font-semibold text-center">{feeling.label}</span>
@@ -192,7 +192,7 @@ const OnboardingQuiz = ({
                 }} className={`relative flex flex-col items-center justify-center p-6 h-32 rounded-lg border-2 transition-all ${answers.trope === trope.value ? "border-primary border-3 bg-gradient-to-br from-primary/20 to-primary/10 shadow-xl shadow-primary/20 scale-105" : "border-border hover:border-primary/50 hover:bg-accent/50"}`}>
                           <RadioGroupItem value={trope.value} id={trope.value} className="sr-only" />
                           {answers.trope === trope.value && <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
+                              <Check className="w-4 h-4 text-primary-foreground" />
                             </div>}
                           <span className="text-4xl mb-2">{trope.emoji}</span>
                           <span className="font-semibold text-center">{trope.label}</span>
@@ -225,7 +225,7 @@ const OnboardingQuiz = ({
                 }} className={`relative flex flex-col items-center justify-center p-4 h-32 rounded-lg border-2 transition-all ${answers.heatLevel === level.value ? "border-primary border-3 bg-gradient-to-br from-primary/20 to-primary/10 shadow-xl shadow-primary/20 scale-105" : "border-border hover:border-primary/50 hover:bg-accent/50"}`}>
                           <RadioGroupItem value={level.value} id={level.value} className="sr-only" />
                           {answers.heatLevel === level.value && <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
+                              <Check className="w-4 h-4 text-primary-foreground" />
                             </div>}
                           <span className="text-3xl mb-1">{level.emoji}</span>
                           <span className="font-semibold text-center text-sm">{level.label}</span>
