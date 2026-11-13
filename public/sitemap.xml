@@ -46,23 +46,23 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/trope/02851357-7fa1-4863-8ab6-e8f390b3d1c0</loc>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/trope/5e50a4c9-f415-44ce-a1b4-df7b1ef313b2</loc>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/trope/7eac7b57-5f7c-4eb2-b9e6-720e0ca62e1d</loc>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/trope/c0241bb7-ccf9-4538-8c6b-9159f3287b41</loc>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/trope/dce56bc9-02f3-4f58-86dc-988e4638d868</loc>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/genre/1e7c2a6c-30cb-4b68-b307-fe0c6bb43d6b</loc>
@@ -114,6 +114,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/016d761e-ce1e-44de-bba6-a3379fbad8ff</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/01a5eef5-3352-43d9-9a1f-4451f16f8276</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -309,6 +313,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/0b02f43b-bbe8-4f71-88a8-48a0703b15c5</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/0b06c479-0da4-443b-aa13-6d8862ef0532</loc>
     <priority>0.6</priority>
   </url>
@@ -337,6 +345,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/0c019298-f501-4c4c-bada-2f70ed497991</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/0c885832-2771-4516-b815-340ffc036183</loc>
     <priority>0.6</priority>
   </url>
@@ -357,6 +369,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/0e500a39-0500-4d41-ba8d-34a23e524958</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/0e9ac683-d8ca-48bc-8150-8a653f6a9634</loc>
     <priority>0.6</priority>
   </url>
@@ -374,6 +390,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/0eb7e6e3-c1c8-4769-a6a2-45f1c8f87088</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/0f0ed8bd-eea8-49a5-8399-6978991df08a</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -510,6 +530,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/14e2fe95-e2b3-4cf2-b55d-65d923754cfb</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/14fc6a8f-9971-484b-b381-21e79001d370</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -805,6 +829,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/22aeea99-b044-4f99-ba90-b146aba7a7aa</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/22c00673-4bac-42b6-b6a0-e2c4643801bf</loc>
     <priority>0.6</priority>
   </url>
@@ -1057,6 +1085,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/2d7d01d5-b1e5-4f08-a663-f390370c6bd4</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/2e054735-7ba2-461b-9318-25f9d16519d8</loc>
     <priority>0.6</priority>
   </url>
@@ -1114,6 +1146,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/3179c82a-190f-4711-a3f9-50b7e05447f0</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/319eb0d3-d1dd-47a9-8df5-48558d7d430b</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -1190,6 +1226,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/349f956e-cce5-410d-a2ad-b0544fb211a2</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/34fd33d5-20c0-4d8e-9b5b-296883c2c877</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -1413,6 +1453,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/423a035f-1bad-4ef7-a8c9-bfd8d77d4f22</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/427aeb2a-102e-4cf9-b83c-15047df25da7</loc>
     <priority>0.6</priority>
   </url>
@@ -1522,6 +1566,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/4793dc91-2ddd-425c-ad8c-6fb6ff1d8b7f</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/47ead771-0acc-4ef4-a531-adf0eb616258</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -1817,6 +1865,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/5642edae-6e0d-4f20-ba8b-9cb927db4f06</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/565ca7c5-fff1-452d-a3fd-6358df331d29</loc>
     <priority>0.6</priority>
   </url>
@@ -1973,6 +2025,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/5e19f8ec-28e7-4d84-8ea7-223044977222</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/5e2d6f43-74ff-40a1-9b2c-5ceb3490337a</loc>
     <priority>0.6</priority>
   </url>
@@ -2026,6 +2082,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/60d72815-1a88-401b-8bb1-aeef62c3bef6</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/613022b2-7233-4df0-a858-758ab3aa4058</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -2226,6 +2286,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/6b5a6072-4bb7-4e71-ac67-d0871cde6c2d</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/6b5a618b-0200-4741-96ba-4b853370c6ff</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -2634,6 +2698,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/7fd885e4-cef8-4013-830d-516331313249</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/800e72d7-d2e7-4253-93ec-2c8c2946d846</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -3197,6 +3265,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/9bb6a882-5d82-4787-aad4-0f942204b9cd</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/9bc52483-1fc8-4b06-9376-9a6ef679b706</loc>
     <priority>0.6</priority>
   </url>
@@ -3510,6 +3582,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/a961d618-385d-432e-8df3-05e93ceaf425</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/a98bb376-a949-4a32-99d6-8d7c1ad6d8e7</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -4345,6 +4421,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/d177785a-d44e-443b-bc48-2a7bdd549763</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/d1927ace-9dfe-4ba9-b67d-6e4a6c062edd</loc>
     <priority>0.6</priority>
   </url>
@@ -4553,6 +4633,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/dbc76552-9e8c-48d9-9a29-8c0255826eee</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/dc49ce2b-25e7-4504-b79c-aff91d51548b</loc>
     <priority>0.6</priority>
   </url>
@@ -4621,6 +4705,14 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/e1306487-d6ec-49f5-96ea-3a0cd2c447fc</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/e15209e2-6fd1-4232-ba13-5a4ec9569082</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/e178bfd0-db49-45a7-8242-a92770bf4c2f</loc>
     <priority>0.6</priority>
   </url>
@@ -4658,6 +4750,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/e367ec2d-a7a3-4545-809e-27684bd5d48f</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/e3a913dd-286e-4aa1-a5c8-dfa9e070c2fb</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -4710,6 +4806,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/e63b49d4-7cbc-4d9f-8420-cbc1f99d91e3</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/e63efc03-1160-472e-bf81-99a2d3953221</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -4766,6 +4866,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/e8fc30f5-01b9-487f-8a9c-65b20d13a90f</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/e91ce5d4-f473-4af5-a016-a79167ed2541</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -4913,6 +5017,10 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/f0c309fb-827c-404a-b799-bfcfb7776c03</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ummverse-book-affair.lovable.app/book/f0d36d35-ba5a-4e40-9abf-f801f571afa0</loc>
     <priority>0.6</priority>
   </url>
@@ -4978,6 +5086,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/f45dbc79-30f5-4ce9-8d23-4e6fd4dbe8f4</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/f485ddcc-dfd0-4e4a-818b-1deec5d610dc</loc>
     <priority>0.6</priority>
   </url>
   <url>
@@ -5162,6 +5274,10 @@
   </url>
   <url>
     <loc>https://ummverse-book-affair.lovable.app/book/fe9a3671-ed37-4291-91d4-a11ecd33b813</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ummverse-book-affair.lovable.app/book/fef17c05-f382-4799-8546-6f29439a4f8a</loc>
     <priority>0.6</priority>
   </url>
   <url>
