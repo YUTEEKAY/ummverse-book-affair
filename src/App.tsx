@@ -13,6 +13,9 @@ import MoodDetail from "./pages/MoodDetail";
 import GenreDetail from "./pages/GenreDetail";
 import TropeDetail from "./pages/TropeDetail";
 import BookDetail from "./pages/BookDetail";
+import SignIn from "./pages/SignIn";
+import Dashboard from "./pages/Dashboard";
+import { ProtectedUserRoute } from "./components/ProtectedUserRoute";
 import Admin from "./pages/Admin";
 import AdminImport from "./pages/AdminImport";
 import AdminAuth from "./pages/AdminAuth";
@@ -34,6 +37,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/admin-login" element={<AdminAuth />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/dashboard" element={<ProtectedUserRoute><Dashboard /></ProtectedUserRoute>} />
             <Route path="/mood/:moodId" element={<MoodDetail />} />
             <Route path="/genre/:genreId" element={<GenreDetail />} />
             <Route path="/trope/:tropeId" element={<TropeDetail />} />

@@ -1,8 +1,7 @@
 import { ArrowDown, ArrowRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { useAuth } from "@/contexts/AuthContext";
-import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+import { UserMenu } from "@/components/UserMenu";
 import readingRoom from "@/assets/ummverse-editorial.jpg";
 
 interface HeroProps {
@@ -10,7 +9,6 @@ interface HeroProps {
 }
 
 const Hero = ({ onDiscoverClick }: HeroProps) => {
-  const { user, signOut } = useAuth();
   return (
     <header className="relative isolate flex min-h-[min(660px,82svh)] items-center overflow-hidden bg-foreground text-primary-foreground">
       <img
@@ -27,14 +25,7 @@ const Hero = ({ onDiscoverClick }: HeroProps) => {
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-6 py-7 sm:px-10 lg:px-14">
         <div className="flex items-center justify-between gap-4 border-b border-primary-foreground/25 pb-4 text-xs font-medium uppercase tracking-[0.14em] text-primary-foreground/85 sm:text-sm">
           <span className="flex shrink-0 items-center gap-2"><Heart className="h-4 w-4" /> Ummverse</span>
-          {user ? (
-            <div className="flex items-center gap-3 normal-case tracking-normal">
-              <span className="hidden max-w-[180px] truncate sm:inline">{user.email}</span>
-              <button type="button" onClick={signOut} className="underline-offset-4 hover:underline">Sign out</button>
-            </div>
-          ) : (
-            <GoogleSignInButton className="normal-case tracking-normal" />
-          )}
+          <UserMenu />
         </div>
 
         <motion.div

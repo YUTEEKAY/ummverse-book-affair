@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import BookCard from "@/components/BookCard";
 import { getRecommendationsFromQuiz } from "@/lib/quizLogic";
 import type { QuizAnswers } from "@/lib/quizStorage";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 interface OnboardingResultsProps {
   answers: QuizAnswers;
   onRetake: () => void;
@@ -17,12 +19,21 @@ const OnboardingResults = ({
 }: OnboardingResultsProps) => {
   const [books, setBooks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   useEffect(() => {
     const fetchRecommendations = async () => {
       setLoading(true);
       const recommendations = await getRecommendationsFromQuiz(answers);
       setBooks(recommendations);
       setLoading(false);
+      if (user) {
+        const { error } = await supabase.from("quiz_history").insert({
+          user_id: user.id,
+          answers: answers as any,
+          book_ids: recommendations.map((b: any) => b.id),
+        });
+        if (error) console.error("Couldn't save quiz history:", error);
+      }
     };
     fetchRecommendations();
   }, [answers]);

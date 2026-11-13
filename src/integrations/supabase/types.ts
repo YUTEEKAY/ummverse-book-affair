@@ -309,6 +309,30 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_history: {
+        Row: {
+          answers: Json
+          book_ids: string[]
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          book_ids?: string[]
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          book_ids?: string[]
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       quotes: {
         Row: {
           author: string
@@ -379,6 +403,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "reviews_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_books: {
+        Row: {
+          book_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_books_book_id_fkey"
             columns: ["book_id"]
             isOneToOne: false
             referencedRelation: "books"

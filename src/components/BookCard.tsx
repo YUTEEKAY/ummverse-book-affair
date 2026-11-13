@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import BookCover from "./BookCover";
 import HeatLevelBadge from "./HeatLevelBadge";
+import { SaveBookButton } from "./SaveBookButton";
 
 interface BookCardProps {
   book: {
@@ -34,6 +35,9 @@ const BookCard = ({ book }: BookCardProps) => {
       >
         <div className="relative aspect-[2/3] overflow-hidden bg-secondary">
           <BookCover book={book} className="group-hover:scale-105 transition-transform duration-300" />
+          <div className="absolute top-2 left-2 z-10">
+            <SaveBookButton bookId={book.id} title={book.title} />
+          </div>
           {book.heat_level && (
             <div className="absolute top-2 right-2 z-10">
               <HeatLevelBadge heatLevel={book.heat_level} size="sm" showLabel={false} />

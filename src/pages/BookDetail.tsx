@@ -21,6 +21,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useBookEnrichment } from "@/hooks/useBookEnrichment";
 import { useSubscription } from "@/hooks/useSubscription";
 import { UpgradeModal } from "@/components/UpgradeModal";
+import { SaveBookButton } from "@/components/SaveBookButton";
 
 interface Book {
   id: string;
@@ -311,6 +312,7 @@ const BookDetail = () => {
             <Card className="overflow-hidden rounded-2xl shadow-glow border-none">
               <div className="aspect-[2/3] relative bg-gradient-to-br from-blush/20 to-dusty-rose/20">
                 <BookCover book={book} eager />
+                <SaveBookButton bookId={book.id} title={book.title} className="absolute top-3 left-3 z-10 h-10 w-10" />
               </div>
             </Card>
           </div>
