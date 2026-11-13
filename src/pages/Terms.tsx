@@ -5,7 +5,7 @@ const Terms = () => (
   <LegalPage
     title="Terms of Service"
     updated="13 November 2026"
-    intro="Ummverse – The Book Affair (“Ummverse”) is owned, operated and managed by Ummverse Ventures, a registered Business Name. By using Ummverse you agree to these terms."
+    intro="Ummverse – The Book Affair (“Ummverse”) is owned, operated and managed by Ummverse Ventures. By using Ummverse you agree to these terms."
     sections={[
       { heading: "Who we are", body: <p>References to “we”, “us” or “our” mean Ummverse Ventures, the owner and operator of Ummverse. Ummverse helps readers discover romance books by mood, trope and spice level.</p> },
       { heading: "Accounts", body: <p>You can sign in with your Google account. You are responsible for activity on your account and must give accurate information. You must be old enough to form a binding contract where you live.</p> },
