@@ -77,7 +77,7 @@ export default function AdminImport() {
   };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile && selectedFile.type === "text/csv") {
+    if (selectedFile && (selectedFile.type === "text/csv" || /\.(csv|txt)$/i.test(selectedFile.name))) {
       setFile(selectedFile);
       setStats(null);
     } else {
@@ -85,8 +85,8 @@ export default function AdminImport() {
     }
   };
   const parseCSV = (text: string): any[] => {
-    const lines = text.split('\n');
-    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/);
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
     const books = [];
     for (let i = 1; i < lines.length; i++) {
       if (!lines[i].trim()) continue;
@@ -95,7 +95,10 @@ export default function AdminImport() {
       let insideQuotes = false;
       for (let j = 0; j < lines[i].length; j++) {
         const char = lines[i][j];
-        if (char === '"') {
+        if (char === '"' && insideQuotes && lines[i][j + 1] === '"') {
+          currentValue += '"';
+          j++;
+        } else if (char === '"') {
           insideQuotes = !insideQuotes;
         } else if (char === ',' && !insideQuotes) {
           values.push(currentValue.trim().replace(/^"|"$/g, ''));

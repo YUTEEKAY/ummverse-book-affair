@@ -16,6 +16,9 @@ interface CSVBook {
   mood?: string;          // REQUIRED
   genre?: string;         // Optional
   trope?: string;         // Optional (will be AI-detected)
+  tropes?: string;
+  moods?: string;
+  cover_url?: string;
   publisher?: string;
   publish_year?: string;
   isbn?: string;
@@ -42,6 +45,8 @@ interface ProcessedBook {
   mood: string | null;
   heat_level: string | null;
   summary: string | null;
+  api_source?: string;
+  cover_url?: string | null;
   publisher?: string;
   publication_year?: number;
   language?: string;
@@ -262,11 +267,14 @@ async function cleanAndValidateBook(
 
   // Normalize fields only if they exist
   const normalizedGenre = book.genre ? normalizeGenre(book.genre) : null;
-  const csvTrope = book.trope ? normalizeTrope(book.trope) : null;
-  const finalTrope = detectedTrope || csvTrope; // Prefer AI detection
-  const normalizedMood = book.mood ? normalizeMood(book.mood) : null;
+  const rawTrope = (book.trope || book.tropes || '').split(/[;|]/)[0].trim();
+  const csvTrope = rawTrope ? normalizeTrope(rawTrope) : null;
+  const finalTrope = csvTrope || detectedTrope; // The admin's own trope wins
+  const rawMood = book.mood || book.moods || '';
+  const normalizedMood = rawMood ? normalizeMood(rawMood) : null;
   const csvHeatLevel = book.heat_level ? normalizeHeatLevel(book.heat_level) : null;
-  const finalHeatLevel = detectedHeatLevel || csvHeatLevel; // Prefer AI detection
+  const finalHeatLevel = csvHeatLevel || detectedHeatLevel;
+  const coverUrl = (book.cover_url || '').trim();
 
   // Parse publication year - support multiple field names
   const yearString = book.publish_year || book.PublishYear || book['release year'];
@@ -295,7 +303,9 @@ async function cleanAndValidateBook(
     publication_year: publicationYear,
     language: (book.language || book.Language)?.trim() || 'English',
     rating: rating,
-    import_source: importSource
+    import_source: importSource,
+    api_source: 'csv_import',
+    cover_url: /^https?:\/\//.test(coverUrl) ? coverUrl : null
   };
 }
 
@@ -432,6 +442,8 @@ async function validateRomanceNovel(
   genre: string,
   lovableApiKey: string
 ): Promise<boolean> {
+  // Trust the admin's genre when it already says romance (e.g. "Dark Romance", "Romantasy")
+  if (/roman/i.test(genre)) return true;
   // If genre is provided, do quick checks
   if (genre) {
     const genreLower = genre.toLowerCase();
@@ -490,6 +502,7 @@ function normalizeGenre(genre: string): string {
   const genreLower = genre.toLowerCase();
   
   const genreMap: Record<string, string> = {
+    'romantasy': 'Fantasy Romance',
     'contemporary romance': 'Contemporary Romance',
     'contemporary': 'Contemporary Romance',
     'historical romance': 'Historical Romance',
@@ -554,50 +567,32 @@ function normalizeTrope(trope: string): string {
 }
 
 function normalizeMood(mood: string): string {
-  const moodLower = mood.toLowerCase();
-  
-  const moodMap: Record<string, string> = {
-    'cozy': 'Cozy & Comforting',
-    'comfort': 'Cozy & Comforting',
-    'heartwarming': 'Cozy & Comforting',
-    'spicy': 'Spicy & Steamy',
-    'steamy': 'Spicy & Steamy',
-    'hot': 'Spicy & Steamy',
-    'dark': 'Dark & Intense',
-    'intense': 'Dark & Intense',
-    'angsty': 'Dark & Intense',
-    'angst': 'Dark & Intense',
-    'light': 'Light & Fun',
-    'fun': 'Light & Fun',
-    'funny': 'Light & Fun',
-    'emotional': 'Emotional Journey',
-    'tear-jerker': 'Emotional Journey',
-    'adventure': 'Adventure & Action',
-    'action': 'Adventure & Action'
-  };
-
-  for (const [key, value] of Object.entries(moodMap)) {
-    if (moodLower.includes(key)) {
-      return value;
-    }
+  const m = mood.toLowerCase();
+  const rules: [string, string[]][] = [
+    ['Spicy & Steamy', ['spicy', 'steamy', 'sizzling', 'seductive', 'sensual', 'passionate', 'sultry']],
+    ['Dark & Intense', ['dark', 'intense', 'obsessive', 'macabre', 'vengeful', 'brooding', 'suspense', 'thrill', 'eerie', 'gothic', 'possessive', 'volatile', 'gripping']],
+    ['Magical & Enchanting', ['magic', 'enchant', 'mythic', 'fae', 'whimsical', 'lush']],
+    ['Sweeping & Epic', ['epic', 'sweeping', 'high stakes', 'adrenaline', 'action', 'fierce']],
+    ['Bittersweet', ['bittersweet', 'devastating', 'poignant', 'emotional', 'angsty', 'tear', 'soulful']],
+    ['Playful', ['playful', 'witty', 'funny', 'comedy', 'chaotic', 'sparkling', 'charming', 'joyful', 'banter']],
+    ['Cozy & Comforting', ['cozy', 'comfort', 'heartwarming', 'heartfelt', 'sweet', 'relatable', 'tender']],
+  ];
+  // Use the first listed mood that matches, so "Witty; Heartwarming" -> Playful
+  for (const part of m.split(/[;|,]/).map(x => x.trim()).filter(Boolean)) {
+    for (const [name, keys] of rules) if (keys.some(k => part.includes(k))) return name;
   }
-
-  return mood || 'Contemporary Romance';
+  return 'Cozy & Comforting';
 }
 
 function normalizeHeatLevel(heatLevel: string): string {
-  const heatLower = heatLevel.toLowerCase().trim();
-  
-  // Match database constraint: sweet, warm, hot, scorching
-  if (heatLower.includes('sweet') || heatLower.includes('clean')) {
-    return 'sweet';
-  } else if (heatLower.includes('mild') || heatLower.includes('warm') || heatLower.includes('flirt')) {
-    return 'warm';
-  } else if (heatLower.includes('spicy') || heatLower.includes('hot') || heatLower.includes('steam')) {
-    return 'hot';
-  } else if (heatLower.includes('very hot') || heatLower.includes('explicit') || heatLower.includes('scorch')) {
-    return 'scorching';
+  const h = heatLevel.toLowerCase().trim();
+  const num = h.match(/^(\d)(?:\s*\/\s*5)?/);
+  if (num) {
+    const n = Number(num[1]);
+    return n <= 2 ? 'sweet' : n === 3 ? 'warm' : n === 4 ? 'hot' : 'scorching';
   }
-
+  if (/scorch|inferno|very hot|extreme/.test(h)) return 'scorching';
+  if (/explicit|spicy|hot|steam/.test(h)) return 'hot';
+  if (/sweet|clean|closed/.test(h)) return 'sweet';
   return 'warm';
 }
