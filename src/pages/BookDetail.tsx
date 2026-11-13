@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getThemeStyle } from "@/lib/themeGradients";
-import BookCoverPlaceholder from "@/components/BookCoverPlaceholder";
+import BookCover from "@/components/BookCover";
 import HeatLevelBadge from "@/components/HeatLevelBadge";
 import { getHeatLevelConfig } from "@/lib/heatLevelConfig";
 import { Card } from "@/components/ui/card";
@@ -25,6 +25,8 @@ interface Book {
   title: string;
   author: string;
   cover_url: string | null;
+  isbn?: string | null;
+  isbn13?: string | null;
   rating: number | null;
   summary: string | null;
   heat_level: string | null;
@@ -70,7 +72,7 @@ const BookDetail = () => {
 
       const { data: bookData } = await supabase
         .from("books")
-        .select("id, title, author, cover_url, rating, summary, genre, mood, trope, heat_level, publication_year")
+        .select("id, title, author, cover_url, isbn, isbn13, rating, summary, genre, mood, trope, heat_level, publication_year")
         .eq("id", bookId)
         .single();
 
@@ -315,25 +317,7 @@ const BookDetail = () => {
           <div className="md:col-span-1">
             <Card className="overflow-hidden rounded-2xl shadow-glow border-none">
               <div className="aspect-[2/3] relative bg-gradient-to-br from-blush/20 to-dusty-rose/20">
-                {book.cover_url ? (
-                  <motion.img
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                    src={book.cover_url}
-                    alt={book.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <BookCoverPlaceholder 
-                    title={book.title} 
-                    genre={book.genre} 
-                    mood={book.mood}
-                  />
-                )}
+                <BookCover book={book} eager />
               </div>
             </Card>
           </div>

@@ -23,6 +23,8 @@ interface Book {
   title: string;
   author: string;
   cover_url: string | null;
+  isbn?: string | null;
+  isbn13?: string | null;
   rating: number | null;
   heat_level: string | null;
 }
@@ -58,7 +60,7 @@ const GenreDetail = () => {
           // Fetch books matching this genre
           const { data: booksData, error: booksError } = await supabase
             .from("books")
-            .select("id, title, author, cover_url, rating, heat_level")
+            .select("id, title, author, cover_url, isbn, isbn13, rating, heat_level")
             .eq("genre", genreData.name)
             .order("rating", { ascending: false, nullsFirst: false });
 

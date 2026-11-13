@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import BookCoverPlaceholder from "@/components/BookCoverPlaceholder";
+import BookCover from "@/components/BookCover";
 import HeatLevelBadge from "@/components/HeatLevelBadge";
 interface BookRecommendation {
   id: string;
@@ -26,8 +26,8 @@ const SimilarBookCard = ({
       duration: 0.2
     }} className="relative">
         {/* Cover */}
-        <div className="aspect-[2/3] rounded-xl overflow-hidden mb-3 shadow-card">
-          {book.cover_url ? <img src={book.cover_url} alt={book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <BookCoverPlaceholder title={book.title} genre={book.genre} mood={book.mood} />}
+        <div className="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 shadow-card bg-secondary">
+          <BookCover book={book} className="group-hover:scale-105 transition-transform duration-500" />
           {book.heat_level && <div className="absolute top-2 right-2">
               <HeatLevelBadge heatLevel={book.heat_level} size="sm" />
             </div>}
