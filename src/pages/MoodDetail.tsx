@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import HeatLevelFilter from "@/components/HeatLevelFilter";
 import type { HeatLevel } from "@/lib/heatLevelConfig";
 import SimilarBooksSection from "@/components/SimilarBooksSection";
+import SiteHeader from "@/components/SiteHeader";
 
 interface Mood {
   id: string;
@@ -165,6 +166,7 @@ const MoodDetail = () => {
 
   return (
     <main className="min-h-screen bg-background">
+      <SiteHeader />
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0 }}

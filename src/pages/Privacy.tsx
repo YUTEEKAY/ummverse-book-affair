@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { UserMenu } from "@/components/UserMenu";
 import Footer from "@/components/Footer";
 
 const Privacy = () => {
@@ -18,6 +19,7 @@ const Privacy = () => {
               Back to Home
             </Button>
           </Link>
+          <UserMenu />
         </div>
       </header>
 

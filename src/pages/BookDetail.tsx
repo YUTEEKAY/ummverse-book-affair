@@ -23,6 +23,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { WhereToBuy } from "@/components/WhereToBuy";
 import { SaveBookButton } from "@/components/SaveBookButton";
+import SiteHeader from "@/components/SiteHeader";
 
 interface Book {
   id: string;
@@ -232,7 +233,9 @@ const BookDetail = () => {
 
   if (!book) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex min-h-screen flex-col bg-background">
+        <SiteHeader />
+        <div className="flex flex-1 items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-serif text-foreground mb-4">Book not found</h2>
           <Button 
@@ -245,6 +248,7 @@ const BookDetail = () => {
           >
             Return Home
           </Button>
+        </div>
         </div>
       </div>
     );
@@ -268,6 +272,8 @@ const BookDetail = () => {
           transition={{ duration: 1 }}
         />
       )}
+
+      <SiteHeader />
 
       <div className="relative max-w-6xl mx-auto px-6 py-12 z-10">
         <div className="flex items-center justify-between mb-8 relative z-20">

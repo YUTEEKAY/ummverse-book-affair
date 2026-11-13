@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Home } from "lucide-react";
+import SiteHeader from "@/components/SiteHeader";
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,7 +13,9 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
+      <SiteHeader />
+      <div className="flex flex-1 items-center justify-center">
       <div className="text-center space-y-6">
         <h1 className="mb-4 text-6xl font-bold text-foreground">404</h1>
         <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
@@ -33,6 +36,7 @@ const NotFound = () => {
             Return to Home
           </Button>
         </div>
+      </div>
       </div>
     </div>
   );

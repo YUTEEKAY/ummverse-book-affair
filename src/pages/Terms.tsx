@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { UserMenu } from "@/components/UserMenu";
 import Footer from "@/components/Footer";
 
 const Terms = () => {
@@ -19,6 +20,7 @@ const Terms = () => {
               Back to Home
             </Button>
           </Link>
+          <UserMenu />
         </div>
       </header>
 

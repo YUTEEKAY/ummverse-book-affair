@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import BookCard from "@/components/BookCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import SiteHeader from "@/components/SiteHeader";
 import { motion } from "framer-motion";
 import { getThemeStyle } from "@/lib/themeGradients";
 import DiscoverButton from "@/components/DiscoverButton";
@@ -145,6 +146,7 @@ const GenreDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SiteHeader />
       {/* Hero Section with Motion Background */}
       <section className={`relative bg-gradient-to-br ${themeStyle.gradient} py-24 px-4 overflow-hidden`}>
         {/* Subtle motion background */}

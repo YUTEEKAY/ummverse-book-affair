@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import BookCard from "@/components/BookCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import SiteHeader from "@/components/SiteHeader";
 import { motion } from "framer-motion";
 import DiscoverButton from "@/components/DiscoverButton";
 import HeatLevelFilter from "@/components/HeatLevelFilter";
@@ -154,6 +155,7 @@ const TropeDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SiteHeader />
       {/* Hero Section with Motion Background */}
       <section className={`relative overflow-hidden px-4 py-16 text-primary-foreground sm:py-20 ${fieldClass}`}>
         <div className="container relative z-10 mx-auto max-w-6xl">
