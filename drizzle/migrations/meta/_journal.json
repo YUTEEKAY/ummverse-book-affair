@@ -8,6 +8,13 @@
       "when": 1794577703211,
       "tag": "0000_subscriptions_and_trials",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794579068501,
+      "tag": "0001_admin_user_management",
+      "breakpoints": true
     }
   ]
 }

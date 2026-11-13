@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Shield, Upload, BookOpen, Users, Eye, MessageSquare, Sparkles, RefreshCw, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { BookManagement } from '@/components/admin/BookManagement';
+import { UserManagement } from '@/components/admin/UserManagement';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -121,6 +122,12 @@ export default function Admin() {
           </Button>
         </div>
 
+        {/* Users, subscriptions & revenue */}
+        <div className="mb-10">
+          <h2 className="text-2xl font-bold mb-4">Users & Revenue</h2>
+          <UserManagement />
+        </div>
+
         {/* Quick Actions & Enrichment Tools */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Enrichment Tools */}
@@ -214,7 +221,7 @@ export default function Admin() {
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                  <CardTitle className="text-sm font-medium">Profiles</CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>

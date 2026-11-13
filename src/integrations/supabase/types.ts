@@ -552,6 +552,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_users: {
+        Args: { check_env?: string }
+        Returns: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string
+          email: string
+          full_name: string
+          id: string
+          is_manual: boolean
+          price_id: string
+          status: string
+          trials_used: number
+        }[]
+      }
+      admin_reset_trials: { Args: { target_user: string }; Returns: undefined }
+      admin_set_tier: {
+        Args: { check_env?: string; target_user: string; tier: string }
+        Returns: undefined
+      }
       consume_trial: {
         Args: { check_env?: string; device_uses: number }
         Returns: Json
