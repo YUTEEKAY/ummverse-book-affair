@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
+import { AUTH_ORIGIN, canonicalSignInUrl } from "@/lib/authRedirect";
 
 export function GoogleSignInButton({ label = "Continue with Google", className = "", redirectPath = "", onError }: { label?: string; className?: string; redirectPath?: string; onError?: (msg: string) => void }) {
   const [busy, setBusy] = useState(false);
   const onClick = async () => {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + redirectPath });
+    if (window.location.origin !== AUTH_ORIGIN) {
+      const next = new URLSearchParams(window.location.search).get("next") ?? sessionStorage.getItem("ummverse_next") ?? (redirectPath === "/signin" ? "/dashboard" : window.location.pathname);
+      window.location.assign(canonicalSignInUrl(next));
+      return;
+    }
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${AUTH_ORIGIN}/signin` });
     if (result.error) { const msg = "Google sign-in failed. Please try again."; onError ? onError(msg) : toast.error(msg); setBusy(false); return; }
     if (result.redirected) return;
     setBusy(false);

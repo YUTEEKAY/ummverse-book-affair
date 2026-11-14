@@ -86,15 +86,26 @@ export default function Dashboard() {
   };
 
   const openPortal = async () => {
+    const portal = window.open("about:blank", "_blank");
+    if (!portal) return toast.error("Please allow pop-ups to open your billing portal.");
+    portal.opener = null;
     setPortalBusy(true);
-    const { data, error } = await supabase.functions.invoke("customer-portal", { body: { environment: getPaddleEnvironment() } });
-    setPortalBusy(false);
-    if (error) {
-      let msg = "Couldn't open the billing portal.";
-      if (error instanceof FunctionsHttpError) { try { msg = (await error.context.json()).error ?? msg; } catch { /* default */ } }
-      return toast.error(msg);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal", { body: { environment: getPaddleEnvironment() } });
+      if (error) {
+        let msg = "Couldn't open the billing portal.";
+        if (error instanceof FunctionsHttpError) { try { msg = (await error.context.json()).error ?? msg; } catch { /* default */ } }
+        throw new Error(msg);
+      }
+      const url = new URL(data?.url);
+      if (url.protocol !== "https:") throw new Error("Couldn't open the billing portal.");
+      portal.location.href = url.href;
+    } catch (error) {
+      portal.close();
+      toast.error(error instanceof Error ? error.message : "Couldn't open the billing portal.");
+    } finally {
+      setPortalBusy(false);
     }
-    window.open(data.url, "_blank");
   };
 
   return (

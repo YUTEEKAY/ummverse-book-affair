@@ -6,17 +6,21 @@ import { getPaddleEnvironment } from "@/lib/paddle";
 export function useSubscription() {
   const { user } = useAuth();
   const q = useQuery({
-    queryKey: ["subscription", user?.id],
+    queryKey: ["subscription", user?.id, getPaddleEnvironment()],
     enabled: !!user,
+    staleTime: 0,
+    refetchInterval: 5000,
     queryFn: async () => {
-      const { data } = await supabase
+      if (!user) return null;
+      const { data, error } = await supabase
         .from("subscriptions")
         .select("*")
-        .eq("user_id", user!.id)
+        .eq("user_id", user.id)
         .eq("environment", getPaddleEnvironment())
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
+      if (error) throw error;
       return data;
     },
   });

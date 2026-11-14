@@ -12,23 +12,26 @@ async function created(data: any, env: PaddleEnv) {
   const priceId = item.price.importMeta?.externalId;
   const productId = item.product.importMeta?.externalId;
   if (!priceId || !productId) { console.warn('Skipping subscription: missing importMeta.externalId'); return; }
-  await sb().from('subscriptions').upsert({
+  const { error } = await sb().from('subscriptions').upsert({
     user_id: userId, paddle_subscription_id: id, paddle_customer_id: customerId,
     product_id: productId, price_id: priceId, status,
     current_period_start: currentBillingPeriod?.startsAt, current_period_end: currentBillingPeriod?.endsAt,
     environment: env, updated_at: new Date().toISOString(),
   }, { onConflict: 'paddle_subscription_id' });
+  if (error) throw error;
 }
 async function updated(data: any, env: PaddleEnv) {
   const { id, status, currentBillingPeriod, scheduledChange } = data;
-  await sb().from('subscriptions').update({
+  const { error } = await sb().from('subscriptions').update({
     status, current_period_start: currentBillingPeriod?.startsAt, current_period_end: currentBillingPeriod?.endsAt,
     cancel_at_period_end: scheduledChange?.action === 'cancel', updated_at: new Date().toISOString(),
   }).eq('paddle_subscription_id', id).eq('environment', env);
+  if (error) throw error;
 }
 async function canceled(data: any, env: PaddleEnv) {
-  await sb().from('subscriptions').update({ status: 'canceled', updated_at: new Date().toISOString() })
+  const { error } = await sb().from('subscriptions').update({ status: 'canceled', updated_at: new Date().toISOString() })
     .eq('paddle_subscription_id', data.id).eq('environment', env);
+  if (error) throw error;
 }
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });

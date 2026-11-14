@@ -27,7 +27,7 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
         items: [{ priceId: paddlePriceId, quantity: 1 }],
         customer: user.email ? { email: user.email } : undefined,
         customData: { userId: user.id },
-        settings: { displayMode: "overlay", successUrl: `${window.location.origin}/?checkout=success`, allowLogout: false, variant: "one-page" },
+        settings: { displayMode: "overlay", successUrl: `${window.location.origin}/dashboard?checkout=success`, allowLogout: false, variant: "one-page" },
       });
     } catch (e) {
       console.error(e);
