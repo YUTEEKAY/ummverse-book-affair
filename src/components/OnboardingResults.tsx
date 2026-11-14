@@ -7,6 +7,7 @@ import { getRecommendationsFromQuiz } from "@/lib/quizLogic";
 import type { QuizAnswers } from "@/lib/quizStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import ShareBookVibe from "./ShareBookVibe";
 interface OnboardingResultsProps {
   answers: QuizAnswers;
   onRetake: () => void;
@@ -76,6 +77,7 @@ const OnboardingResults = ({
           </Button>
         </div>}
 
+      {!loading && books[0] && <ShareBookVibe book={books[0]} />}
       <div className="flex justify-center pt-4 border-t">
         <Button onClick={onRetake} variant="ghost">
           Retake Quiz

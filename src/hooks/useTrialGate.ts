@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { getPaddleEnvironment } from "@/lib/paddle";
-import { canUseFreeTrial, getDeviceUses, setDeviceUses } from "@/lib/trialLimit";
+import { getPaymentEnvironment } from "@/lib/flutterwave";
+import { getDeviceUses, setDeviceUses } from "@/lib/trialLimit";
 
 /** Returns consume(): true if the user may proceed (and records the try). */
 export function useTrialGate() {
@@ -10,14 +10,12 @@ export function useTrialGate() {
   const consume = useCallback(async (): Promise<boolean> => {
     const deviceUses = getDeviceUses();
     if (!user) {
-      if (!canUseFreeTrial(deviceUses)) return false;
-      setDeviceUses(deviceUses + 1);
-      return true;
+      return false;
     }
-    const { data, error } = await supabase.rpc("consume_trial", {
+    const { data, error } = await supabase.functions.invoke("check-and-consume-trial", { body: {
       device_uses: deviceUses,
-      check_env: getPaddleEnvironment(),
-    });
+      check_env: getPaymentEnvironment(),
+    } });
     if (error) { console.error(error); return false; }
     const res = data as { allowed: boolean; subscribed: boolean; uses: number };
     if (!res.subscribed) setDeviceUses(Math.max(deviceUses, res.uses));

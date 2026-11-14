@@ -1,5 +1,19 @@
 # Welcome to Ummverse
 
+## Flutterwave and Vercel deployment
+
+1. Connect this project to GitHub in Lovable, then import that repository into Vercel as a Vite project. Build: `npm run build`; output: `dist`. Root `vercel.json` provides SPA deep-link rewrites.
+2. Set the public variables from `.env.example` in Vercel. Copy the existing application's public Cloud URL and publishable key from project configuration. Set `VITE_FLUTTERWAVE_PUBLIC_KEY` to the public key from the same Flutterwave test/live account as the server key. Rebuild after changes.
+3. Keep `FLUTTERWAVE_SECRET_KEY`, `FLUTTERWAVE_WEBHOOK_HASH`, `FLUTTERWAVE_MONTHLY_PLAN_ID`, and `FLUTTERWAVE_ANNUAL_PLAN_ID` in Lovable Cloud secrets, never as Vite variables. Backend functions continue to run on Lovable Cloud, not Vercel.
+4. Create active USD recurring payment plans in Flutterwave: $5 with interval `monthly`, and $60 with interval `yearly`. Save their numeric IDs as the two plan variables. Test and live plans/keys must not be mixed.
+5. Set the Flutterwave webhook URL to the Cloud functions base URL followed by `/flutterwave-webhook`, set its secret hash to the same `FLUTTERWAVE_WEBHOOK_HASH`, and enable payment/subscription events and webhook retries. The handler expects v3 `verif-hash` authentication and independently verifies payments.
+6. Allow your Vercel and custom-domain `https://…/**` return URLs in Lovable Cloud → Users → Auth settings → Advanced. Managed Google sign-in also requires hosting that serves Lovable's `/~oauth` broker paths; Vercel's SPA rewrite alone does not provide that broker. Verify Google sign-in on Vercel before launch and configure a supported externally hosted OAuth flow if needed.
+7. Disconnect the old managed Payments integration from its dashboard's three-dot menu. Prior subscriptions are not migrated or canceled automatically; arrange migration with existing subscribers before retiring their old billing.
+
+Checkout uses Flutterwave Standard hosted recurring card checkout. No fake keys or sandbox success fallbacks are shipped: the portal renders with empty configuration, but payment requests fail safely until credentials and plans are supplied. Annual price is $60. Cancellation stops renewals while preserving access through the paid period. Subscription rows, not editable profile metadata, drive access.
+
+Before launch, test successful/failed checkout, dashboard verification, duplicate and recurring webhooks, cancellation, and paid review/vendor access with test credentials. These cannot be certified while credentials are missing. `bun test src/lib/*.test.ts` runs the regression tests.
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/7a37ec35-ed53-4a58-aada-c05fb47266d7

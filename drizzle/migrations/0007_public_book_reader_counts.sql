@@ -1,0 +1,2 @@
+CREATE OR REPLACE FUNCTION public.get_book_reader_counts(_book_ids uuid[]) RETURNS TABLE(book_id uuid, readers bigint) LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT v.book_id,count(DISTINCT v.user_id) FROM public.book_views v WHERE v.book_id=ANY(_book_ids) AND v.user_id IS NOT NULL GROUP BY v.book_id $$;
+GRANT EXECUTE ON FUNCTION public.get_book_reader_counts(uuid[]) TO anon,authenticated,service_role;

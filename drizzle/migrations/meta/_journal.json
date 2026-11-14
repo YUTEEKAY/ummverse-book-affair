@@ -43,6 +43,27 @@
       "when": 1794582710665,
       "tag": "0005_vendors",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794619026682,
+      "tag": "0006_flutterwave_subscriptions",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794619219414,
+      "tag": "0007_public_book_reader_counts",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794619554488,
+      "tag": "0008_vendor_outlet_counts",
+      "breakpoints": true
     }
   ]
 }

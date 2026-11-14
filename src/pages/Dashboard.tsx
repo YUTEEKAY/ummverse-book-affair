@@ -1,13 +1,12 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Bookmark, Crown, ExternalLink, History, Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { FunctionsHttpError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { paymentRequest } from "@/lib/flutterwave";
 import { FREE_TRIALS, getDeviceUses } from "@/lib/trialLimit";
 import { UserMenu, userDisplay } from "@/components/UserMenu";
 import { UpgradeModal } from "@/components/UpgradeModal";
@@ -24,19 +23,19 @@ const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString(undefined
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { subscription, isActive } = useSubscription();
+  const { subscription, isActive, refetch } = useSubscription();
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [portalBusy, setPortalBusy] = useState(false);
   const qc = useQueryClient();
   const { name, avatar, initials } = userDisplay(user);
 
   const isAnnual = isActive && subscription?.price_id === "premium_yearly";
-  const badge = !isActive ? "Free Trial" : isAnnual ? "Annual Subscriber - $70/yr" : "Monthly Subscriber - $5/mo";
+  const badge = !isActive ? "Free Trial" : isAnnual ? "Annual Subscriber - $60/yr" : "Monthly Subscriber - $5/mo";
 
   const { data: usage } = useQuery({
     queryKey: ["my-usage", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("feature_usage").select("uses").eq("user_id", user!.id).maybeSingle();
+      const { data } = await supabase.from("feature_usage").select("uses").eq("user_id", user?.id ?? "").maybeSingle();
       return Math.min(FREE_TRIALS, Math.max(data?.uses ?? 0, getDeviceUses()));
     },
   });
@@ -71,7 +70,7 @@ export default function Dashboard() {
     queryFn: async () => {
       const { data, error } = await supabase.from("reviews")
         .select("id, review_text, hearts, created_at, book_id, books(id, title, author)")
-        .eq("user_id", user!.id).order("created_at", { ascending: false });
+        .eq("user_id", user?.id ?? "").order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
@@ -85,27 +84,30 @@ export default function Dashboard() {
     qc.invalidateQueries({ queryKey: ["saved-book-ids"] });
   };
 
+  const [params, setParams] = useSearchParams();
+  const [paymentMessage, setPaymentMessage] = useState("");
+  useEffect(() => {
+    if (params.get("payment") !== "verifying") return;
+    const id = params.get("transaction_id");
+    if (!id) { setPaymentMessage("Payment was not completed. No membership has been activated."); return; }
+    let active = true;
+    setPaymentMessage("Confirming your payment…");
+    paymentRequest("verify-flutterwave-payment", { transaction_id: id }).then(async () => {
+      await refetch();
+      if (active) { setPaymentMessage("Payment confirmed. Your membership is active."); setParams({}, { replace: true }); }
+    }).catch(error => { if (active) setPaymentMessage(error.message); });
+    return () => { active = false; };
+  }, [params, refetch, setParams]);
+
   const openPortal = async () => {
-    const portal = window.open("about:blank", "_blank");
-    if (!portal) return toast.error("Please allow pop-ups to open your billing portal.");
-    portal.opener = null;
+    if (!subscription || !window.confirm("Cancel future renewals? You will keep access until your paid period ends.")) return;
     setPortalBusy(true);
     try {
-      const { data, error } = await supabase.functions.invoke("customer-portal", { body: { environment: getPaddleEnvironment() } });
-      if (error) {
-        let msg = "Couldn't open the billing portal.";
-        if (error instanceof FunctionsHttpError) { try { msg = (await error.context.json()).error ?? msg; } catch { /* default */ } }
-        throw new Error(msg);
-      }
-      const url = new URL(data?.url);
-      if (url.protocol !== "https:") throw new Error("Couldn't open the billing portal.");
-      portal.location.href = url.href;
-    } catch (error) {
-      portal.close();
-      toast.error(error instanceof Error ? error.message : "Couldn't open the billing portal.");
-    } finally {
-      setPortalBusy(false);
-    }
+      await paymentRequest("cancel-flutterwave-subscription", { subscription_id: subscription.id });
+      await refetch();
+      toast.success("Subscription canceled. Future renewals are stopped.");
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Cancellation failed."); }
+    finally { setPortalBusy(false); }
   };
 
   return (
@@ -120,6 +122,7 @@ export default function Dashboard() {
       </header>
 
       <main className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6">
+        {paymentMessage && <p role="status" className="border-l-2 border-primary pl-4 text-sm">{paymentMessage}</p>}
         <Card className="flex flex-col items-start gap-5 p-6 sm:flex-row sm:items-center">
           <Avatar className="h-16 w-16">
             {avatar && <AvatarImage src={avatar} alt="" referrerPolicy="no-referrer" />}
@@ -144,9 +147,9 @@ export default function Dashboard() {
                   : `Next renewal: ${fmt(subscription?.current_period_end)}`}
               </p>
             </div>
-            <Button onClick={openPortal} disabled={portalBusy} variant="outline">
+            <Button onClick={openPortal} disabled={portalBusy || subscription?.provider !== "flutterwave" || !!subscription?.cancel_at_period_end} variant="outline">
               {portalBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ExternalLink className="mr-2 h-4 w-4" />}
-              Manage Subscription
+              Cancel Subscription
             </Button>
           </Card>
         ) : (

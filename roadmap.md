@@ -18,3 +18,22 @@
 - [ ] Match $5/month and $60/year throughout and restore current-origin auth/payment returns.
 - [ ] Add Vercel SPA rewrites, environment example and deployment instructions; run tests and browser checks.
 - [ ] Configure Flutterwave credentials/plans/webhook and disconnect managed payments; blocked until account details and provider disconnect are supplied.
+
+# Covers and engagement
+
+- [ ] Upgrade cover URL resolution, blank/low-resolution detection and editorial fallback covers with hardcover detailing.
+- [ ] Add one-click mood/trope discovery filters, visual heat meter, quick-peek/save controls and real reader counts.
+- [ ] Add today's curated mood pick with quiz CTA; verify desktop/mobile rendering without AI labels.
+
+# Quiz-result sharing
+
+- [ ] Add a branded matched-book share card with cover, title, author and mood tags; export/share locally without backend or AI calls.
+
+# Starter shelves and vendor teaser
+
+- [ ] Add static curated thematic shelf definitions and horizontal book rows with descriptions and tags.
+- [ ] Add live Nigerian/online vendor counts for free readers with an upgrade CTA, without exposing contact details.
+
+# Final production audit
+
+- [ ] Verify signed-in trial enforcement, review/vendor gates, admin access, metadata tools, legal links and deployment checks; report external blockers.

@@ -10,6 +10,8 @@ import { UpgradeModal } from "./UpgradeModal";
 import { useTrialGate } from "@/hooks/useTrialGate";
 import { saveOnboardingData, type QuizAnswers } from "@/lib/quizStorage";
 import { mapFeelingToMood } from "@/lib/quizLogic";
+import { useAuth } from "@/contexts/AuthContext";
+import { GoogleSignInButton } from "./GoogleSignInButton";
 interface OnboardingQuizProps {
   open: boolean;
   onClose: () => void;
@@ -23,6 +25,7 @@ const OnboardingQuiz = ({
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [checking, setChecking] = useState(false);
   const { consume } = useTrialGate();
+  const { user } = useAuth();
   const [answers, setAnswers] = useState<QuizAnswers>({
     feeling: "",
     trope: "",
@@ -134,7 +137,7 @@ const OnboardingQuiz = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto border-border bg-background/95 backdrop-blur-lg">
         <AnimatePresence mode="wait">
-          {!showResults ? <motion.div key={step} initial={{
+          {!user ? <div className="space-y-5 py-8 text-center"><h2 className="font-serif text-3xl">Find your book vibe</h2><p className="text-muted-foreground">Sign in for your 2 free quiz matches.</p><GoogleSignInButton /></div> : !showResults ? <motion.div key={step} initial={{
           opacity: 0,
           x: 20
         }} animate={{

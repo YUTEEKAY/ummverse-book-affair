@@ -239,6 +239,9 @@ All colors MUST be HSL.
 }
 
 @layer components {
+  .editorial-cover { color: hsl(var(--quote-foreground)); }
+  .book-hardcover { box-shadow: inset 7px 0 9px -5px hsl(var(--foreground) / .65), inset 0 0 0 1px hsl(var(--primary-foreground) / .2); }
+  .editorial-cover::before { content: ""; position: absolute; inset: 10px; border: 1px solid hsl(var(--quote-foreground) / .3); pointer-events: none; }
   .editorial-field--hot { background-image: linear-gradient(145deg, hsl(var(--field-wine)), hsl(var(--field-berry))); }
   .editorial-field--mystical { background-image: linear-gradient(145deg, hsl(var(--field-plum)), hsl(var(--field-ocean))); }
   .editorial-field--warm { background-image: linear-gradient(145deg, hsl(var(--field-gold)), hsl(var(--field-wine))); }

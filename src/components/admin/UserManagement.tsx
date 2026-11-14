@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getPaymentEnvironment } from "@/lib/flutterwave";
 import { computeKpis, statusOf, tierOf, type AdminUserRow, type Tier } from "@/lib/adminMetrics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,7 +25,7 @@ const TIER_LABEL: Record<Tier, string> = { free: "Free", monthly: "Monthly", ann
 const fmtDate = (d: string | null) => (d ? new Date(d).toLocaleDateString(undefined, { dateStyle: "medium" }) : "—");
 
 export function UserManagement() {
-  const env = getPaddleEnvironment();
+  const env = getPaymentEnvironment();
   const qc = useQueryClient();
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
@@ -65,7 +65,7 @@ export function UserManagement() {
   const kpiCards = [
     { title: "Registered Users", value: kpis.totalUsers.toLocaleString(), sub: "Signed-in accounts", icon: Users },
     { title: "Active Paid Subscribers", value: kpis.paid.toLocaleString(), sub: `${kpis.monthly} Monthly · ${kpis.annual} Annual`, icon: CreditCard },
-    { title: "Estimated MRR", value: `$${kpis.mrr.toFixed(2)}`, sub: "Monthly $5 + Annual $70 ÷ 12", icon: DollarSign },
+    { title: "Estimated MRR", value: `$${kpis.mrr.toFixed(2)}`, sub: "Monthly $5 + Annual $60 ÷ 12", icon: DollarSign },
     { title: "Free Trial Users", value: (kpis.trials[0] + kpis.trials[1] + kpis.trials[2]).toLocaleString(), sub: `0/2: ${kpis.trials[0]} · 1/2: ${kpis.trials[1]} · 2/2: ${kpis.trials[2]}`, icon: Zap },
   ];
 

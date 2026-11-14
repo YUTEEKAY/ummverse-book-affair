@@ -213,6 +213,74 @@ export type Database = {
         }
         Relationships: []
       }
+      flutterwave_checkouts: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          environment: string
+          plan_id: string
+          tier: string
+          tx_ref: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          environment: string
+          plan_id: string
+          tier: string
+          tx_ref: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          environment?: string
+          plan_id?: string
+          tier?: string
+          tx_ref?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      flutterwave_transactions: {
+        Row: {
+          created_at: string
+          paid_at: string
+          subscription_id: string
+          transaction_id: string
+          tx_ref: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          paid_at: string
+          subscription_id: string
+          transaction_id: string
+          tx_ref: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          paid_at?: string
+          subscription_id?: string
+          transaction_id?: string
+          tx_ref?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flutterwave_transactions_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       genres: {
         Row: {
           color_theme: string | null
@@ -479,11 +547,14 @@ export type Database = {
           current_period_end: string | null
           current_period_start: string | null
           environment: string
+          flutterwave_subscription_id: string | null
           id: string
+          next_billing_date: string | null
           paddle_customer_id: string
           paddle_subscription_id: string
           price_id: string
           product_id: string
+          provider: string
           status: string
           updated_at: string | null
           user_id: string
@@ -494,11 +565,14 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           environment?: string
+          flutterwave_subscription_id?: string | null
           id?: string
+          next_billing_date?: string | null
           paddle_customer_id: string
           paddle_subscription_id: string
           price_id: string
           product_id: string
+          provider?: string
           status?: string
           updated_at?: string | null
           user_id: string
@@ -509,11 +583,14 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           environment?: string
+          flutterwave_subscription_id?: string | null
           id?: string
+          next_billing_date?: string | null
           paddle_customer_id?: string
           paddle_subscription_id?: string
           price_id?: string
           product_id?: string
+          provider?: string
           status?: string
           updated_at?: string | null
           user_id?: string
@@ -688,9 +765,26 @@ export type Database = {
         Args: { check_env?: string; target_user: string; tier: string }
         Returns: undefined
       }
+      apply_flutterwave_payment: {
+        Args: {
+          _next_billing_date: string
+          _paid_at: string
+          _subscription_id: string
+          _transaction_id: string
+          _tx_ref: string
+        }
+        Returns: undefined
+      }
       consume_trial: {
         Args: { check_env?: string; device_uses: number }
         Returns: Json
+      }
+      get_book_reader_counts: {
+        Args: { _book_ids: string[] }
+        Returns: {
+          book_id: string
+          readers: number
+        }[]
       }
       get_book_reviews: {
         Args: { _book_id: string }
@@ -701,6 +795,14 @@ export type Database = {
           id: string
           pen_name: string
           review_text: string
+          total_count: number
+        }[]
+      }
+      get_book_vendor_counts: {
+        Args: { _book_id: string }
+        Returns: {
+          nigerian_count: number
+          online_count: number
           total_count: number
         }[]
       }

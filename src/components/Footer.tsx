@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Footer = () => (
   <footer className="border-t border-border bg-secondary/50 px-6 py-10">
@@ -16,9 +16,6 @@ const Footer = () => (
 );
 
 export function SiteFooter() {
-  // Rendered once for the whole site; the admin area has its own layout.
-  const { pathname } = useLocation();
-  if (pathname.startsWith("/admin")) return null;
   return <Footer />;
 }
 

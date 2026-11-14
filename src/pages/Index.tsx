@@ -6,6 +6,8 @@ import MostSearchedBooksCarousel from "@/components/MostSearchedBooksCarousel";
 import HowItWorks from "@/components/HowItWorks";
 import TodaysQuote from "@/components/TodaysQuote";
 import OnboardingQuiz from "@/components/OnboardingQuiz";
+import DiscoveryShelf from "@/components/DiscoveryShelf";
+import StarterShelves from "@/components/StarterShelves";
 
 const Index = () => {
   const [showOnboardingQuiz, setShowOnboardingQuiz] = useState(false);
@@ -20,6 +22,8 @@ const Index = () => {
       <HowItWorks />
       <TodaysQuote />
       <FeaturedMoods />
+      <DiscoveryShelf onQuiz={handleDiscoverClick} />
+      <StarterShelves />
       <MostSearchedBooksCarousel />
       <FeaturedTropes />
       

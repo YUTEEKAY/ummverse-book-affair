@@ -1,5 +1,5 @@
 export const MONTHLY_PRICE_USD = 5;
-export const ANNUAL_PRICE_USD = 70;
+export const ANNUAL_PRICE_USD = 60;
 
 export type AdminUserRow = {
   id: string;
@@ -20,7 +20,7 @@ export type DisplayStatus = "Active" | "Trialing" | "Canceled" | "Expired" | "â€
 export function isActive(row: AdminUserRow, now = new Date()): boolean {
   if (!row.status) return false;
   const end = row.current_period_end ? new Date(row.current_period_end) : null;
-  if (["active", "trialing"].includes(row.status)) return !end || end > now;
+  if (["active", "trialing", "past_due", "active_monthly", "active_annual"].includes(row.status)) return !end || end > now;
   if (row.status === "canceled") return !!end && end > now;
   return false;
 }

@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { Bookmark } from "lucide-react";
+import { Bookmark, Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useSavedBooks } from "@/hooks/useSavedBooks";
 import { cn } from "@/lib/utils";
 
-export function SaveBookButton({ bookId, title, className }: { bookId: string; title?: string; className?: string }) {
+export function SaveBookButton({ bookId, title, className, heart = false }: { bookId: string; title?: string; className?: string; heart?: boolean }) {
   const { ids, toggle } = useSavedBooks();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const saved = ids.has(bookId);
+  const Icon = heart ? Heart : Bookmark;
 
   const onClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ export function SaveBookButton({ bookId, title, className }: { bookId: string; t
   };
 
   return (
-    <button
+    <Button size="icon" variant="secondary"
       type="button"
       onClick={onClick}
       disabled={busy}
@@ -41,7 +43,7 @@ export function SaveBookButton({ bookId, title, className }: { bookId: string; t
         className,
       )}
     >
-      <Bookmark className={cn("h-4 w-4", saved && "fill-primary text-primary")} />
-    </button>
+      <Icon className={cn("h-4 w-4", saved && "fill-primary text-primary")} />
+    </Button>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import BookCoverPlaceholder from "./BookCoverPlaceholder";
-import { coverCandidates, findCoverByTitle } from "@/lib/coverUrls";
+import { coverCandidates, findCoverByTitle, findGoogleCover, usableCover } from "@/lib/coverUrls";
 
 interface BookCoverProps {
   book: {
@@ -18,7 +18,7 @@ interface BookCoverProps {
 
 /** Cover image that tries the stored URL, then ISBN, then a title lookup, then a styled placeholder. */
 const BookCover = ({ book, className = "", eager = false }: BookCoverProps) => {
-  const initial = useMemo(() => coverCandidates(book), [book.cover_url, book.isbn, book.isbn13]);
+  const initial = useMemo(() => coverCandidates(book), [book.cover_url, book.isbn, book.isbn13, book.title, book.author]);
   const [sources, setSources] = useState(initial);
   const [index, setIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
@@ -35,16 +35,17 @@ const BookCover = ({ book, className = "", eager = false }: BookCoverProps) => {
 
   useEffect(() => {
     if (!exhausted || lookedUp) return;
-    setLookedUp(true);
     let active = true;
-    findCoverByTitle(book.title, book.author).then((url) => {
-      if (active && url && !sources.includes(url)) setSources((s) => [...s, url]);
+    Promise.all([findCoverByTitle(book.title, book.author), findGoogleCover(book.title, book.author)]).then((urls) => {
+      if (!active) return;
+      setLookedUp(true);
+      setSources(s => [...s, ...urls.filter((url): url is string => !!url && !s.includes(url))]);
     });
     return () => { active = false; };
   }, [exhausted, lookedUp, book.title, book.author, sources]);
 
   if (exhausted) {
-    return <BookCoverPlaceholder title={book.title} genre={book.genre} mood={book.mood} />;
+    return <BookCoverPlaceholder title={book.title} author={book.author} genre={book.genre} mood={book.mood} />;
   }
 
   return (
@@ -57,10 +58,10 @@ const BookCover = ({ book, className = "", eager = false }: BookCoverProps) => {
         loading={eager ? "eager" : "lazy"}
         decoding="async"
         referrerPolicy="no-referrer"
-        className={`h-full w-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
+        className={`book-hardcover h-full w-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
         onLoad={(e) => {
           // Open Library returns a 1x1 image for unknown covers
-          if (e.currentTarget.naturalWidth < 10) { setIndex((i) => i + 1); return; }
+          if (!usableCover(e.currentTarget.naturalWidth, e.currentTarget.naturalHeight)) { setLoaded(false); setIndex((i) => i + 1); return; }
           setLoaded(true);
         }}
         onError={() => { setLoaded(false); setIndex((i) => i + 1); }}
