@@ -36,6 +36,9 @@
 
 # Final production audit
 
+- [x] Replace reader Google buttons with shared email/password sign-in, signup and reset-link forms; add public password recovery and initialize free profiles/account trial usage.
+- [ ] Verify email confirmation delivery and password recovery on production after DNS/HTTPS correction; external mail delivery and live apex hosting remain unverified.
+
 - [x] Harden callback handling for unprocessed token fragments and return verified callbacks directly to dashboard without restarting Google.
 - [ ] Verify reported Vercel Google frame error on the actual deployment; blocked by missing deployment URL and missing Vercel address in hosted auth allowlist. Keep required managed Cloud helper.
 

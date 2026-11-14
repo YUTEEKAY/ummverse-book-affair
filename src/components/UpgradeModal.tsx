@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { GoogleSignInButton } from "./GoogleSignInButton";
+import { EmailAuthForm } from "./EmailAuthForm";
 import { PLANS, openFlutterwaveCheckout } from "@/lib/flutterwave";
 import { toast } from "sonner";
 
@@ -41,7 +41,7 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
         {!user ? (
           <div className="flex flex-col items-center gap-3 pt-2">
             <p className="text-sm text-muted-foreground">Sign in first so your subscription stays with your account.</p>
-            <GoogleSignInButton className="w-full" />
+            <div className="w-full"><EmailAuthForm /></div>
           </div>
         ) : (
           <div className="grid gap-3 pt-2 sm:grid-cols-2">

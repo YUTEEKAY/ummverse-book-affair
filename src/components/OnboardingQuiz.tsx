@@ -11,7 +11,7 @@ import { useTrialGate } from "@/hooks/useTrialGate";
 import { saveOnboardingData, type QuizAnswers } from "@/lib/quizStorage";
 import { mapFeelingToMood } from "@/lib/quizLogic";
 import { useAuth } from "@/contexts/AuthContext";
-import { GoogleSignInButton } from "./GoogleSignInButton";
+import { EmailAuthForm } from "./EmailAuthForm";
 interface OnboardingQuizProps {
   open: boolean;
   onClose: () => void;
@@ -137,7 +137,7 @@ const OnboardingQuiz = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto border-border bg-background/95 backdrop-blur-lg">
         <AnimatePresence mode="wait">
-          {!user ? <div className="space-y-5 py-8 text-center"><h2 className="font-serif text-3xl">Find your book vibe</h2><p className="text-muted-foreground">Sign in for your 2 free quiz matches.</p><GoogleSignInButton /></div> : !showResults ? <motion.div key={step} initial={{
+          {!user ? <div className="mx-auto max-w-md space-y-5 py-8 text-center"><h2 className="font-serif text-3xl">Find your book vibe</h2><p className="text-muted-foreground">Sign in for your 2 free quiz matches.</p><EmailAuthForm /></div> : !showResults ? <motion.div key={step} initial={{
           opacity: 0,
           x: 20
         }} animate={{

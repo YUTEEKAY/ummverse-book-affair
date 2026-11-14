@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Heart, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+import { EmailAuthForm } from "@/components/EmailAuthForm";
 import { Card } from "@/components/ui/card";
 
 import { AUTH_NEXT_KEY, safeAuthDestination } from "@/lib/authRedirect";
@@ -11,7 +11,6 @@ export default function SignIn() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const next = safeAuthDestination(params.get("next"));
@@ -37,9 +36,8 @@ export default function SignIn() {
         {loading || user ? (
           <div className="flex justify-center py-2"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
         ) : (
-          <GoogleSignInButton className="h-11 w-full" redirectPath="/signin" onError={setError} />
+          <EmailAuthForm />
         )}
-        {error && <p role="alert" className="mt-4 text-sm text-destructive">{error}</p>}
         <p className="mt-8 text-xs text-muted-foreground">
           By continuing you agree to our <Link to="/terms" className="underline">Terms</Link> and <Link to="/privacy" className="underline">Privacy Policy</Link>.
         </p>

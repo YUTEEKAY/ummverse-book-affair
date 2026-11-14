@@ -71,6 +71,13 @@
       "when": 1794629599075,
       "tag": "0009_tighten_logs_views_achievements",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794672728503,
+      "tag": "0010_initialize_email_reader_accounts",
+      "breakpoints": true
     }
   ]
 }
