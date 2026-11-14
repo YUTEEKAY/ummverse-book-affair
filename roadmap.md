@@ -36,6 +36,8 @@
 
 # Final production audit
 
+- [x] Address follow-up Google-button request: user chose to keep email only until Vercel Google hosting is resolved.
+
 - [x] Replace reader Google buttons with shared email/password sign-in, signup and reset-link forms; add public password recovery and initialize free profiles/account trial usage.
 - [ ] Verify email confirmation delivery and password recovery on production after DNS/HTTPS correction; external mail delivery and live apex hosting remain unverified.
 
