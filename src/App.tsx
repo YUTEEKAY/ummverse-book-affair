@@ -14,6 +14,7 @@ import GenreDetail from "./pages/GenreDetail";
 import TropeDetail from "./pages/TropeDetail";
 import BookDetail from "./pages/BookDetail";
 import SignIn from "./pages/SignIn";
+import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import { ProtectedUserRoute } from "./components/ProtectedUserRoute";
 import Admin from "./pages/Admin";
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/index" element={<Index />} />
             <Route path="/admin-login" element={<AdminAuth />} />
             <Route path="/signin" element={<SignIn />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/dashboard" element={<ProtectedUserRoute><Dashboard /></ProtectedUserRoute>} />
             <Route path="/mood/:moodId" element={<MoodDetail />} />
             <Route path="/genre/:genreId" element={<GenreDetail />} />

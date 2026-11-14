@@ -5,8 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { Card } from "@/components/ui/card";
 
-const NEXT_KEY = "ummverse_next";
-const safePath = (p: string | null) => (p && p.startsWith("/") && !p.startsWith("//") ? p : null);
+import { AUTH_NEXT_KEY, safeAuthDestination } from "@/lib/authRedirect";
 
 export default function SignIn() {
   const { user, loading } = useAuth();
@@ -15,14 +14,14 @@ export default function SignIn() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const next = safePath(params.get("next"));
-    if (next) sessionStorage.setItem(NEXT_KEY, next);
+    const next = safeAuthDestination(params.get("next"));
+    if (next) sessionStorage.setItem(AUTH_NEXT_KEY, next);
   }, [params]);
 
   useEffect(() => {
     if (!loading && user) {
-      const next = safePath(sessionStorage.getItem(NEXT_KEY)) ?? "/dashboard";
-      sessionStorage.removeItem(NEXT_KEY);
+      const next = safeAuthDestination(sessionStorage.getItem(AUTH_NEXT_KEY)) ?? "/dashboard";
+      sessionStorage.removeItem(AUTH_NEXT_KEY);
       navigate(next, { replace: true });
     }
   }, [user, loading, navigate]);

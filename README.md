@@ -14,6 +14,13 @@ Checkout uses Flutterwave Standard hosted recurring card checkout. No fake keys 
 
 Before launch, test successful/failed checkout, dashboard verification, duplicate and recurring webhooks, cancellation, and paid review/vendor access with test credentials. These cannot be certified while credentials are missing. `bun test src/lib/*.test.ts` runs the regression tests.
 
+## Google sign-in across environments
+
+- Keep Google's Lovable Cloud managed sign-in helper, not a direct `supabase.auth.signInWithOAuth` call. Every button returns to `${window.location.origin}/auth/callback`, a public route. The callback waits for automatic session initialization, exchanges an unhandled PKCE code when necessary, verifies the user with the auth server, then forwards to a sanitized saved destination (default `/dashboard`). Errors offer a retry and remove OAuth parameters from the address bar.
+- Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in Vercel; `VITE_SUPABASE_ANON_KEY` is accepted as an alternative public-key name. Hosted environment values override mode-specific file values. Vite resolves these for the generated client without editing it; missing values stop deployment with a clear configuration error. Rebuild after changing variables.
+- Configure **Site URL** and **Redirect URLs** in **Lovable → More → Users → Auth settings → Advanced**, not an external dashboard. Set the live Site URL and allow each deployed/custom-domain `https://your-domain/**` return address. For local testing, use `http://127.0.0.1:8080` and allow `http://127.0.0.1:8080/**` (hosted settings reject `localhost`). Never use a broad allowlist covering all Vercel projects.
+- Current hosted settings allow the existing Ummverse domains and Lovable previews; no Vercel or local address was present at this check. A callback and SPA rewrite do **not** supply the managed `/~oauth` broker on Vercel or local Vite. Google sign-in on those hosts remains unverified until their broker hosting and allowed return addresses are configured; no proxy or alternate direct-provider flow is assumed here.
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/7a37ec35-ed53-4a58-aada-c05fb47266d7

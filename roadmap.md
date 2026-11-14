@@ -36,6 +36,8 @@
 
 # Final production audit
 
+- [x] Add current-origin public OAuth callback, server-verified session completion, safe destination handling and Vercel public-key alias checks; preserve managed Google sign-in.
+
 - [x] Verified sign-in-before-quiz, server allowed/allowed/blocked trial responses and third-attempt modal; admin guards, legal/footer links, image export and mobile layout. 21 tests pass; automatic build OK; no runtime errors observed. Review/vendor RLS inspected.
 - [ ] Vercel deployment and Google OAuth end-to-end: blocked by absent deployed Vercel URL/allowlist and external-host OAuth broker setup.
 - [ ] Completed Flutterwave payment/renewal/cancellation and paid UI: blocked by missing credentials/plans. CSV/enrichment save flows remain unverified in this pass.
