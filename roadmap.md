@@ -10,3 +10,11 @@
 - [ ] Canonical sign-in implemented; its availability is blocked by ummverse.com.ng awaiting DNS and failing HTTPS.
 - [ ] Check real-payment readiness. Blocked: verification/review pending and the retained non-refundable policy conflicts with provider requirements.
 - [ ] Verify completed payment, renewal/cancellation, paid review/vendor access, CSV/enrichment mutations, and user-access gifting. Requires approved/manual payment flow and agreed test-account/data changes; not verified by this audit.
+
+# Flutterwave migration and Vercel readiness
+
+- [ ] Replace frontend checkout and legacy payment endpoints with Flutterwave Standard, verified return handling, recurring webhooks and cancellation.
+- [ ] Add secure subscription fields, payment records and shared access rules; preserve existing subscription history and manual grants.
+- [ ] Match $5/month and $60/year throughout and restore current-origin auth/payment returns.
+- [ ] Add Vercel SPA rewrites, environment example and deployment instructions; run tests and browser checks.
+- [ ] Configure Flutterwave credentials/plans/webhook and disconnect managed payments; blocked until account details and provider disconnect are supplied.
