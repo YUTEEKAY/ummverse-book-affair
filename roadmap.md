@@ -36,6 +36,9 @@
 
 # Final production audit
 
+- [x] Harden callback handling for unprocessed token fragments and return verified callbacks directly to dashboard without restarting Google.
+- [ ] Verify reported Vercel Google frame error on the actual deployment; blocked by missing deployment URL and missing Vercel address in hosted auth allowlist. Keep required managed Cloud helper.
+
 - [x] Add current-origin public OAuth callback, server-verified session completion, safe destination handling and Vercel public-key alias checks; preserve managed Google sign-in.
 
 - [x] Verified sign-in-before-quiz, server allowed/allowed/blocked trial responses and third-attempt modal; admin guards, legal/footer links, image export and mobile layout. 21 tests pass; automatic build OK; no runtime errors observed. Review/vendor RLS inspected.

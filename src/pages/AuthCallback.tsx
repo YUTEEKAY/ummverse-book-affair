@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { completeAuthCallback } from "@/lib/authCallback";
-import { AUTH_NEXT_KEY, safeAuthDestination } from "@/lib/authRedirect";
+import { AUTH_NEXT_KEY } from "@/lib/authRedirect";
 import { Button } from "@/components/ui/button";
 
 export default function AuthCallback() {
@@ -24,9 +24,10 @@ export default function AuthCallback() {
     }, 20000);
     completion.current.then(() => {
       if (!mounted) return;
-      const next = safeAuthDestination(sessionStorage.getItem(AUTH_NEXT_KEY)) ?? "/dashboard";
       sessionStorage.removeItem(AUTH_NEXT_KEY);
-      navigate(next, { replace: true });
+      // Remove credentials from browser history before entering the reader area.
+      window.history.replaceState(null, "", "/auth/callback");
+      navigate("/dashboard", { replace: true });
     }).catch((cause: unknown) => {
       if (!mounted) return;
       window.history.replaceState(null, "", "/auth/callback");

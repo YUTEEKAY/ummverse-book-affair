@@ -12,8 +12,16 @@ export async function completeAuthCallback(auth: SupabaseClient["auth"], href: s
   if (error) throw new Error("Your sign-in link could not be verified. Please sign in again.");
   if (!data.session) {
     const code = url.searchParams.get("code");
-    if (!code) throw new Error("No sign-in session was received. Please sign in again.");
-    const exchanged = await auth.exchangeCodeForSession(code);
+    const accessToken = hash.get("access_token");
+    const refreshToken = hash.get("refresh_token");
+    if (!code && !(accessToken && refreshToken)) {
+      throw new Error("No sign-in session was received. Please sign in again.");
+    }
+    // Automatic URL hydration is preferred; explicitly handle an unprocessed
+    // implicit return as well as PKCE without starting another OAuth flow.
+    const exchanged = code
+      ? await auth.exchangeCodeForSession(code)
+      : await auth.setSession({ access_token: accessToken ?? "", refresh_token: refreshToken ?? "" });
     if (exchanged.error || !exchanged.data.session) {
       throw new Error("Your sign-in link has expired or belongs to another browser. Please sign in again.");
     }

@@ -7,6 +7,7 @@ function client(session: object | null = { user: { id: "reader" } }) {
   const auth = {
     getSession: mock(async () => ({ data: { session }, error: null })),
     exchangeCodeForSession: mock(async (_code: string) => ({ data: { session: { user: { id: "reader" } } }, error: null })),
+    setSession: mock(async (_tokens: object) => ({ data: { session: { user: { id: "reader" } } }, error: null })),
     getUser: mock(async () => ({ data: { user: { id: "reader" } }, error: null })),
   };
   return { auth, typed: auth as unknown as SupabaseClient["auth"] };
@@ -29,6 +30,18 @@ describe("OAuth callback", () => {
     const c = client(null);
     await expect(completeAuthCallback(c.typed, "https://reader.vercel.app/auth/callback")).rejects.toThrow("No sign-in session");
     expect(c.auth.getUser).toHaveBeenCalledTimes(0);
+  });
+  test("handles an unprocessed hash return then verifies the user", async () => {
+    const c = client(null);
+    await completeAuthCallback(c.typed, "https://reader.vercel.app/auth/callback#access_token=test-access&refresh_token=test-refresh");
+    expect(c.auth.setSession).toHaveBeenCalledWith({ access_token: "test-access", refresh_token: "test-refresh" });
+    expect(c.auth.exchangeCodeForSession).toHaveBeenCalledTimes(0);
+    expect(c.auth.getUser).toHaveBeenCalledTimes(1);
+  });
+  test("rejects incomplete hash credentials", async () => {
+    const c = client(null);
+    await expect(completeAuthCallback(c.typed, "https://reader.vercel.app/auth/callback#access_token=incomplete")).rejects.toThrow("No sign-in session");
+    expect(c.auth.setSession).toHaveBeenCalledTimes(0);
   });
   test("rejects provider denial even with an existing session", async () => {
     const c = client();
