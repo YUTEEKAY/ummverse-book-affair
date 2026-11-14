@@ -1,8 +1,8 @@
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 export const PLANS = [
-  { id: "monthly", name: "Monthly", price: "$5", per: "/month" },
-  { id: "annual", name: "Annual", price: "$60", per: "/year" },
+  { id: "monthly", name: "Monthly", price: "₦8,000", per: "/month" },
+  { id: "annual", name: "Annual", price: "₦80,000", per: "/year" },
 ];
 export function getPaymentEnvironment(): "sandbox" | "live" {
   const key = import.meta.env.VITE_FLUTTERWAVE_PUBLIC_KEY;

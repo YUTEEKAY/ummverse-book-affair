@@ -49,3 +49,8 @@
 - [x] Verified sign-in-before-quiz, server allowed/allowed/blocked trial responses and third-attempt modal; admin guards, legal/footer links, image export and mobile layout. 21 tests pass; automatic build OK; no runtime errors observed. Review/vendor RLS inspected.
 - [ ] Vercel deployment and Google OAuth end-to-end: blocked by absent deployed Vercel URL/allowlist and external-host OAuth broker setup.
 - [ ] Completed Flutterwave payment/renewal/cancellation and paid UI: blocked by missing credentials/plans. CSV/enrichment save flows remain unverified in this pass.
+
+# Naira pricing
+
+- [x] Switch both plans to naira: ₦8,000 monthly and ₦80,000 annually across the upgrade window, dashboard badge, admin metrics, Terms and Refunds, plus backend amount/currency checks and tests.
+- [ ] Update the two Flutterwave hosted payment links to charge ₦8,000 and ₦80,000 in NGN; blocked until the links are edited in the Flutterwave dashboard, since the app cannot change what a hosted link charges.

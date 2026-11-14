@@ -12,8 +12,8 @@ const Terms = () => (
       { heading: "Free trials", body: <p>Sign in to receive <strong>2 free tries</strong> (for example, quiz recommendations). Tries are stored against your account across devices, with a browser counter as an additional safeguard. After 2 tries, a paid subscription is required to continue.</p> },
       { heading: "Subscriptions & billing", body: <>
         <ul>
-          <li><strong>Monthly:</strong> $5 USD per month.</li>
-          <li><strong>Annual:</strong> $60 USD per year.</li>
+          <li><strong>Monthly:</strong> ₦8,000 per month.</li>
+          <li><strong>Annual:</strong> ₦80,000 per year.</li>
         </ul>
         <p>Subscriptions <strong>renew automatically</strong> at the end of each billing period at the then-current price until you cancel. Payments are processed by our payment partner, Flutterwave. You can cancel any time from your dashboard; cancellation stops future renewals and access continues until the end of the paid period. See our <Link to="/refunds">Refund Policy</Link>.</p>
         <p>We may change prices with advance notice; changes apply from your next renewal.</p>

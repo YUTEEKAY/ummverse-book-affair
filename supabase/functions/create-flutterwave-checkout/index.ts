@@ -1,5 +1,5 @@
 import { config, db, flw, handle, user } from "../_shared/flutterwave.ts";
-import { PRICE } from "../_shared/flutterwaveRules.ts";
+import { CURRENCY, PRICE } from "../_shared/flutterwaveRules.ts";
 Deno.serve(req => handle(req, async () => {
   const account = await user(req);
   const { tier, origin } = await req.json();
@@ -12,13 +12,13 @@ Deno.serve(req => handle(req, async () => {
   if (!planId || !/^\d+$/.test(planId)) throw new Error("This payment plan is not configured yet.");
   const plan = await flw(`/payment-plans/${planId}`);
   const amount = PRICE[tier as keyof typeof PRICE];
-  if (plan.status !== "active" || plan.currency !== "USD" || Number(plan.amount) !== amount || plan.interval !== (tier === "annual" ? "yearly" : "monthly")) throw new Error("The payment plan price or billing interval is incorrect.");
+  if (plan.status !== "active" || plan.currency !== CURRENCY || Number(plan.amount) !== amount || plan.interval !== (tier === "annual" ? "yearly" : "monthly")) throw new Error("The payment plan price or billing interval is incorrect.");
   const active = await db().rpc("has_active_subscription", { user_uuid: account.id, check_env: environment });
   if (active.error) throw active.error;
   if (active.data) throw new Error("Your membership is already active.");
   const tx_ref = `ummverse_${crypto.randomUUID()}`;
-  const { error } = await db().from("flutterwave_checkouts").insert({ tx_ref, user_id: account.id, tier, amount, currency: "USD", plan_id: planId, environment });
+  const { error } = await db().from("flutterwave_checkouts").insert({ tx_ref, user_id: account.id, tier, amount, currency: CURRENCY, plan_id: planId, environment });
   if (error) throw error;
-  const payment = await flw("/payments", "POST", { tx_ref, amount, currency: "USD", payment_plan: Number(planId), payment_options: "card", redirect_url: `${origin}/dashboard?payment=verifying`, customer: { email: account.email }, meta: { user_id: account.id }, customizations: { title: "Ummverse Premium" } });
+  const payment = await flw("/payments", "POST", { tx_ref, amount, currency: CURRENCY, payment_plan: Number(planId), payment_options: "card", redirect_url: `${origin}/dashboard?payment=verifying`, customer: { email: account.email }, meta: { user_id: account.id }, customizations: { title: "Ummverse Premium" } });
   return { url: payment.link, tx_ref };
 }));

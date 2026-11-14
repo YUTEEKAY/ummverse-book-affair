@@ -11,7 +11,7 @@ describe("admin metrics", () => {
     expect(tierOf({ ...base, status: "active_annual", price_id: "premium_yearly", current_period_end: "2026-12-01" }, now)).toBe("annual");
     expect(tierOf({ ...base, status: "active_annual", price_id: "premium_yearly", current_period_end: "2026-10-01" }, now)).toBe("free");
   });
-  test("MRR counts monthly at $5 and annual at $60/12", () => {
+  test("MRR counts monthly at ₦8,000 and annual at ₦80,000/12", () => {
     const rows = [
       { ...base, status: "active", price_id: "premium_monthly", current_period_end: "2026-12-01" },
       { ...base, status: "active", price_id: "premium_yearly", current_period_end: "2027-06-01" },
@@ -19,7 +19,7 @@ describe("admin metrics", () => {
     const k = computeKpis(rows, now);
     expect(k.monthly).toBe(1);
     expect(k.annual).toBe(1);
-    expect(k.mrr).toBeCloseTo(5 + 60 / 12);
+    expect(k.mrr).toBeCloseTo(8000 + 80000 / 12);
   });
   test("expired subscription counts as free trial user", () => {
     const r = { ...base, trials_used: 2, status: "active", price_id: "premium_monthly", current_period_end: "2026-10-01" };

@@ -30,7 +30,7 @@ export default function Dashboard() {
   const { name, avatar, initials } = userDisplay(user);
 
   const isAnnual = isActive && subscription?.price_id === "premium_yearly";
-  const badge = !isActive ? "Free Trial" : isAnnual ? "Annual Subscriber - $60/yr" : "Monthly Subscriber - $5/mo";
+  const badge = !isActive ? "Free Trial" : isAnnual ? "Annual Subscriber - ₦80,000/yr" : "Monthly Subscriber - ₦8,000/mo";
 
   const { data: usage } = useQuery({
     queryKey: ["my-usage", user?.id],

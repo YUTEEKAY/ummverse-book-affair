@@ -1,5 +1,5 @@
 import { db, flw, json, config, verifyTransaction } from "../_shared/flutterwave.ts";
-import { linkTier, nextBillingDate } from "../_shared/flutterwaveRules.ts";
+import { CURRENCY, linkTier, nextBillingDate } from "../_shared/flutterwaveRules.ts";
 function equal(a: string, b: string) {
   const x = new TextEncoder().encode(a), y = new TextEncoder().encode(b);
   if (x.length !== y.length) return false;
@@ -37,7 +37,7 @@ async function applyLinkPayment(id: string) {
   try { remote = (await flw(`/subscriptions?transaction_id=${encodeURIComponent(id)}`))?.[0] ?? null; } catch { remote = null; }
   const subId = remote?.id ? String(remote.id) : `tx_${t.id}`;
   const { error: saveError } = await store.from("flutterwave_checkouts").upsert({
-    tx_ref: t.tx_ref, user_id: userId, tier, amount: Number(t.amount), currency: "USD",
+    tx_ref: t.tx_ref, user_id: userId, tier, amount: Number(t.amount), currency: CURRENCY,
     plan_id: String(remote?.plan ?? t.plan ?? "payment_link"), environment: config().environment,
   });
   if (saveError) throw saveError;

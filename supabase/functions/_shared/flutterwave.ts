@@ -1,6 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
-import { nextBillingDate, validatePayment } from "./flutterwaveRules.ts";
+import { CURRENCY, PRICE, nextBillingDate, validatePayment } from "./flutterwaveRules.ts";
 export const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 export function db() {
   const url = Deno.env.get("SUPABASE_URL"), key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -40,7 +40,7 @@ export async function verifyTransaction(id: string, expectedUser?: string) {
     const existing = await store.from("subscriptions").select("*").eq("flutterwave_subscription_id", String(remote.id)).maybeSingle();
     subscription = existing.data;
     if (!subscription) throw new Error("Unknown subscription.");
-    checkout = { tx_ref: t.tx_ref, user_id: subscription.user_id, tier: subscription.price_id === "premium_yearly" ? "annual" : "monthly", amount: subscription.price_id === "premium_yearly" ? 60 : 5, plan_id: String(remote.plan), currency: "USD", environment: subscription.environment };
+    checkout = { tx_ref: t.tx_ref, user_id: subscription.user_id, tier: subscription.price_id === "premium_yearly" ? "annual" : "monthly", amount: subscription.price_id === "premium_yearly" ? PRICE.annual : PRICE.monthly, plan_id: String(remote.plan), currency: CURRENCY, environment: subscription.environment };
     validatePayment(t, checkout);
     const saved = await store.from("flutterwave_checkouts").upsert(checkout);
     if (saved.error) throw saved.error;

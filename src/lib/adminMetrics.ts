@@ -1,5 +1,5 @@
-export const MONTHLY_PRICE_USD = 5;
-export const ANNUAL_PRICE_USD = 60;
+export const MONTHLY_PRICE_NGN = 8000;
+export const ANNUAL_PRICE_NGN = 80000;
 
 export type AdminUserRow = {
   id: string;
@@ -47,6 +47,6 @@ export function computeKpis(rows: AdminUserRow[], now = new Date()) {
     else if (t === "annual") annual++;
     else trials[Math.min(2, Math.max(0, r.trials_used)) as 0 | 1 | 2]++;
   }
-  const mrr = monthly * MONTHLY_PRICE_USD + (annual * ANNUAL_PRICE_USD) / 12;
+  const mrr = monthly * MONTHLY_PRICE_NGN + (annual * ANNUAL_PRICE_NGN) / 12;
   return { totalUsers: rows.length, monthly, annual, paid: monthly + annual, mrr, trials };
 }
