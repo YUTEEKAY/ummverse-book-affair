@@ -13,3 +13,6 @@
 - Centralize cover resolution and minimum source dimensions in BookCover; use semantic editorial fallback styling when providers cannot supply a usable image rather than enlarging tiny bitmaps.
 - Reader badges use aggregated distinct signed-in book viewers and say explored, not matched; never invent social-proof counts or expose reader identities.
 - Curated starter shelves use static catalogue IDs and fetch current book metadata; sharing exports the rendered quiz card in the browser without backend generation.
+
+- Require sign-in before quiz trials and consume account usage through the authenticated endpoint and row-locked RPC; this enforces account limits across devices without fingerprint/IP tracking.
+- Vendor category teasers use a count-only RPC; contact details remain behind the existing paid vendor RPC.

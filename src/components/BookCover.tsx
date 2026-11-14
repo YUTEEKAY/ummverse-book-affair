@@ -50,7 +50,7 @@ const BookCover = ({ book, className = "", eager = false }: BookCoverProps) => {
 
   return (
     <>
-      {!loaded && <div className="absolute inset-0 animate-pulse bg-muted" aria-hidden="true" />}
+      <div className="absolute inset-0" aria-hidden="true"><BookCoverPlaceholder title={book.title} author={book.author} genre={book.genre} mood={book.mood} /></div>
       <img
         key={sources[index]}
         src={sources[index]}
@@ -58,7 +58,7 @@ const BookCover = ({ book, className = "", eager = false }: BookCoverProps) => {
         loading={eager ? "eager" : "lazy"}
         decoding="async"
         referrerPolicy="no-referrer"
-        className={`book-hardcover h-full w-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
+        className={`book-hardcover relative h-full w-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
         onLoad={(e) => {
           // Open Library returns a 1x1 image for unknown covers
           if (!usableCover(e.currentTarget.naturalWidth, e.currentTarget.naturalHeight)) { setLoaded(false); setIndex((i) => i + 1); return; }

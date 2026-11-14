@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { toBlob } from "html-to-image";
+import html2canvas from "html2canvas";
 import { Share2, Download, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,8 @@ export default function ShareBookVibe({ book }: { book: VibeBook }) {
     try {
       await document.fonts.ready;
       await Promise.all(Array.from(card.current.querySelectorAll("img")).map(img => img.decode().catch(() => undefined)));
-      const blob = await toBlob(card.current, { pixelRatio: 3, cacheBust: false, skipFonts: true });
+      const canvas = await html2canvas(card.current, { scale: 3, useCORS: true, backgroundColor: null, logging: false });
+      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, "image/png"));
       if (!blob) throw new Error("Couldn't create your card.");
       const file = new File([blob], "ummverse-book-vibe.png", { type: "image/png" });
       if (mode === "share" && navigator.canShare?.({ files: [file] })) {
@@ -32,7 +33,7 @@ export default function ShareBookVibe({ book }: { book: VibeBook }) {
   };
   return <section className="space-y-4 border-y border-border py-6">
     <h3 className="text-center font-serif text-2xl font-semibold">Share My Book Vibe</h3>
-    <div ref={card} className="editorial-field--mystical editorial-cover mx-auto flex w-full max-w-sm flex-col items-center gap-4 overflow-hidden rounded-md px-6 py-8 text-center">
+    <div ref={card} className="vibe-share-card editorial-field--mystical relative mx-auto flex w-full max-w-sm flex-col items-center gap-4 overflow-hidden rounded-md px-6 py-8 text-center">
       <p className="text-xs font-semibold uppercase tracking-widest">My next chapter</p>
       <div className="relative aspect-[2/3] w-36 overflow-hidden rounded-md"><BookCover book={book} eager /></div>
       <h4 className="max-w-full break-words font-serif text-2xl font-semibold leading-tight">{book.title}</h4>
