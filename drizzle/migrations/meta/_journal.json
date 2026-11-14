@@ -64,6 +64,13 @@
       "when": 1794619554488,
       "tag": "0008_vendor_outlet_counts",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794629599075,
+      "tag": "0009_tighten_logs_views_achievements",
+      "breakpoints": true
     }
   ]
 }

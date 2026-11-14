@@ -819,6 +819,13 @@ export type Database = {
           website_url: string
         }[]
       }
+      get_most_viewed_books: {
+        Args: { _days?: number; _limit?: number }
+        Returns: {
+          book_id: string
+          views: number
+        }[]
+      }
       has_active_subscription: {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean

@@ -29,28 +29,10 @@ const MostSearchedBooksCarousel = () => {
 
   useEffect(() => {
     const fetchMostViewed = async () => {
-      // Query to get books with most views in last 30 days
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-      const { data: viewData, error } = await supabase
-        .from('book_views')
-        .select('book_id')
-        .gte('created_at', thirtyDaysAgo.toISOString());
-
+      const { data: viewData, error } = await supabase.rpc('get_most_viewed_books', { _days: 30, _limit: 6 });
       if (error) console.error('Error fetching views:', error);
-
-      // Count views per book
-      const viewCounts = (viewData || []).reduce((acc, view) => {
-        acc[view.book_id] = (acc[view.book_id] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-
-      // Get top 6 book IDs
-      const topBookIds = Object.entries(viewCounts)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 6)
-        .map(([id]) => id);
+      const viewCounts = Object.fromEntries((viewData || []).map((v) => [v.book_id, Number(v.views)])) as Record<string, number>;
+      const topBookIds = (viewData || []).map((v) => v.book_id);
 
       if (topBookIds.length === 0) {
         // Fallback: show highest rated books if no views are available yet.
