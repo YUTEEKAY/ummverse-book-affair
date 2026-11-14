@@ -84,7 +84,7 @@ const OnboardingQuiz = ({
     label: "Scorching",
     desc: "Explicit, no limits"
   }];
-  const handleNext = async () => {
+  const handleNext = async (selectedAnswers = answers) => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
@@ -96,8 +96,8 @@ const OnboardingQuiz = ({
         return;
       }
       // Submit quiz
-      const recommendedMood = mapFeelingToMood(answers.feeling);
-      saveOnboardingData(answers, recommendedMood);
+      const recommendedMood = mapFeelingToMood(selectedAnswers.feeling);
+      saveOnboardingData(selectedAnswers, recommendedMood);
       setShowResults(true);
     }
   };
@@ -225,11 +225,12 @@ const OnboardingQuiz = ({
                   </div>
 
                   <RadioGroup value={answers.heatLevel} onValueChange={value => {
-              setAnswers({
+              const selected = {
                 ...answers,
                 heatLevel: value
-              });
-              setTimeout(() => handleNext(), 300);
+              };
+              setAnswers(selected);
+              setTimeout(() => handleNext(selected), 300);
             }} className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {heatLevels.map(level => <Label key={level.value} htmlFor={level.value} className="cursor-pointer">
                         <motion.div whileHover={{
@@ -262,7 +263,7 @@ const OnboardingQuiz = ({
                   Skip for now
                 </Button>
 
-                <Button onClick={handleNext} disabled={!canProceed() || checking} size="lg" className="gap-2">
+                <Button onClick={() => handleNext()} disabled={!canProceed() || checking} size="lg" className="gap-2">
                   {step === totalSteps ? "Show Results" : "Next"}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
