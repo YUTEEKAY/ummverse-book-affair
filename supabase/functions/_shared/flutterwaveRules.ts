@@ -13,4 +13,11 @@ export function validatePayment(t: any, c: any) {
   if (t.status !== "successful" || t.currency !== "USD" || Number(t.amount) !== Number(c.amount) || t.tx_ref !== c.tx_ref || (t.meta?.user_id && t.meta.user_id !== c.user_id)) {
     throw new Error("Payment amount, currency, reference or account does not match.");
   }
+}// Hosted payment links: $60+ unlocks annual, $5+ monthly; anything else is ignored.
+export function linkTier(t: any): Tier | null {
+  const amount = Number(t?.amount);
+  if (t?.status !== "successful" || t?.currency !== "USD" || !Number.isFinite(amount)) return null;
+  if (amount >= PRICE.annual) return "annual";
+  if (amount >= PRICE.monthly) return "monthly";
+  return null;
 }

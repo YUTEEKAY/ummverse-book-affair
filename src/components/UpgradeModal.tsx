@@ -4,24 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { EmailAuthForm } from "./EmailAuthForm";
-import { PLANS, openFlutterwaveCheckout } from "@/lib/flutterwave";
-import { toast } from "sonner";
+import { PLANS } from "@/lib/flutterwave";
+import { PAYMENT_LINKS, SAME_EMAIL_NOTE } from "@/lib/paymentLinks";
 
 export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { user } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
 
-  const checkout = async (priceId: string) => {
+  const checkout = (planId: string) => {
     if (!user) return;
-    setLoading(priceId);
-    try {
-      await openFlutterwaveCheckout(priceId);
-    } catch (e) {
-      console.error(e);
-      toast.error(e instanceof Error ? e.message : "Couldn't open checkout. Please try again.");
-    } finally {
-      setLoading(null);
-    }
+    setLoading(planId);
+    window.location.assign(PAYMENT_LINKS[planId as keyof typeof PAYMENT_LINKS]);
   };
 
   return (
@@ -44,7 +37,8 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
             <div className="w-full"><EmailAuthForm /></div>
           </div>
         ) : (
-          <div className="grid gap-3 pt-2 sm:grid-cols-2">
+          <div className="space-y-3 pt-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             {PLANS.map((p) => (
               <div key={p.id} className="flex flex-col rounded-lg border border-border p-4">
                 <div className="flex items-center justify-between">
@@ -58,6 +52,11 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
                 </Button>
               </div>
             ))}
+          </div>
+          <p className="rounded-md border border-border bg-muted p-3 text-sm text-foreground">
+            <strong>Important:</strong> {SAME_EMAIL_NOTE.replace("Important: ", "")}
+            {user.email && <> Your account email is <strong>{user.email}</strong>.</>}
+          </p>
           </div>
         )}
       </DialogContent>

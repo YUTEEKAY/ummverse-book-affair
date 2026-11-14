@@ -12,4 +12,10 @@ test("successful payment must match reference amount currency and account", () =
 test("monthly period handles month-end and annual handles leap day", () => {
   expect(nextBillingDate("2026-01-31T12:00:00Z", "monthly")).toBe("2026-02-28T12:00:00.000Z");
   expect(nextBillingDate("2024-02-29T12:00:00Z", "annual")).toBe("2025-02-28T12:00:00.000Z");
-});
+});import { linkTier } from "../../supabase/functions/_shared/flutterwaveRules";
+import { PAYMENT_LINKS } from "./paymentLinks";
+test("$60 link payment unlocks annual", () => expect(linkTier({ status: "successful", currency: "USD", amount: 60 })).toBe("annual"));
+test("$5 link payment unlocks monthly", () => expect(linkTier({ status: "successful", currency: "USD", amount: 5 })).toBe("monthly"));
+test("under-$5 link payment unlocks nothing", () => expect(linkTier({ status: "successful", currency: "USD", amount: 1 })).toBeNull());
+test("monthly button uses lo5a1h8arwlu link", () => expect(PAYMENT_LINKS.monthly).toBe("https://flutterwave.com/pay/lo5a1h8arwlu"));
+test("annual button uses tw608nmdxat0 link", () => expect(PAYMENT_LINKS.annual).toBe("https://flutterwave.com/pay/tw608nmdxat0"));
