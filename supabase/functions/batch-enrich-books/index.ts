@@ -132,6 +132,7 @@ serve(async (req) => {
         const { data: enrichData, error: enrichError } = await supabase.functions.invoke(
           'enrich-single-book',
           {
+            headers: { Authorization: authHeader },
             body: {
               bookId: book.id,
               title: book.title,

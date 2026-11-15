@@ -6,7 +6,8 @@ export const PLANS = [
 ];
 export function getPaymentEnvironment(): "sandbox" | "live" {
   const key = import.meta.env.VITE_FLUTTERWAVE_PUBLIC_KEY;
-  return !key || key.includes("TEST") ? "sandbox" : "live";
+  // Hosted payment links need no public key; only an explicit test key means sandbox.
+  return key && key.includes("TEST") ? "sandbox" : "live";
 }
 export async function paymentRequest(name: string, body: unknown) {
   const { data, error } = await supabase.functions.invoke(name, { body });
