@@ -153,8 +153,8 @@ export function UserManagement() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Grant access</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => setTier(r, "annual")}>Gift Annual (1 year)</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => setTier(r, "monthly")}>Gift Monthly (1 month)</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setTier(r, "annual")}>Unlock Annual — manual payment (1 year)</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setTier(r, "monthly")}>Unlock Monthly — manual payment (1 month)</DropdownMenuItem>
                               <DropdownMenuItem onClick={() => setTier(r, "free")}>Remove gifted access</DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={() => resetTrials(r)}>Reset free tries</DropdownMenuItem>
