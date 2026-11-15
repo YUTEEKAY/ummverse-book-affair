@@ -1,12 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { getPaymentEnvironment } from "@/lib/flutterwave";
 
 export function useSubscription() {
   const { user } = useAuth();
   const q = useQuery({
-    queryKey: ["subscription", user?.id, getPaymentEnvironment()],
+    queryKey: ["subscription", user?.id],
     enabled: !!user,
     staleTime: 0,
     refetchInterval: 5000,
@@ -16,19 +15,21 @@ export function useSubscription() {
         .from("subscriptions")
         .select("*")
         .eq("user_id", user.id)
-        .eq("environment", getPaymentEnvironment())
         .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .limit(10);
       if (error) throw error;
-      return data;
+      // Paid access counts in any payment mode, matching the server check.
+      return (data ?? []).find(isActiveRow) ?? data?.[0] ?? null;
     },
   });
   const s = q.data;
-  const futureEnd = !s?.current_period_end || new Date(s.current_period_end) > new Date();
-  const isActive = !!s && (
-    (["active", "trialing", "past_due", "active_monthly", "active_annual"].includes(s.status) && futureEnd) ||
-    (s.status === "canceled" && !!s.current_period_end && new Date(s.current_period_end) > new Date())
-  );
+  const isActive = !!s && isActiveRow(s);
   return { subscription: s, isActive, refetch: q.refetch };
+}
+
+type Row = { status: string; current_period_end: string | null };
+function isActiveRow(s: Row) {
+  const futureEnd = !s.current_period_end || new Date(s.current_period_end) > new Date();
+  return (["active", "trialing", "past_due", "active_monthly", "active_annual"].includes(s.status) && futureEnd) ||
+    (s.status === "canceled" && !!s.current_period_end && new Date(s.current_period_end) > new Date());
 }

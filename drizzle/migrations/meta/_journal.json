@@ -78,6 +78,13 @@
       "when": 1794672728503,
       "tag": "0010_initialize_email_reader_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794719087485,
+      "tag": "0011_trial_accepts_any_paid_environment",
+      "breakpoints": true
     }
   ]
 }
