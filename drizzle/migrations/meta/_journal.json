@@ -92,6 +92,13 @@
       "when": 1794826817693,
       "tag": "0012_admin_tools_any_environment",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794888934272,
+      "tag": "0013_admin_assign_vendor_all_books",
+      "breakpoints": true
     }
   ]
 }

@@ -745,6 +745,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_assign_vendor_to_all_books: {
+        Args: { _vendor_id: string }
+        Returns: number
+      }
       admin_list_users: {
         Args: { check_env?: string }
         Returns: {

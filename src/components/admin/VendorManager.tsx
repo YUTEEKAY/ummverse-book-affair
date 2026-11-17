@@ -130,7 +130,7 @@ function AssignBooks({ vendor, assigned, onClose, onChange }: { vendor: Vendor; 
 
   useEffect(() => {
     if (!assigned.length) return setAssignedBooks([]);
-    supabase.from("books").select("id, title, author").in("id", assigned).order("title").then(({ data }) => setAssignedBooks(data ?? []));
+    supabase.from("books").select("id, title, author").in("id", assigned.slice(0, 50)).order("title").then(({ data }) => setAssignedBooks(data ?? []));
   }, [assigned]);
 
   useEffect(() => {
@@ -144,6 +144,16 @@ function AssignBooks({ vendor, assigned, onClose, onChange }: { vendor: Vendor; 
     return () => clearTimeout(t);
   }, [query]);
 
+  const [bulk, setBulk] = useState(false);
+  const assignAll = async () => {
+    if (!confirm(`Link ${vendor.name} to every book in the catalogue?`)) return;
+    setBulk(true);
+    const { data, error } = await supabase.rpc("admin_assign_vendor_to_all_books", { _vendor_id: vendor.id });
+    setBulk(false);
+    if (error) return toast.error(error.message);
+    toast.success(`Linked to ${data ?? 0} more book${data === 1 ? "" : "s"}`);
+    onChange();
+  };
   const toggle = async (b: Book) => {
     const { error } = assignedSet.has(b.id)
       ? await supabase.from("book_vendors").delete().eq("vendor_id", vendor.id).eq("book_id", b.id)
@@ -156,6 +166,10 @@ function AssignBooks({ vendor, assigned, onClose, onChange }: { vendor: Vendor; 
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-lg">
         <DialogHeader><DialogTitle>Books sold by {vendor.name}</DialogTitle></DialogHeader>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm text-muted-foreground">{assigned.length} book{assigned.length === 1 ? "" : "s"} linked{assigned.length > 50 ? " (showing 50)" : ""}</p>
+          <Button size="sm" disabled={bulk} onClick={assignAll}>{bulk && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}Assign to All Books</Button>
+        </div>
         <div className="flex flex-wrap gap-2">
           {assignedBooks.length === 0 && <p className="text-sm text-muted-foreground">No books assigned yet.</p>}
           {assignedBooks.map((b) => (

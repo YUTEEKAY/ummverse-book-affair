@@ -4,11 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useSubscription } from "@/hooks/useSubscription";
 import { instagramUrl, telUrl, websiteUrl, whatsappUrl } from "@/lib/vendorLinks";
 
 type Vendor = { id: string | null; name: string | null; type: string | null; instagram_handle: string | null; phone_number: string | null; website_url: string | null; total_count: number; full_access: boolean };
 
 export function WhereToBuy({ bookId, accessKey, onUpgrade }: { bookId: string; accessKey?: string; onUpgrade: () => void }) {
+  const { isActive } = useSubscription();
   const [rows, setRows] = useState<Vendor[] | null>(null);
   const [counts, setCounts] = useState({ nigerian_count: 0, online_count: 0, total_count: 0 });
 
@@ -25,7 +27,7 @@ export function WhereToBuy({ bookId, accessKey, onUpgrade }: { bookId: string; a
 
   if (!rows) return null;
   const total = Number(rows[0]?.total_count ?? 0);
-  const full = rows[0]?.full_access ?? false;
+  const full = (rows[0]?.full_access ?? false) || (isActive && rows.length === 0);
   const vendors = rows.filter((r) => r.id);
 
   return (
