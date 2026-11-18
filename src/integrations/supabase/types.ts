@@ -88,6 +88,7 @@ export type Database = {
           author: string
           cover_url: string | null
           created_at: string | null
+          featured_slot: number | null
           genre: string | null
           heat_level: string | null
           id: string
@@ -113,6 +114,7 @@ export type Database = {
           author: string
           cover_url?: string | null
           created_at?: string | null
+          featured_slot?: number | null
           genre?: string | null
           heat_level?: string | null
           id?: string
@@ -138,6 +140,7 @@ export type Database = {
           author?: string
           cover_url?: string | null
           created_at?: string | null
+          featured_slot?: number | null
           genre?: string | null
           heat_level?: string | null
           id?: string

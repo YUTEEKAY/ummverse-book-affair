@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,11 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export function BookManagement() {
+  const queryClient = useQueryClient();
+  const refreshBooks = () => {
+    queryClient.invalidateQueries({ queryKey: ['admin-books'] });
+    queryClient.invalidateQueries({ queryKey: ['featured-books'] });
+  };
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingBook, setEditingBook] = useState<any>(null);
@@ -69,7 +74,7 @@ export function BookManagement() {
       if (error) throw error;
 
       toast.success('Book deleted successfully');
-      refetch();
+      refreshBooks();
       setDeletingBookId(null);
     } catch (error: any) {
       console.error('Error deleting book:', error);
@@ -95,7 +100,7 @@ export function BookManagement() {
           <AddBookForm 
             onSuccess={() => {
               setShowAddForm(false);
-              refetch();
+              refreshBooks();
             }}
           />
         </CardContent>
@@ -122,7 +127,7 @@ export function BookManagement() {
             book={editingBook}
             onSuccess={() => {
               setEditingBook(null);
-              refetch();
+              refreshBooks();
             }}
           />
         </CardContent>
@@ -181,6 +186,7 @@ export function BookManagement() {
                     <h3 className="font-semibold text-lg truncate">{book.title}</h3>
                     <p className="text-sm text-muted-foreground">{book.author}</p>
                     <div className="flex items-center gap-2 mt-2 flex-wrap text-xs">
+                      {book.featured_slot && <span className="rounded bg-secondary px-2 py-1 text-secondary-foreground">Featured {book.featured_slot}/3</span>}
                       {book.genre && (
                         <span className="px-2 py-1 bg-primary/10 rounded">
                           {book.genre}

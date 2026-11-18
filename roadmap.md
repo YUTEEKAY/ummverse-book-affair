@@ -1,5 +1,9 @@
 # Ummverse editorial refresh
 
+## Homepage featured books
+- [x] Add three database-enforced featured positions and selection in admin add/edit forms.
+- [ ] Populate and verify the homepage shelf and admin controls on desktop/mobile.
+
 - [x] Refresh the public browsing experience with the reading-room image, editorial styling, and clear homepage discovery sections.
 - [x] Finish desktop/mobile checks and inspect current build diagnostics before commit.
 

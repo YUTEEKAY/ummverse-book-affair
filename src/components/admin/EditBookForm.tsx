@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
+import FeaturedBookField from './FeaturedBookField';
 
 const bookFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -51,6 +52,7 @@ interface EditBookFormProps {
 
 export function EditBookForm({ book, onSuccess }: EditBookFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [featured, setFeatured] = useState<number | null>(book.featured_slot ?? null);
 
   const form = useForm<BookFormValues>({
     resolver: zodResolver(bookFormSchema),
@@ -90,6 +92,7 @@ export function EditBookForm({ book, onSuccess }: EditBookFormProps) {
         isbn13: values.isbn13 || null,
         publisher: values.publisher || null,
         language: values.language,
+        featured_slot: featured,
       };
 
       const { error } = await supabase
@@ -104,7 +107,7 @@ export function EditBookForm({ book, onSuccess }: EditBookFormProps) {
     } catch (error: any) {
       console.error('Error updating book:', error);
       toast.error('Failed to update book', {
-        description: error.message
+        description: error.code === '23505' ? 'That featured position is occupied. Unfeature its current book first, or choose another position.' : error.message
       });
     } finally {
       setIsSubmitting(false);
@@ -330,6 +333,7 @@ export function EditBookForm({ book, onSuccess }: EditBookFormProps) {
           />
         </div>
 
+        <FeaturedBookField value={featured} onChange={setFeatured} />
         <Button type="submit" disabled={isSubmitting} className="w-full">
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Update Book

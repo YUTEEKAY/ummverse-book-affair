@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Loader2, Zap } from 'lucide-react';
 import { aiEnrichBook } from '@/lib/aiEnrich';
+import FeaturedBookField from './FeaturedBookField';
 
 const bookFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -52,6 +53,7 @@ interface AddBookFormProps {
 export function AddBookForm({ onSuccess }: AddBookFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEnriching, setIsEnriching] = useState(false);
+  const [featured, setFeatured] = useState<number | null>(null);
 
   const handleAiFill = async () => {
     const title = form.getValues('title').trim();
@@ -112,6 +114,7 @@ export function AddBookForm({ onSuccess }: AddBookFormProps) {
         publisher: values.publisher || null,
         language: values.language,
         import_source: 'manual',
+        featured_slot: featured,
       };
 
       const { error } = await supabase
@@ -122,11 +125,12 @@ export function AddBookForm({ onSuccess }: AddBookFormProps) {
 
       toast.success('Book added successfully!');
       form.reset();
+      setFeatured(null);
       onSuccess();
     } catch (error: any) {
       console.error('Error adding book:', error);
       toast.error('Failed to add book', {
-        description: error.message
+        description: error.code === '23505' ? 'That featured position is occupied. Unfeature its current book first, or choose another position.' : error.message
       });
     } finally {
       setIsSubmitting(false);
@@ -362,6 +366,7 @@ export function AddBookForm({ onSuccess }: AddBookFormProps) {
           />
         </div>
 
+        <FeaturedBookField value={featured} onChange={setFeatured} />
         <Button type="submit" disabled={isSubmitting} className="w-full">
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Add Book

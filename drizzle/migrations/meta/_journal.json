@@ -99,6 +99,13 @@
       "when": 1794888934272,
       "tag": "0013_admin_assign_vendor_all_books",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1794978642025,
+      "tag": "0014_homepage_featured_books",
+      "breakpoints": true
     }
   ]
 }

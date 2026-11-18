@@ -8,6 +8,7 @@ import TodaysQuote from "@/components/TodaysQuote";
 import OnboardingQuiz from "@/components/OnboardingQuiz";
 import DiscoveryShelf from "@/components/DiscoveryShelf";
 import StarterShelves from "@/components/StarterShelves";
+import FeaturedBooks from "@/components/FeaturedBooks";
 
 const Index = () => {
   const [showOnboardingQuiz, setShowOnboardingQuiz] = useState(false);
@@ -19,6 +20,7 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <Hero onDiscoverClick={handleDiscoverClick} />
+      <FeaturedBooks />
       <HowItWorks />
       <TodaysQuote />
       <FeaturedMoods />
