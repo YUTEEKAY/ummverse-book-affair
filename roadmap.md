@@ -2,7 +2,7 @@
 
 ## Homepage featured books
 - [x] Add three database-enforced featured positions and selection in admin add/edit forms.
-- [ ] Populate and verify the homepage shelf and admin controls on desktop/mobile.
+- [x] Populate three initial books; verify all book links, admin feature/unfeature persistence, fourth-book rejection, and light/dark desktop/mobile layouts.
 
 - [x] Refresh the public browsing experience with the reading-room image, editorial styling, and clear homepage discovery sections.
 - [x] Finish desktop/mobile checks and inspect current build diagnostics before commit.
