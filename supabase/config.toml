@@ -21,32 +21,12 @@ verify_jwt = false
 [functions.import-csv-books]
 verify_jwt = true
 
-[functions.handle-lemon-squeezy-webhook]
-verify_jwt = false
-
-[functions.create-lemon-squeezy-checkout]
-verify_jwt = true
-
 [functions.recategorize-book-moods]
 verify_jwt = true
 
 [functions.recategorize-book-tropes]
 verify_jwt = true
 
-[functions.admin-reset-password]
-verify_jwt = true
-
-[functions.generate-quote]
-verify_jwt = false
-
-[functions.payments-webhook]
-verify_jwt = false
-
-[functions.get-paddle-price]
-verify_jwt = false
-
 [functions.ai-enrich-book]
 verify_jwt = false
 
-[functions.customer-portal]
-verify_jwt = false
