@@ -19,7 +19,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const BOOK_FIELDS = "id, title, author, cover_url, isbn, isbn13, mood, genre";
-const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString(undefined, { dateStyle: "medium" }) : "—");
+const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString(undefined, { dateStyle: "medium" }) : "-");
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -200,7 +200,7 @@ export default function Dashboard() {
 
           <TabsContent value="history" className="mt-6 space-y-6">
             {historyLoading ? <Spinner /> : history.length === 0 ? (
-              <Empty text="Take the mood quiz and your matches will be saved here to revisit anytime — for free." />
+              <Empty text="Take the mood quiz and your matches will be saved here to revisit anytime, for free." />
             ) : history.map((h: any) => (
               <Card key={h.id} className="p-5">
                 <div className="mb-4 flex flex-wrap items-center gap-2">

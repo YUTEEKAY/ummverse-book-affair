@@ -65,7 +65,7 @@ export function WhereToBuy({ bookId, accessKey, onUpgrade }: { bookId: string; a
           <div className="text-center">
             <Lock className="w-7 h-7 mx-auto mb-3 text-primary" />
             <h3 className="text-xl font-serif font-semibold mb-2">
-              {total > 0 ? `Available at ${counts.nigerian_count} Nigerian Bookstore${counts.nigerian_count === 1 ? "" : "s"} & ${counts.online_count} Online Site${counts.online_count === 1 ? "" : "s"} — Unlock to view` : "No outlets listed for this book yet"}
+              {total > 0 ? `Available at ${counts.nigerian_count} Nigerian Bookstore${counts.nigerian_count === 1 ? "" : "s"} & ${counts.online_count} Online Site${counts.online_count === 1 ? "" : "s"}. Unlock to view` : "No outlets listed for this book yet"}
             </h3>
             <p className="text-muted-foreground mb-5">Subscribe to see local Nigerian bookstores, online links and vendor contact info.</p>
             <Button onClick={onUpgrade} className="h-auto min-h-10 whitespace-normal">Upgrade to Unlock Vendor Links</Button>

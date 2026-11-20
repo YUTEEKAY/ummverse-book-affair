@@ -39,7 +39,7 @@ const Hero = ({ onDiscoverClick }: HeroProps) => {
             Ummverse<span className="text-accent">.</span>
           </h1>
           <p className="max-w-xl font-serif text-2xl leading-snug text-primary-foreground sm:text-3xl lg:text-4xl">
-            Find romance that feels right — not by genre, but by emotion.
+            Find romance that feels right, not by genre, but by emotion.
           </p>
           <p className="mt-3 font-serif text-base italic text-primary-foreground/80 sm:text-lg">
             Fall for the words. Stay for the feels.

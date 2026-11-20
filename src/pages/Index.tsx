@@ -17,9 +17,9 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <Hero onDiscoverClick={handleDiscoverClick} />
-      <FeaturedBooks />
-      <HowItWorks />
       <TodaysQuote />
+      <HowItWorks />
+      <FeaturedBooks />
       <FeaturedMoods />
       <FeaturedTropes />
       

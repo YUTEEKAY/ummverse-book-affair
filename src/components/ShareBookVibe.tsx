@@ -19,7 +19,7 @@ export default function ShareBookVibe({ book }: { book: VibeBook }) {
       if (!blob) throw new Error("Couldn't create your card.");
       const file = new File([blob], "ummverse-book-vibe.png", { type: "image/png" });
       if (mode === "share" && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: `${book.title} — My Book Vibe`, text: `Found on Ummverse: ${book.title} by ${book.author}` });
+        await navigator.share({ files: [file], title: `${book.title}: My Book Vibe`, text: `Found on Ummverse: ${book.title} by ${book.author}` });
       } else if (mode === "copy" && navigator.clipboard?.write && typeof ClipboardItem !== "undefined") {
         await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]); toast.success("Book vibe card copied.");
       } else {

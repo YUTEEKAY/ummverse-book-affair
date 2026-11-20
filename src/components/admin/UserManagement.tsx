@@ -22,7 +22,7 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: "annual", label: "Annual" },
 ];
 const TIER_LABEL: Record<Tier, string> = { free: "Free", monthly: "Monthly", annual: "Annual" };
-const fmtDate = (d: string | null) => (d ? new Date(d).toLocaleDateString(undefined, { dateStyle: "medium" }) : "—");
+const fmtDate = (d: string | null) => (d ? new Date(d).toLocaleDateString(undefined, { dateStyle: "medium" }) : "-");
 
 export function UserManagement() {
   const env = getPaymentEnvironment();
@@ -133,7 +133,7 @@ export function UserManagement() {
                     return (
                       <TableRow key={r.id}>
                         <TableCell className="font-medium">{r.email}</TableCell>
-                        <TableCell>{r.full_name || "—"}</TableCell>
+                        <TableCell>{r.full_name || "-"}</TableCell>
                         <TableCell>{fmtDate(r.created_at)}</TableCell>
                         <TableCell>{r.trials_used}/2</TableCell>
                         <TableCell>
@@ -141,9 +141,9 @@ export function UserManagement() {
                           {r.is_manual && tier !== "free" && <span className="ml-1 text-xs text-muted-foreground">gift</span>}
                         </TableCell>
                         <TableCell>
-                          {status === "—" ? "—" : <Badge variant={status === "Active" || status === "Trialing" ? "outline" : "secondary"}>{status}</Badge>}
+                          {status === "-" ? "-" : <Badge variant={status === "Active" || status === "Trialing" ? "outline" : "secondary"}>{status}</Badge>}
                         </TableCell>
-                        <TableCell>{tier === "free" ? "—" : fmtDate(r.current_period_end)}</TableCell>
+                        <TableCell>{tier === "free" ? "-" : fmtDate(r.current_period_end)}</TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -153,8 +153,8 @@ export function UserManagement() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Grant access</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => setTier(r, "annual")}>Unlock Annual — manual payment (1 year)</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => setTier(r, "monthly")}>Unlock Monthly — manual payment (1 month)</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setTier(r, "annual")}>Unlock Annual: manual payment (1 year)</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setTier(r, "monthly")}>Unlock Monthly: manual payment (1 month)</DropdownMenuItem>
                               <DropdownMenuItem onClick={() => setTier(r, "free")}>Remove gifted access</DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={() => resetTrials(r)}>Reset free tries</DropdownMenuItem>

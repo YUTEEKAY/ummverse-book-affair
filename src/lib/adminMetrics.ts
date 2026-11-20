@@ -15,7 +15,7 @@ export type AdminUserRow = {
 };
 
 export type Tier = "free" | "monthly" | "annual";
-export type DisplayStatus = "Active" | "Trialing" | "Canceled" | "Expired" | "—";
+export type DisplayStatus = "Active" | "Trialing" | "Canceled" | "Expired" | "-";
 
 export function isActive(row: AdminUserRow, now = new Date()): boolean {
   if (!row.status) return false;
@@ -31,7 +31,7 @@ export function tierOf(row: AdminUserRow, now = new Date()): Tier {
 }
 
 export function statusOf(row: AdminUserRow, now = new Date()): DisplayStatus {
-  if (!row.status) return "—";
+  if (!row.status) return "-";
   if (!isActive(row, now)) return "Expired";
   if (row.status === "trialing") return "Trialing";
   if (row.status === "canceled" || row.cancel_at_period_end) return "Canceled";
