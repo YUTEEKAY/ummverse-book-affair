@@ -19,3 +19,4 @@
 
 - Require sign-in before quiz trials and consume account usage through the authenticated endpoint and row-locked RPC; this enforces account limits across devices without fingerprint/IP tracking.
 - Vendor category teasers use a count-only RPC; contact details remain behind the existing paid vendor RPC.
+- Homepage quotes are curated by hand in the quotes table; book auto-fill never writes quotes because provider snippets are marketing blurbs.
